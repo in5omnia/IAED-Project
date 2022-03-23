@@ -48,7 +48,7 @@ int check_date(date Date){
 
 date sum_dates(date Date1, date Date2){
     date DateSum;
-    DateSum.hour = Date1.day + Date1.day
+    DateSum.day = Date1.day + Date1.day
 }
 
 
