@@ -21,10 +21,11 @@ t avança a data do sistema
 
 /* 
 Airport - ID, country, city
-Flight - ID, departure airport, arrival airport, departure date and time, duration, max passengers 
+Flight - ID, departure airport, arrival airport, departure date and time, duration, max passengers
 Date
 Time?
  */
+
 
 typedef struct {
     int day;
@@ -33,7 +34,7 @@ typedef struct {
 } date;
 
 int check_date(date Date){
-    int Months30days = { 4, 6, 9, 11 }, Months31days = { 1, 3, 5, 7, 8, 10, 12 };
+    int i, Months30days = { 4, 6, 9, 11 }, Months31days = { 1, 3, 5, 7, 8, 10, 12 };
     if (Date.month == 2 && Date.day > 28)       /* caso dos 28 dias de fevereiro */
         return 0;
     for (i = 0, i < 7, i++){
@@ -46,23 +47,22 @@ int check_date(date Date){
     return 1;
 }
 
-date sum_dates(date Date1, date Date2){
-    date DateSum;
-    DateSum.day = Date1.day + Date1.day
-}
-
 
 typedef struct {
     int hour;
     int min;
 } time;
 
-date sum_times(time Time1, time Time2){
-    time TimeSum;       // MAS TENHO DE TER EM CONTA QUE PODE MUDAR DE DIA LOGO NAO POSSO INSERIR SO TIMES, TEM DE SER UMA OUTRA STRUCT MAYBE
-    TimeSum.hour = Time1.hour + Time1.hour
+
+time sum_times(time Time1, time Duration){     // MAS TENHO DE TER EM CONTA QUE PODE MUDAR DE DIA LOGO NAO POSSO INSERIR SO TIMES, TEM DE SER UMA OUTRA STRUCT MAYBE
+    Time1.hour += Duration.hour;
+    Time1.min += Duration.min;
+    if (Time1.min > 59) {
+        Time1.min -= 60;
+        Time1.hour += 1;
+    }
+    return Time1;
 }
-
-
 
 
 typedef struct airport Airport;
