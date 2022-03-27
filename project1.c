@@ -5,13 +5,18 @@
 #include <string.h>
 #include </Users/beatrizgavilan/CLionProjects/IAED-project1/proj1.h>
 /*#include <airport.c>*/
-/* cant use qsort() */
 
-// !!!!!existe %s +para scanf de strings e %02d para imprimir horas com 0 antes
+ /*existe %s +para scanf de strings e %02d para imprimir horas com 0 antes*/
 
 int n_airports = 0;
 
 /*	a 	*/
+
+/*sortAlphabetically()*/
+
+
+
+
 
 Airport createAirport(char airportID[MAX_AIRPORT_ID],
 					  char country[MAX_COUNTRY], char city[MAX_CITY]){
@@ -23,7 +28,7 @@ Airport createAirport(char airportID[MAX_AIRPORT_ID],
 	return airport;
 }
 
-void addAirport(Airport new_airport, Airport airportBank[MAX_AIRPORTS]){ //[[airport, voosPartida, voosChegada], ...]
+void addAirport(Airport new_airport, Airport airportBank[MAX_AIRPORTS]){/*[[airport, voosPartida, voosChegada], ...]*/
 	airportBank[n_airports] = new_airport;
 	return;
 }
@@ -32,8 +37,8 @@ void addAirport(Airport new_airport, Airport airportBank[MAX_AIRPORTS]){ //[[air
 int validAirportID(/*const */char airportID[]){
 	int i;
 	for (i=0; airportID[i] != '\0'; i++){
-		if (i >= MAX_AIRPORT_ID) {	/*	mais de 3 letras */
-			printf(TOO_MANY_AIRPORTS);
+		if (i >= MAX_AIRPORT_ID-1) {	/*	mais de 3 letras */
+			printf(INVALID_AIRPORT_ID);
 			return 0;
 		}
 		if (airportID[i] < 'A' || airportID[i] > 'Z') {	/* nao sao maiusculas */
@@ -51,7 +56,8 @@ int validAirportID(/*const */char airportID[]){
 
 
 int notDuplicateAirport(char airportID[], Airport airportBank[MAX_AIRPORTS]){
-	for (int i=0; i < n_airports; i++){
+	int i;
+	for (i=0; i < n_airports; i++){
 		if (!strcmp(airportID, airportBank[i].ID)) {
 			printf(DUPLICATE_AIRPORT);
 			return 0;
@@ -63,29 +69,35 @@ int notDuplicateAirport(char airportID[], Airport airportBank[MAX_AIRPORTS]){
 
 int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
 	int num_airports = n_airports;
-	return (num_airports++) <= MAX_AIRPORTS && validAirportID(airportID)
-		   && notDuplicateAirport(airportID, airportBank);
+	if ((num_airports++) > MAX_AIRPORTS) {
+		printf(TOO_MANY_AIRPORTS);
+		return 0;
+	}
+	return (validAirportID(airportID) &&
+		   notDuplicateAirport(airportID, airportBank));
 }
 
 
 /* 	l	 */
 void listAirports(Airport airportBank[MAX_AIRPORTS], int num){
+	int i;
 	if (!num) {
 		num = n_airports;
 	}
-	for (int i=0; i < num; i++)
+	for (i=0; i < num; i++)
 		printf(OUT_AIRPORT, airportBank[i].ID, airportBank[i].city, airportBank[i].country, airportBank[i].n_flights);
 	return;
 }
 
 void listRequestedAirports(Airport airportBank[MAX_AIRPORTS], char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID], int num_IDs){
-	Airport requestedAirports[num_IDs];				/* 	NAO TENHO DE VER INVALID ID??????	*/
-	int existingID[num_IDs];
+	int i, e, a;
+	Airport requestedAirports[MAX_AIRPORTS];				/* 	NAO TENHO DE VER INVALID ID??????	*/
+	int existingID[MAX_AIRPORTS];
 	int n=0, inicialized = 0;
-	for (int i=0; i < n_airports; i++){
+	for (i=0; i < n_airports; i++){
 		if (n == num_IDs)	/*	ja temos todos os requested	*/
 			break;
-		for (int e=0; e < num_IDs; e++){
+		for (e=0; e < num_IDs; e++){
 			if (!inicialized) {		/* inicializa a 0 o vetor que ira ver se IDs existem */
 				existingID[e] = 0;
 			}
@@ -100,7 +112,7 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS], char requested_IDs
 		inicialized = 1;
 	}
 	if (n != num_IDs){	/* so ve os nao existem se nao tiver encontrado todos*/
-		for (int a=0; a < num_IDs; a++){	/* validar se existe o ID */
+		for (a=0; a < num_IDs; a++){	/* validar se existe o ID */
 			if (!existingID[a]){
 				printf(OUT_NO_AIRPORT_ID, requestedAirports[a].ID);
 			}
@@ -117,14 +129,95 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS], char requested_IDs
 }
 
 
-void readcommand(char cmd, Airport airportBank[MAX_AIRPORTS]) {
+
+/*três letras maiusculas, pais máximo de 30 carateres,
+	cidade(uma string não vazia com um máximo de 50 carateres;
+		   podem ocorrer carateres brancos(espaços ou tabulador \t))
+		país apenas contém letras minusculas ou maíusculas.*/
+
+
+Date newDate(int day, int month, int year, Date today){
+	today.day = day;
+	today.month = month;
+	today.year = year;
+	return today;
+}
+
+
+int pastDate(int day, int month, int year, Date today){
+	return ((year < today.year) ||
+			(year == today.year && month < today.month) ||
+			(year == today.year && month == today.month && day < today.day));
+}
+
+int oneYearAfter(int day, int month, int year, Date today,
+				 int daysPerMonth[12]){
+	int days_between = 0;
+	while (today.year != year || today.month != month) {
+		if (days_between >= 365) {
+			return 1;
+		}
+		else if (month <= 12){
+			days_between += daysPerMonth[month-1] - (today.day-1);
+			today.month++;
+			today.day = 1;
+		}
+		else {
+			today.year++;
+			today.month = 1;
+			today.day = 1;
+		}
+	}
+	days_between += day - (today.day-1);
+	return (days_between >= 365);
+}
+
+void outputDate(Date date){
+	printf("%02d-%02d-%d\n", date.day, date.month, date.year);
+	return;
+}
+
+int check_date(int day, int month, int year, Date today) {
+	int daysPerMonth[12] = {31,28,31,30,31, 30,
+							31, 31, 30, 31, 30, 31};
+	if (pastDate(day, month, year, today) || oneYearAfter(day, month, year,
+		  today, daysPerMonth)) {
+		printf("invalid date");
+		return 0;
+	}
+	if (day > daysPerMonth[month-1]){
+		return 0;
+	}
+
+	/*int i, Months30days[4] = {4, 6, 9, 11};
+	int Months31days[7] = {1, 3, 5, 7, 8, 10, 12};
+	if (month == 2 && day > 28) */ /* caso dos 28 dias de fevereiro */ /*
+	{
+		return 0;
+	}
+	for (i = 0; i < 7; i++) {
+		if (i < 4 && month == Months30days[i] &&
+			day > 30) */ /* SERIA MAIS EFICIENTE ESTAR NOUTRO FOR?*/ /*
+		{
+			return 0;
+		}
+		if (month == Months31days[i] && day > 31)
+			return 0;
+	}*/
+	/* falta ver se data for antes ou mais de 1 ano no futuro*/
+	return 1;
+}
+
+
+
+Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS], Date today) {
 	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
 	switch (cmd) {
 		case 'a':
 			scanf(" %s %s ", airportID, country);
 			scanf("%[^\n]", city);
 			/*fgets(city, MAX_CITY, stdin);*/
-			//tb posso criar dentro do add
+			/*tb posso criar dentro do add*/
 			if (validate_case_a(airportID, airportBank))
 			{	/*should I checkCountry and checkLetters too??*/
 				Airport new_airport = createAirport(airportID, country, city);
@@ -151,8 +244,33 @@ void readcommand(char cmd, Airport airportBank[MAX_AIRPORTS]) {
 			break;
 
 		case 'v':
-			printf("yo");
+			/*if (getchar() == '\n') {
+				*//*listFlights(flightBank, 0);*//*
+				printf("yoyo case v if\n");
+			}
+			else {
+				int flightID, capacity, day, month, year, hour, min;
+				int durationHour, durationMin;
+				char departureAirportID[MAX_AIRPORT_ID],
+					arrivalAirportID[MAX_AIRPORT_ID];
+
+				*//*Time departureTime;*//*
+				scanf("%d", &flightID);
+				scanf(" %s %s", departureAirportID, arrivalAirportID);
+				scanf(" %d-%d-%d",  &day, &month, &year);
+				scanf(" %d:%d", &hour, &min);
+				scanf(" %d:%d %d", &durationHour, &durationMin, &capacity);
+
+				if (!validAirportID(departureAirportID) ||
+						!validAirportID(arrivalAirportID))
+					break;
+				if (check_date(day, month, year, today)){
+					Date departureDate = {day, month, year};
+					printf("ifnora v else date %d\n", departureDate.year);
+			}
+			printf("yoyo case v elseeee\n");*/
 			break;
+
 		case 'p':
 			printf("yo");
 			break;
@@ -160,11 +278,17 @@ void readcommand(char cmd, Airport airportBank[MAX_AIRPORTS]) {
 			printf("yo");
 			break;
 		case 't':
-			printf("yo");
+		{
+			int day, month, year;
+			scanf("%d-%d-%d", &day, &month, &year);
+			if (check_date(day, month, year, today)) {
+				today = newDate(day, month, year, today);
+				outputDate(today);
+			}
 			break;
-
+		}
 	}
-	return;
+	return today;
 }
 
 
@@ -181,38 +305,16 @@ int main() {
 	Date today = {1,1,2022};
 	char cmd;
 	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
-			readcommand(cmd, airportBank);
+		today = readCommand(cmd, airportBank, today);
 	}
 	return 0;
 }
 
 
-/*três letras maiusculas, pais máximo de 30 carateres,
-	cidade(uma string não vazia com um máximo de 50 carateres;
-		   podem ocorrer carateres brancos(espaços ou tabulador \t))
-		país apenas contém letras minusculas ou maíusculas.*/
-
-
-
-int check_date(Date date) {
-	int i, Months30days[4] = {4, 6, 9, 11};
-	int Months31days[7] = {1, 3, 5, 7, 8, 10, 12};
-	if (date.month == 2 && date.day > 28) /* caso dos 28 dias de fevereiro */
-		return 0;
-	for (i = 0; i < 7; i++) {
-		if (i < 4 && date.month == Months30days[i] &&
-			date.day > 30) /* SERIA MAIS EFICIENTE ESTAR NOUTRO FOR?*/
-			return 0;
-		if (date.month == Months31days[i] && date.day > 31) return 0;
-	}
-	// falta ver se data for antes ou mais de 1 ano no futuro
-	return 1;
-}
-
 Time sum_times(Time time1,
-			   Time duration) {	 // MAS TENHO DE TER EM CONTA QUE PODE MUDAR DE
-								 // DIA LOGO NAO POSSO INSERIR SO TIMES, TEM DE
-								 // SER UMA OUTRA STRUCT MAYBE
+			   Time duration) {	  /*MAS TENHO DE TER EM CONTA QUE PODE MUDAR DE
+								  DIA LOGO NAO POSSO INSERIR SO TIMES, TEM DE
+								  SER UMA OUTRA STRUCT MAYBE*/
 	time1.hour += duration.hour;
 	time1.min += duration.min;
 	if (time1.min > 59) {
@@ -222,5 +324,13 @@ Time sum_times(Time time1,
 	return time1;
 }
 
+int validFlightID(int flightID){
+	return (flightID > 0 && flightID <= 9999);
+}
+
+int validDuration(Time duration, Time departureTime){		/*ERRADO*/
+	printf("---%d %d valid duration print\n", duration.hour, departureTime.hour);
+	return 0;
+}
 
 
