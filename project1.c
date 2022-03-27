@@ -12,11 +12,85 @@ int n_airports = 0;
 
 /*	a 	*/
 
-/*sortAlphabetically()*/
+/*sortAlphabetically()------------------------------------------------------*/
+
+/*
+
+#define less(A, B) (A < B)
+
+
+int beforeLetters(char beforeWord[MAX_AIRPORT_ID], char afterWord[MAX_AIRPORT_ID]) {
+	return (less(beforeWord[0], afterWord[0]) ||
+			((beforeWord[0] == afterWord[0]) &&
+			 less(beforeWord[1], afterWord[1])) ||
+			((beforeWord[0] == afterWord[0]) && (beforeWord[1] == afterWord[1])
+			 && less(beforeWord[2], afterWord[2])));
+}
+*/
 
 
 
+/*
 
+void exch(Airport a, Airport b){
+	char id[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
+	*/
+/*	temporary variables	*//*
+
+	int flights = a.n_flights;
+	strcpy(id, a.ID);
+	strcpy(country, a.country);
+	strcpy(city, a.city);
+	*/
+/* change airport a *//*
+
+	strcpy(a.ID, b.ID);
+	strcpy(a.country, b.country);
+	strcpy(a.city, b.city);
+	a.n_flights = b.n_flights;
+	*/
+/* change airport b *//*
+
+	strcpy(b.ID, id);
+	strcpy(b.country, country);
+	strcpy(b.city, city);
+	b.n_flights = flights;
+	return;
+
+}
+
+int partition(Airport airportBank[MAX_AIRPORTS], int left, int right) {
+	int i = left-1;
+	int j = right;
+	char v[MAX_AIRPORT_ID];
+	strcpy(v, airportBank[right].ID);
+	while (i < j) {
+		while (beforeLetters(airportBank[++i].ID, v));
+
+		while (beforeLetters(v, airportBank[--j].ID)){
+			if (j == left)
+				break;
+		}
+		if (i < j)
+			exch(airportBank[i], airportBank[j]);
+	}
+	exch(airportBank[i], airportBank[right]);
+	return i;
+}
+
+
+void quicksort(Airport airportBank[MAX_AIRPORTS], int left, int right)
+{
+	int i;
+	if (right <= left)
+		return;
+	i = partition(airportBank, left, right);
+	quicksort(airportBank, left, i-1);
+	quicksort(airportBank, i+1, right);
+}
+*/
+
+/*------------------------------------------------------------------------*/
 
 Airport createAirport(char airportID[MAX_AIRPORT_ID],
 					  char country[MAX_COUNTRY], char city[MAX_CITY]){
@@ -111,6 +185,7 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS], char requested_IDs
 		}
 		inicialized = 1;
 	}
+
 	if (n != num_IDs){	/* so ve os nao existem se nao tiver encontrado todos*/
 		for (a=0; a < num_IDs; a++){	/* validar se existe o ID */
 			if (!existingID[a]){
@@ -229,6 +304,7 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS], Date today) {
 			break;
 		case 'l':
 			if (getchar() == '\n') {
+				/*quicksort(airportBank, 0, n_airports-1);*/
 				listAirports(airportBank, 0);
 			}
 			else {
@@ -245,7 +321,7 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS], Date today) {
 
 		case 'v':
 			/*if (getchar() == '\n') {
-				*//*listFlights(flightBank, 0);*//*
+				*/ /*listFlights(flightBank, 0);*/ /*
 				printf("yoyo case v if\n");
 			}
 			else {
@@ -254,7 +330,7 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS], Date today) {
 				char departureAirportID[MAX_AIRPORT_ID],
 					arrivalAirportID[MAX_AIRPORT_ID];
 
-				*//*Time departureTime;*//*
+				*/ /*Time departureTime;*/ /*
 				scanf("%d", &flightID);
 				scanf(" %s %s", departureAirportID, arrivalAirportID);
 				scanf(" %d-%d-%d",  &day, &month, &year);

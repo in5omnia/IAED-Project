@@ -1,6 +1,6 @@
-//
-// Created by Beatriz Gavilan on 26/03/2022.
-//
+/*
+	Created by Beatriz Gavilan on 26/03/2022.
+*/
 
 #ifndef IAED_PROJECT1_PROJ1_H
 
@@ -57,4 +57,4 @@ int notDuplicateAirport(char airportID[], Airport airportBank[MAX_AIRPORTS]);
 
 
 
-#endif	// IAED_PROJECT1_PROJ1_H
+#endif	/* IAED_PROJECT1_PROJ1_H*/
