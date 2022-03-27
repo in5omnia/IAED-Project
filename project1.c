@@ -3,88 +3,105 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <proj1.h>
+#include <airport.c>
 /* cant use qsort() */
 
 // !!!!!existe %s +para scanf de strings e %02d para imprimir horas com 0 antes
 
-/*
-q termina o programa
-a adiciona um novo aeroporto ao sistema
-l lista os aeroportos
-v adiciona um voo ou lista todos os voos
-p lista os voos com partida de um aeroporto
-c lista os voos com chegada a um aeroporto
-t avança a data do sistema
- */
-#define MAX_CITY 51
-#define MAX_COUNTRY 31
-#define MAX_AIRPORT_ID 4
-#define MAX_AIRPORTS 40
-#define MAX_FLIGHTS 30000
+int n_airports = 0;
 
-typedef struct {
-	int day;
-	int month;
-	int year;
-} Date;
+/*	a 	*/
 
-
-typedef struct {
-	int hour;
-	int min;
-} Time;
-
-
-typedef struct {
-	char ID[MAX_AIRPORT_ID];
-	char country[MAX_COUNTRY];
-	char city[MAX_CITY];
-} Airport;
-
-
-Airport createAirport(char airportID[MAX_AIRPORT_ID],
-					  char country[MAX_COUNTRY], char city[MAX_CITY]){
-	Airport airport;
-	strcpy(airport.ID,airportID);
-	strcpy(airport.country, country);
-	strcpy(airport.city, city);
-	return airport;
-}
-
-Airport addAirport(Airport airport, Airport airportBank[MAX_AIRPORTS], int n_airports){ //[[airport, voosPartida, voosChegada], ...]
-	/*airportBank[n_airports][0] = airport;
-	airportBank[n_airports][1] = airport;
-	airportBank[n_airports][2] = airport;*/
-	airportBank[n_airports] = airport;
-	return airportBank;
+int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS], int n_airports){
+	return (n_airports++) <= MAX_AIRPORTS && validAirportID(airportID)
+		   && notDuplicateAirport(airportID, airportBank, n_airports);
 }
 
 
-int readcommand() {
-	int n_airports = 0;
-	char cmd, airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
-	switch (cmd = getchar()) {
-		case 'q':
-			flag = 0;	//quit
+/* 	l	 */
+void listAirports(Airport airportBank[MAX_AIRPORTS], int n_airports){
+	for (int i=0; i < n_airports; i++)
+		printf(OUT_AIRPORT, airportBank[i].ID, airportBank[i].city,
+			   airportBank[i].country, airportBank[i].n_flights);
+	return;
+}
+
+void listRequestedAirports(Airport airportBank[MAX_AIRPORTS], int n_airports, char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID], int num_IDs){
+	Airport requestedAirports[num_IDs];				/* 	NAO TENHO DE VER INVALID ID??????	*/
+	int existingID[num_IDs] = {0};
+	int n=0;
+	for (int i=0; i < n_airports; i++){
+		if (n == num_IDs)	/*	ja temos todos os requested	*/
+			break;
+		for (int e=0; e < num_IDs; e++){
+			if (!strcmp(airportBank[i].ID, requested_IDs[e])){	/* !!!!!QUERO ENCONTRAR FORMA + eficiente que nao percorra todos os requested */
+				requestedAirports[e] = airportBank[i];
+				n++;
+				existingID[e] = 1;
+				break;	/*	TIRAR SE PEDIREM O MM ID 2 VEZES NO INPUT */
+			}
+		}
+	}
+	if (n != num_IDs){
+		for (int a=0; a < num_IDs; a++){	/* validar se existe o ID */
+			if (!existingID[a]){
+				printf("%s: no such airport ID", existingID[a]);
+			}
+			else{
+				printf(OUT_AIRPORT, requestedAirports[a].ID, requestedAirports[a].city,
+					   requestedAirports[a].country, requestedAirports[a].n_flights);
+			}
+		}
+	}
+	else {
+		listAirports(requestedAirports, num_IDs);
+	}
+	return;
+}
+
+
+void readcommand(char cmd, Airport airportBank[MAX_AIRPORTS], int n_airports) {
+	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
+	switch (cmd) {
 		case 'a':
 			scanf("%s %s ", airportID, country);
 			fgets(city, MAX_CITY, stdin);
 			//tb posso criar dentro do add
-			Airport airport = createAirport(airportID, country, city);
-			addAirport(airport);
-			outAirport();
+			if (validate_case_a(airportID, airportBank, n_airports))
+			{	/*should I checkCountry and checkLetters too??*/
+				Airport new_airport = createAirport(airportID, country, city);
+				addAirport(new_airport, airportBank, n_airports);
+				printf(OUT_AIRPORT_ID, airportID);
+				n_airports++;
+				/*tenho de aumentar o n_airports mas variaveis n se alteram fora da funcao, so tabelas*/
+			}
 		case 'l':
+			if (getchar() == '\n') {
+				listAirports(airportBank, n_airports);
+			}
+			else {
+				char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID];	/* arrays of strings are confusing af */
+				int num_IDs = 0;
+				do {	/*	VER SE STRTOK ERA MELHOR PK ESQUECI ME */
+					scanf("%s", airportID);
+					strcpy(requested_IDs[num_IDs], airportID);
+					num_IDs++;
+				} while (getchar() != '\n');
+				listRequestedAirports(airportBank, n_airports, requested_IDs, num_IDs);
+			}
 
 		case 'v':
-
+			printf("yo");
 		case 'p':
-
+			printf("yo");
 		case 'c':
-
+			printf("yo");
 		case 't':
+			printf("yo");
 
 	}
-	return 0;
+	return;
 }
 
 
@@ -97,9 +114,15 @@ int main() {
 		}
 		scanf("%c", &cmd);
 	}*/
-
+	Airport airportBank[MAX_AIRPORTS] = {0};
+	Date today = {1,1,2022};
+	char cmd;
+	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
+			readcommand(cmd, airportBank, n_airports);
+	}
 	return 0;
 }
+
 
 /*três letras maiusculas, pais máximo de 30 carateres,
 	cidade(uma string não vazia com um máximo de 50 carateres;
@@ -109,10 +132,11 @@ int main() {
 
 
 int check_date(Date date) {
-	int i, Months30days = {4, 6, 9, 11}, Months31days = {1, 3, 5, 7, 8, 10, 12};
+	int i, Months30days[4] = {4, 6, 9, 11};
+	int Months31days[7] = {1, 3, 5, 7, 8, 10, 12};
 	if (date.month == 2 && date.day > 28) /* caso dos 28 dias de fevereiro */
 		return 0;
-	for (i = 0, i < 7, i++) {
+	for (i = 0; i < 7; i++) {
 		if (i < 4 && date.month == Months30days[i] &&
 			date.day > 30) /* SERIA MAIS EFICIENTE ESTAR NOUTRO FOR?*/
 			return 0;
@@ -136,13 +160,13 @@ Time sum_times(Time time1,
 }
 
 typedef struct airport;
-Airport listAirports();
-Airport addAirport();
-typedef struct flight Flight;
-Flight listFlights();
-Flight list_Arrival_Flights();
-Flight list_Departure_Flights();
-Flight addFlight(Flight f);
-typedef struct date Date;
+void listAirports();
+void addAirport();
+typedef struct Flight;
+struct Flight listFlights();
+struct Flight list_Arrival_Flights();
+struct Flight list_Departure_Flights();
+struct Flight addFlight(struct Flight f);
+typedef struct Date;
 Date nextDay(Date today);
 

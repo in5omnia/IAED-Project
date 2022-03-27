@@ -17,3 +17,64 @@ dateTime sum_times(dateTime DateTime1, time Duration) {     // MAS TENHO DE TER 
     }
     return DateTime1;
 }
+
+/*airportBank[n_airports][0] = airport;
+	airportBank[n_airports][1] = airport;
+	airportBank[n_airports][2] = airport;*/
+
+
+int readcommand(char cmd, Airport airportBank[MAX_AIRPORTS], int n_airports) {
+	int flag=1;
+	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
+	switch (cmd) {
+		case 'q':
+			return 0;	//quit
+		case 'a':
+			scanf("%s %s ", airportID, country);
+			fgets(city, MAX_CITY, stdin);
+			//tb posso criar dentro do add
+			return
+		case 'l':
+
+		case 'v':
+
+		case 'p':
+
+		case 'c':
+
+		case 't':
+
+	}
+	return flag;
+}
+
+
+int main() {
+
+	Airport airportBank[MAX_AIRPORTS] = {0};
+	Date today = {1,1,2022};
+	int n_airports = 0;
+	char cmd, airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
+	while ((cmd = getchar()) != EOF){
+
+		switch (readcommand(cmd)) {
+			case 0:
+				break;	// quit
+			case 1:
+				case_a();
+			case 2:
+
+			case 3:
+
+			case 4:
+
+			case 5:
+
+			case 6:
+				case_t()
+		}
+
+	}
+
+	return 0;
+}
