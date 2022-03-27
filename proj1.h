@@ -10,8 +10,13 @@
 #define MAX_AIRPORTS 40
 #define MAX_FLIGHTS 30000
 
-#define OUT_AIRPORT_ID "airport %s"
-#define OUT_AIRPORT "%s %s %s %d"
+#define OUT_AIRPORT_ID "airport %s\n"
+#define OUT_AIRPORT "%s %s %s %d\n"
+#define OUT_NO_AIRPORT_ID "%s: no such airport ID\n"
+
+#define DUPLICATE_AIRPORT "duplicate airport"
+#define INVALID_AIRPORT_ID "invalid airport ID"
+#define TOO_MANY_AIRPORTS "too many airports"
 
 #define END_PROGRAM 'q'
 

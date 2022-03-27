@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <proj1.h>
-#include <airport.c>
+#include </Users/beatrizgavilan/CLionProjects/IAED-project1/proj1.h>
+/*#include <airport.c>*/
 /* cant use qsort() */
 
 // !!!!!existe %s +para scanf de strings e %02d para imprimir horas com 0 antes
@@ -13,28 +13,83 @@ int n_airports = 0;
 
 /*	a 	*/
 
-int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS], int n_airports){
-	return (n_airports++) <= MAX_AIRPORTS && validAirportID(airportID)
-		   && notDuplicateAirport(airportID, airportBank, n_airports);
+Airport createAirport(char airportID[MAX_AIRPORT_ID],
+					  char country[MAX_COUNTRY], char city[MAX_CITY]){
+	Airport airport;
+	strcpy(airport.ID, airportID);
+	strcpy(airport.country, country);
+	strcpy(airport.city, city);
+	airport.n_flights = 0;
+	return airport;
+}
+
+void addAirport(Airport new_airport, Airport airportBank[MAX_AIRPORTS]){ //[[airport, voosPartida, voosChegada], ...]
+	airportBank[n_airports] = new_airport;
+	return;
+}
+
+
+int validAirportID(/*const */char airportID[]){
+	int i;
+	for (i=0; airportID[i] != '\0'; i++){
+		if (i >= MAX_AIRPORT_ID) {	/*	mais de 3 letras */
+			printf(TOO_MANY_AIRPORTS);
+			return 0;
+		}
+		if (airportID[i] < 'A' || airportID[i] > 'Z') {	/* nao sao maiusculas */
+			printf(INVALID_AIRPORT_ID);
+			return 0;
+		}
+	}
+	if (i < MAX_AIRPORT_ID-1) {	/* menos de 3 letras */
+		printf(INVALID_AIRPORT_ID);
+		printf("2yo");
+		return 0;
+	}
+	return 1;
+}
+
+
+int notDuplicateAirport(char airportID[], Airport airportBank[MAX_AIRPORTS]){
+	for (int i=0; i < n_airports; i++){
+		if (!strcmp(airportID, airportBank[i].ID)) {
+			printf(DUPLICATE_AIRPORT);
+			return 0;
+		}
+	}
+	return 1;
+}
+
+
+int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
+	int num_airports = n_airports;
+	return (num_airports++) <= MAX_AIRPORTS && validAirportID(airportID)
+		   && notDuplicateAirport(airportID, airportBank);
 }
 
 
 /* 	l	 */
-void listAirports(Airport airportBank[MAX_AIRPORTS], int n_airports){
-	for (int i=0; i < n_airports; i++)
-		printf(OUT_AIRPORT, airportBank[i].ID, airportBank[i].city,
-			   airportBank[i].country, airportBank[i].n_flights);
+void listAirports(Airport airportBank[MAX_AIRPORTS], int num){
+	if (!num) {
+		num = n_airports;
+	}
+	for (int i=0; i < num; i++)
+		printf(OUT_AIRPORT, airportBank[i].ID, airportBank[i].city, airportBank[i].country, airportBank[i].n_flights);
 	return;
 }
 
-void listRequestedAirports(Airport airportBank[MAX_AIRPORTS], int n_airports, char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID], int num_IDs){
+void listRequestedAirports(Airport airportBank[MAX_AIRPORTS], char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID], int num_IDs){
 	Airport requestedAirports[num_IDs];				/* 	NAO TENHO DE VER INVALID ID??????	*/
-	int existingID[num_IDs] = {0};
-	int n=0;
+	int existingID[num_IDs];
+	int n=0, inicialized = 0;
 	for (int i=0; i < n_airports; i++){
 		if (n == num_IDs)	/*	ja temos todos os requested	*/
 			break;
 		for (int e=0; e < num_IDs; e++){
+			if (!inicialized) {		/* inicializa a 0 o vetor que ira ver se IDs existem */
+				existingID[e] = 0;
+			}
+
 			if (!strcmp(airportBank[i].ID, requested_IDs[e])){	/* !!!!!QUERO ENCONTRAR FORMA + eficiente que nao percorra todos os requested */
 				requestedAirports[e] = airportBank[i];
 				n++;
@@ -42,11 +97,12 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS], int n_airports, ch
 				break;	/*	TIRAR SE PEDIREM O MM ID 2 VEZES NO INPUT */
 			}
 		}
+		inicialized = 1;
 	}
-	if (n != num_IDs){
+	if (n != num_IDs){	/* so ve os nao existem se nao tiver encontrado todos*/
 		for (int a=0; a < num_IDs; a++){	/* validar se existe o ID */
 			if (!existingID[a]){
-				printf("%s: no such airport ID", existingID[a]);
+				printf(OUT_NO_AIRPORT_ID, requestedAirports[a].ID);
 			}
 			else{
 				printf(OUT_AIRPORT, requestedAirports[a].ID, requestedAirports[a].city,
@@ -61,24 +117,26 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS], int n_airports, ch
 }
 
 
-void readcommand(char cmd, Airport airportBank[MAX_AIRPORTS], int n_airports) {
+void readcommand(char cmd, Airport airportBank[MAX_AIRPORTS]) {
 	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
 	switch (cmd) {
 		case 'a':
-			scanf("%s %s ", airportID, country);
-			fgets(city, MAX_CITY, stdin);
+			scanf(" %s %s ", airportID, country);
+			scanf("%[^\n]", city);
+			/*fgets(city, MAX_CITY, stdin);*/
 			//tb posso criar dentro do add
-			if (validate_case_a(airportID, airportBank, n_airports))
+			if (validate_case_a(airportID, airportBank))
 			{	/*should I checkCountry and checkLetters too??*/
 				Airport new_airport = createAirport(airportID, country, city);
-				addAirport(new_airport, airportBank, n_airports);
+				addAirport(new_airport, airportBank);
 				printf(OUT_AIRPORT_ID, airportID);
 				n_airports++;
 				/*tenho de aumentar o n_airports mas variaveis n se alteram fora da funcao, so tabelas*/
 			}
+			break;
 		case 'l':
 			if (getchar() == '\n') {
-				listAirports(airportBank, n_airports);
+				listAirports(airportBank, 0);
 			}
 			else {
 				char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID];	/* arrays of strings are confusing af */
@@ -88,17 +146,22 @@ void readcommand(char cmd, Airport airportBank[MAX_AIRPORTS], int n_airports) {
 					strcpy(requested_IDs[num_IDs], airportID);
 					num_IDs++;
 				} while (getchar() != '\n');
-				listRequestedAirports(airportBank, n_airports, requested_IDs, num_IDs);
+				listRequestedAirports(airportBank, requested_IDs, num_IDs);
 			}
+			break;
 
 		case 'v':
 			printf("yo");
+			break;
 		case 'p':
 			printf("yo");
+			break;
 		case 'c':
 			printf("yo");
+			break;
 		case 't':
 			printf("yo");
+			break;
 
 	}
 	return;
@@ -118,7 +181,7 @@ int main() {
 	Date today = {1,1,2022};
 	char cmd;
 	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
-			readcommand(cmd, airportBank, n_airports);
+			readcommand(cmd, airportBank);
 	}
 	return 0;
 }
@@ -159,14 +222,5 @@ Time sum_times(Time time1,
 	return time1;
 }
 
-typedef struct airport;
-void listAirports();
-void addAirport();
-typedef struct Flight;
-struct Flight listFlights();
-struct Flight list_Arrival_Flights();
-struct Flight list_Departure_Flights();
-struct Flight addFlight(struct Flight f);
-typedef struct Date;
-Date nextDay(Date today);
+
 
