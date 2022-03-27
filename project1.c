@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include </Users/beatrizgavilan/CLionProjects/IAED-project1/proj1.h>
+#include "proj1.h"
+
+
 /*#include <airport.c>*/
 
  /*existe %s +para scanf de strings e %02d para imprimir horas com 0 antes*/
@@ -14,7 +16,7 @@ int n_airports = 0;
 
 /*sortAlphabetically()------------------------------------------------------*/
 
-/*
+
 
 #define less(A, B) (A < B)
 
@@ -26,35 +28,16 @@ int beforeLetters(char beforeWord[MAX_AIRPORT_ID], char afterWord[MAX_AIRPORT_ID
 			((beforeWord[0] == afterWord[0]) && (beforeWord[1] == afterWord[1])
 			 && less(beforeWord[2], afterWord[2])));
 }
-*/
 
 
 
-/*
 
-void exch(Airport a, Airport b){
-	char id[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
-	*/
-/*	temporary variables	*//*
 
-	int flights = a.n_flights;
-	strcpy(id, a.ID);
-	strcpy(country, a.country);
-	strcpy(city, a.city);
-	*/
-/* change airport a *//*
 
-	strcpy(a.ID, b.ID);
-	strcpy(a.country, b.country);
-	strcpy(a.city, b.city);
-	a.n_flights = b.n_flights;
-	*/
-/* change airport b *//*
-
-	strcpy(b.ID, id);
-	strcpy(b.country, country);
-	strcpy(b.city, city);
-	b.n_flights = flights;
+void exch(Airport airportBank[MAX_AIRPORTS], int i, int right){
+	Airport t = airportBank[i];
+	airportBank[i] = airportBank[right];
+	airportBank[right] = t;
 	return;
 
 }
@@ -72,9 +55,9 @@ int partition(Airport airportBank[MAX_AIRPORTS], int left, int right) {
 				break;
 		}
 		if (i < j)
-			exch(airportBank[i], airportBank[j]);
+			exch(airportBank, i, j);
 	}
-	exch(airportBank[i], airportBank[right]);
+	exch(airportBank, i, right);
 	return i;
 }
 
@@ -88,57 +71,9 @@ void quicksort(Airport airportBank[MAX_AIRPORTS], int left, int right)
 	quicksort(airportBank, left, i-1);
 	quicksort(airportBank, i+1, right);
 }
-*/
+
 
 /*------------------------------------------------------------------------*/
-
-Airport createAirport(char airportID[MAX_AIRPORT_ID],
-					  char country[MAX_COUNTRY], char city[MAX_CITY]){
-	Airport airport;
-	strcpy(airport.ID, airportID);
-	strcpy(airport.country, country);
-	strcpy(airport.city, city);
-	airport.n_flights = 0;
-	return airport;
-}
-
-void addAirport(Airport new_airport, Airport airportBank[MAX_AIRPORTS]){/*[[airport, voosPartida, voosChegada], ...]*/
-	airportBank[n_airports] = new_airport;
-	return;
-}
-
-
-int validAirportID(/*const */char airportID[]){
-	int i;
-	for (i=0; airportID[i] != '\0'; i++){
-		if (i >= MAX_AIRPORT_ID-1) {	/*	mais de 3 letras */
-			printf(INVALID_AIRPORT_ID);
-			return 0;
-		}
-		if (airportID[i] < 'A' || airportID[i] > 'Z') {	/* nao sao maiusculas */
-			printf(INVALID_AIRPORT_ID);
-			return 0;
-		}
-	}
-	if (i < MAX_AIRPORT_ID-1) {	/* menos de 3 letras */
-		printf(INVALID_AIRPORT_ID);
-		printf("2yo");
-		return 0;
-	}
-	return 1;
-}
-
-
-int notDuplicateAirport(char airportID[], Airport airportBank[MAX_AIRPORTS]){
-	int i;
-	for (i=0; i < n_airports; i++){
-		if (!strcmp(airportID, airportBank[i].ID)) {
-			printf(DUPLICATE_AIRPORT);
-			return 0;
-		}
-	}
-	return 1;
-}
 
 
 int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
@@ -263,26 +198,33 @@ int check_date(int day, int month, int year, Date today) {
 	if (day > daysPerMonth[month-1]){
 		return 0;
 	}
-
-	/*int i, Months30days[4] = {4, 6, 9, 11};
-	int Months31days[7] = {1, 3, 5, 7, 8, 10, 12};
-	if (month == 2 && day > 28) */ /* caso dos 28 dias de fevereiro */ /*
-	{
-		return 0;
-	}
-	for (i = 0; i < 7; i++) {
-		if (i < 4 && month == Months30days[i] &&
-			day > 30) */ /* SERIA MAIS EFICIENTE ESTAR NOUTRO FOR?*/ /*
-		{
-			return 0;
-		}
-		if (month == Months31days[i] && day > 31)
-			return 0;
-	}*/
-	/* falta ver se data for antes ou mais de 1 ano no futuro*/
 	return 1;
 }
 
+
+dateTime sumDuration(dateTime departure, Time duration) {     // MAS TENHO DE TER EM CONTA QUE PODE MUDAR DE DIA LOGO NAO POSSO INSERIR SO TIMES, TEM DE SER UMA OUTRA STRUCT MAYBE
+	departure.time.hour += duration.hour;
+	departure.time.min += duration.min;
+	if (departure.time.min > 59) {
+		departure.time.min -= 60;
+		departure.time.hour += 1;
+	}
+	if (departure.time.hour > 23) {
+		departure.time.hour -= 24;
+		departure.date.day += 1;
+	}
+	return departure;
+}
+
+
+int validFlightID(int flightID){
+	return (flightID > 0 && flightID <= 9999);
+}
+
+int validDuration(Time duration, Time departureTime){		/*ERRADO*/
+	printf("---%d %d valid duration print\n", duration.hour, departureTime.hour);
+	return 0;
+}
 
 
 Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS], Date today) {
@@ -304,7 +246,7 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS], Date today) {
 			break;
 		case 'l':
 			if (getchar() == '\n') {
-				/*quicksort(airportBank, 0, n_airports-1);*/
+				quicksort(airportBank, 0, n_airports-1);
 				listAirports(airportBank, 0);
 			}
 			else {
@@ -386,27 +328,5 @@ int main() {
 	return 0;
 }
 
-
-Time sum_times(Time time1,
-			   Time duration) {	  /*MAS TENHO DE TER EM CONTA QUE PODE MUDAR DE
-								  DIA LOGO NAO POSSO INSERIR SO TIMES, TEM DE
-								  SER UMA OUTRA STRUCT MAYBE*/
-	time1.hour += duration.hour;
-	time1.min += duration.min;
-	if (time1.min > 59) {
-		time1.min -= 60;
-		time1.hour += 1;
-	}
-	return time1;
-}
-
-int validFlightID(int flightID){
-	return (flightID > 0 && flightID <= 9999);
-}
-
-int validDuration(Time duration, Time departureTime){		/*ERRADO*/
-	printf("---%d %d valid duration print\n", duration.hour, departureTime.hour);
-	return 0;
-}
 
 

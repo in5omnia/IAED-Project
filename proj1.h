@@ -4,8 +4,6 @@
 
 #ifndef IAED_PROJECT1_PROJ1_H
 
-
-
 #define MAX_CITY 51
 #define MAX_COUNTRY 31
 #define MAX_AIRPORT_ID 4
@@ -22,13 +20,6 @@
 
 #define END_PROGRAM 'q'
 
-typedef struct {
-	char ID[MAX_AIRPORT_ID];
-	char country[MAX_COUNTRY];
-	char city[MAX_CITY];
-	int n_flights;
-} Airport;
-
 
 typedef struct {
 	int day;
@@ -42,6 +33,15 @@ typedef struct {
 	int min;
 } Time;
 
+
+
+typedef struct {
+	Date date;
+	Time time;
+} dateTime;
+
+
+#include "airport.h"
 
 int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]);
 void listAirports(Airport airportBank[MAX_AIRPORTS], int num);
