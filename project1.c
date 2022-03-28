@@ -109,7 +109,7 @@ void listFlights(Flight flightBank[MAX_FLIGHTS]) {
 		f = flightBank[i];
 		f_date = f.departureDateTime.date;
 		f_time = f.departureDateTime.time;
-		printf(OUT_FLIGHT, f.ID, f.departureAirport, f.arrivalAirport,
+		printf(OUT_FLIGHT, f.ID.letters, f.ID.num, f.departureAirport, f.arrivalAirport,
 			   f_date.day, f_date.month, f_date.year, f_time.hour, f_time.min);
 	}
 	return;
@@ -118,7 +118,7 @@ void listFlights(Flight flightBank[MAX_FLIGHTS]) {
 void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 			   char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID], int num_IDs){
 	int i, e, a;
-	Airport requestedAirports[MAX_AIRPORTS];				/* 	NAO TENHO DE VER INVALID ID??????	*/
+	Airport requestedAirports[MAX_AIRPORTS];
 	int existingID[MAX_AIRPORTS];
 	int n=0, inicialized = 0;
 	for (i=0; i < n_airports; i++){
@@ -127,9 +127,10 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 		for (e=0; e < num_IDs; e++){
 			if (!inicialized) {		/* inicializa a 0 o vetor que ira ver se IDs existem */
 				existingID[e] = 0;
+				/*requestedAirports[e] = createAirport("", "", "");*/
 			}
 
-			if (!strcmp(airportBank[i].ID, requested_IDs[e])){	/* !!!!!QUERO ENCONTRAR FORMA + eficiente que nao percorra todos os requested */
+			if (!strcmp(airportBank[i].ID, requested_IDs[e])){
 				requestedAirports[e] = airportBank[i];
 				n++;
 				existingID[e] = 1;
@@ -142,7 +143,7 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 	if (n != num_IDs){	/* so ve os nao existem se nao tiver encontrado todos*/
 		for (a=0; a < num_IDs; a++){	/* validar se existe o ID */
 			if (!existingID[a]){
-				printf(OUT_NO_AIRPORT_ID, requestedAirports[a].ID);
+				printf(OUT_NO_AIRPORT_ID, requested_IDs[a]);
 			}
 			else{
 				printf(OUT_AIRPORT, requestedAirports[a].ID,
@@ -212,7 +213,7 @@ int check_date(int day, int month, int year, Date today) {
 							31, 31, 30, 31, 30, 31};
 	if (pastDate(day, month, year, today) || oneYearAfter(day, month, year,
 		  today, daysPerMonth)) {
-		printf("invalid date");
+		printf(INVALID_DATE);
 		return 0;
 	}
 	if (day > daysPerMonth[month-1]){
@@ -245,8 +246,15 @@ int validDuration(int durationHour){
 }
 
 
-int validFlightID(int flightID){
-	return (flightID > 0 && flightID <= 9999);
+int validFlightID(FlightID flightID){
+	int i;
+	for (i=0; flightID.letters[i] != '\0' && i < MAX_LETTERS_FLIGHT_ID; i++) {
+		if (flightID.letters[i] < 'A' || flightID.letters[i] > 'Z') {
+			printf(INVALID_FLIGHT_ID);
+			return 0;
+		}
+	}
+	return (flightID.num > 0 && flightID.num <= 9999);
 }
 
 int validCapacity(int capacity){
@@ -262,7 +270,7 @@ int airportIDs_exist(char arrivalAirportID[MAX_AIRPORT_ID],
 	 char departureAirportID[MAX_AIRPORT_ID], Airport airportBank[MAX_AIRPORTS])
 {
 	int i, exists=1, Arr_flag=0, Dep_flag=0;
-	for (i=0; i < n_flights; i++) {
+	for (i=0; i < n_airports; i++) {
 		if (!strcmp(arrivalAirportID, airportBank[i].ID))
 			Arr_flag++;
 
@@ -281,10 +289,10 @@ int airportIDs_exist(char arrivalAirportID[MAX_AIRPORT_ID],
 }
 
 
-int notDuplicateFlight(int flightID, Flight flightBank[MAX_FLIGHTS]) {
+int notDuplicateFlight(FlightID flightID, Flight flightBank[MAX_FLIGHTS]) {
 	int i;
 	for (i=0; i < n_flights; i++) {
-		if (flightID == flightBank[i].ID) {
+		if (flightID.num == flightBank[i].ID.num && !strcmp(flightID.letters, flightBank[i].ID.letters)) {
 			printf(DUPLICATE_FLIGHT);
 			return 0;
 		}
@@ -294,15 +302,15 @@ int notDuplicateFlight(int flightID, Flight flightBank[MAX_FLIGHTS]) {
 
 
 
-int valid_case_v(int flightID, char arrivalAirportID[MAX_AIRPORT_ID],
+int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 				 char departureAirportID[MAX_AIRPORT_ID], int day, int month,
 				 int year, Date today, int durationHour, int capacity,
 				 Airport airportBank[MAX_AIRPORTS],
 				 Flight flightBank[MAX_FLIGHTS])
 {
 	int num_flights = n_flights, num_airports = n_airports;
-	if (num_flights++ >= n_flights) {
-		printf(TOO_MANY__FLIGHTS);
+	if (num_flights++ >= MAX_FLIGHTS) {
+		printf(TOO_MANY_FLIGHTS);
 		return 0;
 	}
 
@@ -350,6 +358,15 @@ dateTime createDateTime(Date date, Time time) {
 	return DateTime;
 }
 
+FlightID createFlightID(char flightID_str[MAX_LETTERS_FLIGHT_ID],
+											int flightID_num){
+	FlightID flightId;
+	flightID_str[MAX_LETTERS_FLIGHT_ID-1] = '\0';
+	strcpy(flightId.letters, flightID_str);
+	flightId.num = flightID_num;
+	return flightId;
+}
+
 
 Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				 				Flight flightBank[MAX_FLIGHTS], Date today) {
@@ -390,16 +407,17 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 		case 'v':
 			if (getchar() == '\n') {
 				listFlights(flightBank);
-				printf("yoyo case v if\n");
 			} else {
-				int flightID, capacity, day, month, year, hour, min;
+				int flightID_num, capacity, day, month, year, hour, min;
 				int durationHour, durationMin;
-
 				char departureAirportID[MAX_AIRPORT_ID],
-					arrivalAirportID[MAX_AIRPORT_ID];
+					arrivalAirportID[MAX_AIRPORT_ID],
+					flightID_str[MAX_LETTERS_FLIGHT_ID];
+				FlightID flightID;
 
 				/*Time departureTime;*/
-				scanf("%d", &flightID);
+				scanf("%02s%d", flightID_str, &flightID_num);
+				flightID = createFlightID(flightID_str, flightID_num);
 				scanf(" %s %s", departureAirportID, arrivalAirportID);
 				scanf(" %d-%d-%d", &day, &month, &year);
 				scanf(" %d:%d", &hour, &min);
