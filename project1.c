@@ -102,11 +102,15 @@ void listAirports(Airport airportBank[MAX_AIRPORTS], int num){
 
 void listFlights(Flight flightBank[MAX_FLIGHTS]) {
 	int i;
+	Date f_date;
+	Time f_time;
 	Flight f;
 	for (i=0; i < n_flights; i++) {
 		f = flightBank[i];
+		f_date = f.departureDateTime.date;
+		f_time = f.departureDateTime.time;
 		printf(OUT_FLIGHT, f.ID, f.departureAirport, f.arrivalAirport,
-			   f.departureDateTime.date, f.departureDateTime.time);
+			   f_date.day, f_date.month, f_date.year, f_time.hour, f_time.min);
 	}
 	return;
 }
@@ -296,12 +300,12 @@ int valid_case_v(int flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 				 Airport airportBank[MAX_AIRPORTS],
 				 Flight flightBank[MAX_FLIGHTS])
 {
-	int num_flights = n_flights;
+	int num_flights = n_flights, num_airports = n_airports;
 	if (num_flights++ >= n_flights) {
 		printf(TOO_MANY__FLIGHTS);
 		return 0;
 	}
-	int num_airports = n_airports;
+
 	if ((num_airports++) > MAX_AIRPORTS) {
 		printf(TOO_MANY_AIRPORTS);
 		return 0;
@@ -324,7 +328,27 @@ void addFlight(Flight flightBank[MAX_FLIGHTS], Flight new_flight){
 	return;
 }
 
+Date createDate(int day, int month, int year) {
+	Date date;
+	date.day = day;
+	date.month = month;
+	date.year = year;
+	return date;
+}
 
+Time createTime(int hour, int min) {
+	Time time;
+	time.hour = hour;
+	time.min = min;
+	return time;
+}
+
+dateTime createDateTime(Date date, Time time) {
+	dateTime DateTime;
+	DateTime.date = date;
+	DateTime.time = time;
+	return DateTime;
+}
 
 
 Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
@@ -370,6 +394,7 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 			} else {
 				int flightID, capacity, day, month, year, hour, min;
 				int durationHour, durationMin;
+
 				char departureAirportID[MAX_AIRPORT_ID],
 					arrivalAirportID[MAX_AIRPORT_ID];
 
@@ -386,37 +411,43 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				{
 					break;
 				}
+				else{
+					Flight newFlight;
+					Date departureDate;
+					Time departureTime, duration;
+					dateTime departureDateTime;
+					departureDate = createDate(day, month, year);
+					departureTime = createTime(hour, min);
+					departureDateTime = createDateTime(departureDate,
+													   departureTime);
+					duration = createTime(durationHour, durationMin);
 
-				Date departureDate = {day, month, year};
-				Time departureTime = {hour, min};
-				dateTime departureDateTime = {departureDate,
-											  departureTime};
-				Time duration = {durationHour, durationMin};
+					newFlight = createFlight(flightID,
+									departureAirportID, arrivalAirportID,
+										departureDateTime, duration, capacity);
 
-				Flight newFlight = createFlight(flightID, departureAirportID,
-					arrivalAirportID, departureDateTime, duration, capacity);
-
-				addFlight(flightBank, newFlight);
-				n_flights++;
-
+					addFlight(flightBank, newFlight);
+					n_flights++;
 				}
-				break;
 
-				case 'p':
-					printf("yo");
-					break;
-				case 'c':
-					printf("yo");
-					break;
-				case 't': {
-					int day, month, year;
-					scanf("%d-%d-%d", &day, &month, &year);
-					if (check_date(day, month, year, today)) {
-						today = newDate(day, month, year, today);
-						outputDate(today);
-					}
-					break;
-				}
+			}
+			break;
+
+		case 'p':
+			printf("yo");
+			break;
+		case 'c':
+			printf("yo");
+			break;
+		case 't': {
+			int day, month, year;
+			scanf("%d-%d-%d", &day, &month, &year);
+			if (check_date(day, month, year, today)) {
+				today = newDate(day, month, year, today);
+				outputDate(today);
+			}
+			break;
+		}
 
 	}
 	return today;
