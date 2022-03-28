@@ -79,7 +79,7 @@ void quicksort(Airport airportBank[MAX_AIRPORTS], int left, int right)
 
 int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
 	int num_airports = n_airports;
-	if ((num_airports++) > MAX_AIRPORTS) {
+	if ((++num_airports) > MAX_AIRPORTS) {
 		printf(TOO_MANY_AIRPORTS);
 		return 0;
 	}
@@ -190,7 +190,7 @@ int pastDate(int day, int month, int year, Date today){
 
 int oneYearAfter(int day, int month, int year, Date today,
 				 int daysPerMonth[12]) {
-	int days_between = 0,a;
+	int days_between = 0;
 
 
 	while (!(today.year == year && today.month == month)) {
