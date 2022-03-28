@@ -190,23 +190,20 @@ int pastDate(int day, int month, int year, Date today){
 
 int oneYearAfter(int day, int month, int year, Date today,
 				 int daysPerMonth[12]) {
-	int days_between = 0;
-	while (today.year != year && today.month != month) {
-		if (days_between > 365) {
-			return 1;
-		}
-		else if (month <= 12){
-			days_between += daysPerMonth[month-1] - today.day;
+	int days_between = 0,a;
+
+
+	while (!(today.year == year && today.month == month)) {
+		if (today.month <= 12){
+			days_between += daysPerMonth[today.month-1];
 			today.month++;
-			today.day = 0;
 		}
 		else {
 			today.year++;
 			today.month = 1;
-			today.day = 0;
 		}
 	}
-	days_between += day - (today.day);
+	days_between += day - today.day;
 	return (days_between > 365);
 }
 
