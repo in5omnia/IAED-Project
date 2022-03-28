@@ -37,7 +37,7 @@ void addAirport(Airport new_airport, Airport airportBank[MAX_AIRPORTS]){/*[[airp
 }
 
 
-int validAirportID(/*const */char airportID[]){
+int validAirportID(/*const */char airportID[MAX_AIRPORT_ID]){
 	int i;
 	for (i=0; airportID[i] != '\0'; i++){
 		if (i >= MAX_AIRPORT_ID-1) {	/*	mais de 3 letras */
