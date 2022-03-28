@@ -42,18 +42,15 @@ int validAirportID(char airportID[MAX_AIRPORT_ID]){
 	for (i=0; airportID[i] != '\0'; i++){
 		if (i >= MAX_AIRPORT_ID-1) {	/*	mais de 3 letras */
 			printf(INVALID_AIRPORT_ID);
-			printf("1 yo\n");
 			return 0;
 		}
 		if (airportID[i] < 'A' || airportID[i] > 'Z') {	/* nao sao maiusculas */
 			printf(INVALID_AIRPORT_ID);
-			printf("2 yo\n");
 			return 0;
 		}
 	}
 	if (i < MAX_AIRPORT_ID-1) {	/* menos de 3 letras */
 		printf(INVALID_AIRPORT_ID);
-		printf("3 yo\n");
 		return 0;
 	}
 	return 1;
