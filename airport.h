@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int extern n_airports;
+extern int n_airports;
 
 typedef struct {
 	char ID[MAX_AIRPORT_ID];
