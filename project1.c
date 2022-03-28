@@ -117,10 +117,13 @@ void listFlights(Flight flightBank[MAX_FLIGHTS]) {
 
 void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 			   char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID], int num_IDs){
-	int i, e, a;
+	int i, e, a, c;
 	Airport requestedAirports[MAX_AIRPORTS];
 	int existingID[MAX_AIRPORTS];
 	int n=0, inicialized = 0;
+	for (c=0; c < num_IDs; c++){
+		existingID[c] = 0;
+	}
 	for (i=0; i < n_airports; i++){
 		if (n == num_IDs)	/*	ja temos todos os requested	*/
 			break;
@@ -139,6 +142,10 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 		}
 		inicialized = 1;
 	}
+	/*for (b=0; b < num_IDs; b++) {
+		if (!existingID[b])
+			requestedAirports[e] = createAirport("o", "o", "o");
+	}*/
 
 	if (n != num_IDs){	/* so ve os nao existem se nao tiver encontrado todos*/
 		for (a=0; a < num_IDs; a++){	/* validar se existe o ID */
