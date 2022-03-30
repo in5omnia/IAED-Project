@@ -1,7 +1,6 @@
 /* Projeto1.c */
-#include <ctype.h>
+
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "proj1.h"
 
