@@ -79,21 +79,41 @@ int validAirportID(char airportID[MAX_AIRPORT_ID]){
 }
 
 
-int notDuplicateAirport(char airportID[], Airport airportBank[MAX_AIRPORTS], char flag){
+int airportExist(char airportID[], Airport airportBank[MAX_AIRPORTS], char flag){
 	int i;
 	for (i=0; i < n_airports; i++){
 		if (!strcmp(airportID, airportBank[i].ID)) {
 			if (flag == 'a') {
 				printf(DUPLICATE_AIRPORT);
 			}
-			return 0;
+			return ++i;
 		}
 	}
 	if (flag == 'v') {
 		printf(OUT_NO_AIRPORT_ID, airportID);
 	}
-	return 1;
+	return 0;
 }
+
+
+/*
+int airportExists(char airportID[], Airport airportBank[MAX_AIRPORTS], char flag){
+	int i;
+	for (i=0; i < n_airports; i++){
+		if (!strcmp(airportID, airportBank[i].ID)) {
+			if (flag == 'a') {
+				printf(DUPLICATE_AIRPORT);
+			}
+			return ++i;
+		}
+	}
+	if (flag == 'v') {
+		printf(OUT_NO_AIRPORT_ID, airportID);
+	}
+	return 0;
+}
+*/
+
 
 
 /*

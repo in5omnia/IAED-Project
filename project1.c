@@ -82,7 +82,7 @@ int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
 		return 0;
 	}
 	return (validAirportID(airportID) &&
-		   notDuplicateAirport(airportID, airportBank, 'a'));
+		   !airportExist(airportID, airportBank, 'a'));
 }
 
 
@@ -196,29 +196,43 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 				 int capacity, Airport airportBank[MAX_AIRPORTS],
 				 Flight flightBank[MAX_FLIGHTS])
 {
-
-	return (validFlightID(flightID) &&
-		notDuplicateFlight(flightID, departureDate, flightBank) &&
-		validAirportID(departureAirportID) &&
-		validAirportID(arrivalAirportID) &&
-		!(notDuplicateAirport(departureAirportID, airportBank, 'v') ||
-		notDuplicateAirport(arrivalAirportID, airportBank, 'v')) /*&&*/
-		/*airportIDs_exist(arrivalAirportID, departureAirportID, airportBank)*/
-		&& !tooManyFlights() && check_date(departureDate, today) &&
-		validDuration(duration) && validCapacity(capacity) );
+	int departureIndexPlus1, arrivalIndexPlus1;	/* indice + 1 */
+	if (validFlightID(flightID) &&
+		 notDuplicateFlight(flightID, departureDate, flightBank) &&
+		 validAirportID(departureAirportID) &&
+		 validAirportID(arrivalAirportID)) {
+			 departureIndexPlus1 = airportExist(departureAirportID,
+									  airportBank, 'v');
+			 arrivalIndexPlus1 = airportExist(arrivalAirportID,
+									 airportBank, 'v');
+			 if (!(!departureIndexPlus1 || !arrivalIndexPlus1) &&
+				 !tooManyFlights() &&
+				 check_date(departureDate, today) &&
+				 validDuration(duration) && validCapacity(capacity))
+			 {
+				 airportBank[departureIndexPlus1].n_Departure_Flights++;
+				 airportBank[arrivalIndexPlus1].n_Arrival_Flights++;
+				 return 1;
+			 }
+	}
+	return 0;
 }
 
 
-/*
-void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS], Airport airportBank[MAX_AIRPORTS], char flag) {
-	int i;
+/*void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
+			  Airport airportBank[MAX_AIRPORTS], char flag) {
+	int i, number_flights;
+	int airportIndexPlus1 = airportExist(airportID, airportBank, 'v');
+	if (!airportIndexPlus1) {
+		return;
+	}
+	number_flights = airportBank[airportIndexPlus1-1];
 	for (i=0; i < n_flights; i++) {
 		if (flag == 'p' && flightBank[i])
 	}
 	return;
-}
+}*/
 
-*/
 
 Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				 				Flight flightBank[MAX_FLIGHTS], Date today) {
@@ -227,8 +241,6 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 		case 'a':
 			scanf(" %s %s ", airportID, country);
 			scanf("%[^\n]", city);
-			/*fgets(city, MAX_CITY, stdin);*/
-			/*tb posso criar dentro do add*/
 			if (validate_case_a(airportID,
 								airportBank)) { /*should I checkCountry and
 												   checkLetters too??*/
@@ -236,7 +248,7 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				addAirport(new_airport, airportBank);
 				printf(OUT_AIRPORT_ID, airportID);
 				n_airports++;
-				/*tenho de aumentar o n_airports mas variaveis n se alteram fora da funcao, so tabelas*/
+
 			}
 			break;
 		case 'l':
@@ -306,13 +318,12 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 			break; }
 
 		case 'p':
-/*		{
-			char departureAirportID[MAX_AIRPORT_ID];
+		{
+/*			char departureAirportID[MAX_AIRPORT_ID];
 			scanf(" %s", departureAirportID);
-			if (!notDuplicateAirport(airportID, airportBank, 'v')) {
-				case_p_c(departureAirportID, flightBank, airportBank, 'p');
-			}
-		}*/
+			case_p_c(departureAirportID, flightBank, airportBank, 'p');*/
+
+		}
 			printf("na");
 			break;
 		case 'c':
