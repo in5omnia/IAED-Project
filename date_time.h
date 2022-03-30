@@ -97,9 +97,10 @@ void outputDate(Date date){
 int check_date(Date date, Date today) {
 	int daysPerMonth[12] = {31,28,31,30,31, 30,
 							31, 31, 30, 31, 30, 31};
+
 	if (pastDate(date.day, date.month, date.year, today) ||
 		oneYearAfter(date.day, date.month, date.year,
-					 today/*, daysPerMonth*/)) {
+					 today)) {
 		printf(INVALID_DATE);
 		return 0;
 	}
@@ -125,6 +126,50 @@ int sameDate(Date date1, Date date2) {
 	return (date1.day == date2.day && date1.month == date2.month
 			&& date1.year == date2.year);
 }
+
+
+int beforeTime(Time time1, Time time2){
+	if (time1.hour < time2.hour ||
+		(time1.hour == time2.hour && time1.min < time2.min))
+		return 1;
+	return 0;
+}
+
+
+int pastDateTime(dateTime dateTime1, dateTime dateTime2) {
+	int day1 = dateTime1.date.day, month1 = dateTime1.date.month,
+		year1 = dateTime1.date.year;
+	if (pastDate(day1, month1, year1, dateTime2.date)){
+		return 1;
+	}
+	if (sameDate(dateTime1.date, dateTime2.date) &&
+		beforeTime(dateTime1.time, dateTime2.time)) {
+		return 1;
+	}
+	return 0;
+}
+
+
+dateTime sumDuration(dateTime departure, Time duration) {
+	int daysPerMonth[12] = {31,28,31,30,31, 30,
+							31, 31, 30, 31, 30, 31};
+	departure.time.hour += duration.hour;
+	departure.time.min += duration.min;
+	if (departure.time.min > 59) {
+		departure.time.min -= 60;
+		departure.time.hour += 1;
+	}
+	if (departure.time.hour > 23) {
+		departure.time.hour -= 24;
+		departure.date.day += 1;
+	}
+	if (departure.date.day > daysPerMonth[departure.date.month-1]) {
+		departure.date.month++;
+		departure.date.day = 1;
+	}
+	return departure;
+}
+
 
 
 

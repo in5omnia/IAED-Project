@@ -14,13 +14,10 @@
 int n_airports = 0;
 int n_flights = 0;
 
+
 /*	a 	*/
 
 /*sortAlphabetically()------------------------------------------------------*/
-
-
-
-#define less(A, B) (A < B)
 
 
 int beforeLetters(char beforeWord[MAX_AIRPORT_ID], char afterWord[MAX_AIRPORT_ID]) {
@@ -32,47 +29,125 @@ int beforeLetters(char beforeWord[MAX_AIRPORT_ID], char afterWord[MAX_AIRPORT_ID
 }
 
 
-
-void exch(Airport airportBank[MAX_AIRPORTS], int i, int right){
-	Airport t = airportBank[i];
-	airportBank[i] = airportBank[right];
-	airportBank[right] = t;
+void exch(Airport airportBank[MAX_AIRPORTS]/*, Flight desiredFlights[MAX_FLIGHTS]*/, int i, int right, char flag){
+	if (flag == 'l') {
+		Airport t = airportBank[i];
+		airportBank[i] = airportBank[right];
+		airportBank[right] = t;
+	}
+	/*else {	*//* flag == 'c' || flag == 'p'	*//*
+		Flight t = desiredFlights[i];
+		desiredFlights[i] = desiredFlights[right];
+		desiredFlights[right] = t;
+	}*/
 	return;
 
 }
 
-int partition(Airport airportBank[MAX_AIRPORTS], int left, int right) {
+int partition(Airport airportBank[MAX_AIRPORTS]/*, Flight desiredFlights[MAX_FLIGHTS]*/,
+			  								int left, int right, char flag) {
 	int i = left-1;
 	int j = right;
-	char v[MAX_AIRPORT_ID];
-	strcpy(v, airportBank[right].ID);
-	while (i < j) {
-		while (beforeLetters(airportBank[++i].ID, v));
+	if (flag == 'l') {
+		char v[MAX_AIRPORT_ID];
+		strcpy(v, airportBank[right].ID);
+		while (i < j) {
+			while (beforeLetters(airportBank[++i].ID, v));
 
-		while (beforeLetters(v, airportBank[--j].ID)){
-			if (j == left)
-				break;
+			while (beforeLetters(v, airportBank[--j].ID)){
+				if (j == left)
+					break;
+			}
+			if (i < j)
+				exch(airportBank, /*desiredFlights,*/ i, j, 'l');
 		}
-		if (i < j)
-			exch(airportBank, i, j);
+		exch(airportBank, /*desiredFlights,*/ i, right, 'l');
 	}
-	exch(airportBank, i, right);
+/*
+	else if (flag == 'p') {
+		dateTime v;
+		v = desiredFlights[right].departureDateTime;
+
+		while (i < j) {
+			while (pastDateTime(desiredFlights[++i].departureDateTime, v));
+			while (pastDateTime(v, desiredFlights[--j].departureDateTime)){
+				if (j == left)
+					break;
+			}
+			if (i < j)
+				exch(airportBank, desiredFlights, i, j, 'p');
+		}
+		exch(airportBank, desiredFlights, i, right, 'p');
+	}
+
+	else {	*//* flag == 'c' *//*
+		dateTime v;
+		v = desiredFlights[right].arrivalDateTime;
+
+		while (i < j) {
+			while (pastDateTime(desiredFlights[++i].arrivalDateTime, v));
+			while (pastDateTime(v, desiredFlights[--j].arrivalDateTime)) {
+				if (j == left)
+					break;
+			}
+			if (i < j)
+				exch(airportBank, desiredFlights, i, j, 'c');
+		}
+		exch(airportBank, desiredFlights, i, right, 'c');
+	}*/
+
 	return i;
 }
 
 
-void quicksort(Airport airportBank[MAX_AIRPORTS], int left, int right)
+
+void insertionSort( Flight desiredFlights[MAX_FLIGHTS], int left, int right, char flag) {
+	int i,j;
+	Flight v;
+	if (flag == 'p') {
+		for (i = left+1; i <= right; i++) {
+			v = desiredFlights[i];
+			j = i-1;
+			while ( j >= left && pastDateTime(v.departureDateTime, desiredFlights[j].departureDateTime)) {
+				desiredFlights[j+1] = desiredFlights[j];
+				j--;
+			}
+			desiredFlights[j+1] = v;
+		}
+	}
+	else {	/*	flag == 'c'	*/
+		for (i = left+1; i <= right; i++) {
+			v = desiredFlights[i];
+			j = i-1;
+			while ( j >= left && pastDateTime(v.arrivalDateTime, desiredFlights[j].arrivalDateTime)) {
+				desiredFlights[j+1] = desiredFlights[j];
+				j--;
+			}
+			desiredFlights[j+1] = v;
+		}
+	}
+	return;
+}
+
+
+void quicksort(Airport airportBank[MAX_AIRPORTS]/*, Flight desiredFlights[MAX_FLIGHTS]*/,
+			   int left, int right, char flag)
 {
 	int i;
 	if (right <= left)
 		return;
-	i = partition(airportBank, left, right);
-	quicksort(airportBank, left, i-1);
-	quicksort(airportBank, i+1, right);
+	i = partition(airportBank, /*desiredFlights,*/ left, right, flag);
+	quicksort(airportBank, /*desiredFlights,*/ left, i-1, flag);
+	quicksort(airportBank, /*desiredFlights,*/ i+1, right, flag);
 }
 
 
-/*------------------------------------------------------------------------*/
+void sortFlights(Flight desiredFlights[MAX_FLIGHTS], /*Airport airportBank[],*/ int num_desired_flights, char flag) {
+	/*quicksort(airportBank, desiredFlights,
+			  0, num_desired_flights, flag);*/
+	insertionSort( desiredFlights, 0, num_desired_flights, flag);
+	return;
+}
 
 
 int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
@@ -97,6 +172,37 @@ void listAirports(Airport airportBank[MAX_AIRPORTS], int num){
 			   airportBank[i].country, airportBank[i].n_Departure_Flights);
 	return;
 }
+
+
+void outputFlights(Flight desiredFlights[MAX_FLIGHTS], int n_wanted_flights,
+				   char flag){
+	int i=0;
+	Date f_date;
+	Time f_time;
+	Flight f;
+	if (flag == 'p'){
+		for (i=0; i < n_wanted_flights; i++) {
+			f = desiredFlights[i];
+			f_date = f.departureDateTime.date;
+			f_time = f.departureDateTime.time;
+			printf(OUT_P_C_FLIGHT, f.ID.letters, f.ID.num, f.arrivalAirport,
+				   f_date.day, f_date.month, f_date.year, f_time.hour,
+				   f_time.min);
+		}
+	}
+	else {	/*	flag == 'c'*/
+		for (i=0; i < n_wanted_flights; i++) {
+			f = desiredFlights[i];
+			f_date = f.arrivalDateTime.date;
+			f_time = f.arrivalDateTime.time;
+			printf(OUT_P_C_FLIGHT, f.ID.letters, f.ID.num, f.departureAirport,
+				   f_date.day, f_date.month, f_date.year, f_time.hour,
+				   f_time.min);
+		}
+	}
+	return;
+}
+
 
 void listFlights(Flight flightBank[MAX_FLIGHTS]) {
 	int i;
@@ -140,10 +246,6 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 		}
 		inicialized = 1;
 	}
-	/*for (b=0; b < num_IDs; b++) {
-		if (!existingID[b])
-			requestedAirports[e] = createAirport("o", "o", "o");
-	}*/
 
 	if (n != num_IDs){	/* so ve os nao existem se nao tiver encontrado todos*/
 		for (a=0; a < num_IDs; a++){	/* validar se existe o ID */
@@ -173,23 +275,6 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 
 
 
-
-dateTime sumDuration(dateTime departure, Time duration) {
-	departure.time.hour += duration.hour;
-	departure.time.min += duration.min;
-	if (departure.time.min > 59) {
-		departure.time.min -= 60;
-		departure.time.hour += 1;
-	}
-	if (departure.time.hour > 23) {
-		departure.time.hour -= 24;
-		departure.date.day += 1;
-	}
-	return departure;
-}
-
-
-
 int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 				 char departureAirportID[MAX_AIRPORT_ID], Date departureDate,
 				 Date today, Time duration,
@@ -210,8 +295,8 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 				 check_date(departureDate, today) &&
 				 validDuration(duration) && validCapacity(capacity))
 			 {
-				 airportBank[departureIndexPlus1].n_Departure_Flights++;
-				 airportBank[arrivalIndexPlus1].n_Arrival_Flights++;
+				 airportBank[departureIndexPlus1-1].n_Departure_Flights++;
+				 airportBank[arrivalIndexPlus1-1].n_Arrival_Flights++;
 				 return 1;
 			 }
 	}
@@ -219,19 +304,39 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 }
 
 
-/*void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
-			  Airport airportBank[MAX_AIRPORTS], char flag) {
-	int i, number_flights;
+void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
+			  Airport airportBank[MAX_AIRPORTS], char flag)
+{
+	int i, number_flights, n_wanted_flights=0;
 	int airportIndexPlus1 = airportExist(airportID, airportBank, 'v');
-	if (!airportIndexPlus1) {
+	Flight desiredFlights[MAX_FLIGHTS];
+
+	if (!airportIndexPlus1) {	/*	airport doesnt exist	*/
 		return;
 	}
-	number_flights = airportBank[airportIndexPlus1-1];
+	if (flag == 'p')
+		number_flights = airportBank[airportIndexPlus1-1].n_Departure_Flights;
+	else /* flag == 'c' */
+		number_flights = airportBank[airportIndexPlus1-1].n_Arrival_Flights;
+
 	for (i=0; i < n_flights; i++) {
-		if (flag == 'p' && flightBank[i])
+		if (n_wanted_flights==number_flights)
+			break;
+		if (flag == 'p' && !strcmp(flightBank[i].departureAirport, airportID)) {
+			desiredFlights[n_wanted_flights] = flightBank[i];
+			n_wanted_flights++;
+		}
+		else if (flag == 'c' && !strcmp(flightBank[i].arrivalAirport, airportID)) {
+			desiredFlights[n_wanted_flights] = flightBank[i];
+			n_wanted_flights++;
+		}
 	}
+/*	if (n_wanted_flights==0)
+		return;*/
+	sortFlights(desiredFlights, /*airportBank,*/ n_wanted_flights-1, flag);
+	outputFlights(desiredFlights, n_wanted_flights, flag);
 	return;
-}*/
+}
 
 
 Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
@@ -253,7 +358,7 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 			break;
 		case 'l':
 			if (getchar() == '\n') {
-				quicksort(airportBank, 0, n_airports - 1);
+				quicksort(airportBank, /*flightBank,*/ 0, n_airports - 1, 'l');
 				listAirports(airportBank, 0);
 			} else {
 				char requested_IDs[MAX_AIRPORTS]
@@ -303,13 +408,15 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				else{
 					Flight newFlight;
 					Time departureTime;
-					dateTime departureDateTime;
+					dateTime departureDateTime, arrivalDateTime;
 					departureTime = createTime(hour, min);
 					departureDateTime = createDateTime(departureDate,
 													   departureTime);
+					arrivalDateTime = sumDuration(departureDateTime, duration);
 					newFlight = createFlight(flightID,
 									departureAirportID, arrivalAirportID,
-										departureDateTime, duration, capacity);
+									departureDateTime, arrivalDateTime,
+								 	duration, capacity);
 
 					addFlight(flightBank, newFlight);
 					n_flights++;
@@ -319,16 +426,19 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 
 		case 'p':
 		{
-/*			char departureAirportID[MAX_AIRPORT_ID];
+			char departureAirportID[MAX_AIRPORT_ID];
+			/*getchar();*/
 			scanf(" %s", departureAirportID);
-			case_p_c(departureAirportID, flightBank, airportBank, 'p');*/
-
+			case_p_c(departureAirportID, flightBank, airportBank, 'p');
+			break;
 		}
-			printf("na");
-			break;
 		case 'c':
-			printf("na\n");
+		{
+			char arrivalAirportID[MAX_AIRPORT_ID];
+			scanf(" %s", arrivalAirportID);
+			case_p_c(arrivalAirportID, flightBank, airportBank, 'c');
 			break;
+		}
 		case 't': {
 			int day, month, year;
 			Date possibleDate;
@@ -340,22 +450,12 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 			}
 			break;
 		}
-		default:
-			break;
 	}
 	return today;
 }
 
 
 int main() {
-	/*char cmd;
-	scanf("%c", &cmd);
-	while (cmd != EOF) {
-		while (getchar(cmd) != "\0") {
-			readcommand(cmd);
-		}
-		scanf("%c", &cmd);
-	}*/
 	Airport airportBank[MAX_AIRPORTS] = {0};
 	Flight flightBank[MAX_FLIGHTS] = {0};
 	Date today = {1,1,2022};

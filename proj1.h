@@ -14,6 +14,7 @@
 #define OUT_AIRPORT_ID "airport %s\n"
 #define OUT_AIRPORT "%s %s %s %d\n"
 #define OUT_FLIGHT "%s%d %s %s %02d-%02d-%d %02d:%02d\n"
+#define OUT_P_C_FLIGHT "%s%d %s %02d-%02d-%d %02d:%02d\n"
 #define OUT_NO_AIRPORT_ID "%s: no such airport ID\n"
 #define DUPLICATE_AIRPORT "duplicate airport\n"
 #define INVALID_AIRPORT_ID "invalid airport ID\n"
@@ -27,6 +28,7 @@
 
 #define END_PROGRAM 'q'
 
+#define less(A, B) (A < B)
 
 
 #include "airport.h"

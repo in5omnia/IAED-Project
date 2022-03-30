@@ -89,7 +89,7 @@ int airportExist(char airportID[], Airport airportBank[MAX_AIRPORTS], char flag)
 			return ++i;
 		}
 	}
-	if (flag == 'v') {
+	if (flag != 'a') {
 		printf(OUT_NO_AIRPORT_ID, airportID);
 	}
 	return 0;
