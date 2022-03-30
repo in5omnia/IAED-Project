@@ -28,60 +28,10 @@
 #define END_PROGRAM 'q'
 
 
-typedef struct {
-	int day;
-	int month;
-	int year;
-} Date;
-
-
-typedef struct {
-	int hour;
-	int min;
-} Time;
-
-
-typedef struct {
-	Date date;
-	Time time;
-} dateTime;
-
-
-typedef struct {
-	char letters[MAX_LETTERS_FLIGHT_ID];
-	int num;
-} FlightID;
-
-
-typedef struct {
-	FlightID ID;
-	char departureAirport[MAX_AIRPORT_ID];
-	char arrivalAirport[MAX_AIRPORT_ID];
-	dateTime departureDateTime;
-	Time duration;
-	int capacity;
-} Flight;
-
-
-
-
-Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
-				 char arrivalAirportID[MAX_AIRPORT_ID], dateTime departureDateTime,
-				 Time duration, int capacity) {
-	Flight newFlight;
-	newFlight.ID = flightID;
-	strcpy(newFlight.departureAirport, departureAirportID);
-	strcpy(newFlight.arrivalAirport, arrivalAirportID);
-	newFlight.departureDateTime = departureDateTime;
-	newFlight.duration = duration;
-	newFlight.capacity = capacity;
-	return newFlight;
-}
-
-
 
 #include "airport.h"
-
+#include "date_time.h"
+#include "flight.h"
 
 
 

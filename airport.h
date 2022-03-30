@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "flight.h"
 
 extern int n_airports;
 
@@ -16,17 +17,38 @@ typedef struct {
 	char ID[MAX_AIRPORT_ID];
 	char country[MAX_COUNTRY];
 	char city[MAX_CITY];
-	int n_flights;
+	int n_Departure_Flights;
+	int n_Arrival_Flights;
+/*	Flight departureFlights[MAX_FLIGHTS];
+	Flight arrivalFlights[MAX_FLIGHTS];*/
 } Airport;
 
 
 Airport createAirport(char airportID[MAX_AIRPORT_ID],
 					  char country[MAX_COUNTRY], char city[MAX_CITY]){
 	Airport airport;
+	/*int i;*/
 	strcpy(airport.ID, airportID);
 	strcpy(airport.country, country);
 	strcpy(airport.city, city);
-	airport.n_flights = 0;
+	airport.n_Departure_Flights = 0;
+/*	airport.n_Arrival_Flights = 0;*/
+/*
+
+	for (i=0; i < MAX_FLIGHTS; i++) {
+
+		airport.departureFlights[i] = createFlight(
+			createFlightID("$$", 0), airportID, "$$$",
+			createDateTime(createDate(0,0,0), createTime(0,0)),
+			createTime(0,0), 0);
+
+		airport.arrivalFlights[i] = createFlight(
+			createFlightID("$$", 0), "$$$", airportID,
+			createDateTime(createDate(0,0,0), createTime(0,0)),
+			createTime(0,0), 0);
+	}
+*/
+
 	return airport;
 }
 
@@ -57,18 +79,47 @@ int validAirportID(char airportID[MAX_AIRPORT_ID]){
 }
 
 
-int notDuplicateAirport(char airportID[], Airport airportBank[MAX_AIRPORTS]){
+int notDuplicateAirport(char airportID[], Airport airportBank[MAX_AIRPORTS], char flag){
 	int i;
 	for (i=0; i < n_airports; i++){
 		if (!strcmp(airportID, airportBank[i].ID)) {
-			printf(DUPLICATE_AIRPORT);
+			if (flag == 'a') {
+				printf(DUPLICATE_AIRPORT);
+			}
 			return 0;
 		}
+	}
+	if (flag == 'v') {
+		printf(OUT_NO_AIRPORT_ID, airportID);
 	}
 	return 1;
 }
 
 
+/*
+
+int airportIDs_exist(char arrivalAirportID[MAX_AIRPORT_ID],
+					 char departureAirportID[MAX_AIRPORT_ID], Airport airportBank[MAX_AIRPORTS])
+{
+	int i, exists=1, Arr_flag=0, Dep_flag=0;
+	for (i=0; i < n_airports; i++) {
+		if (!strcmp(arrivalAirportID, airportBank[i].ID))
+			Arr_flag++;
+
+		if (!strcmp(departureAirportID, airportBank[i].ID))
+			Dep_flag++;
+	}
+	if (!Dep_flag) {
+		printf(OUT_NO_AIRPORT_ID, departureAirportID);
+		exists = 0;
+	}
+	if (!Arr_flag){
+		printf(OUT_NO_AIRPORT_ID, arrivalAirportID);
+		exists = 0;
+	}
+	return exists;
+}
+*/
 
 
 #endif	/* IAEDPROJ1_AIRPORT_H */
