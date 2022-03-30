@@ -167,6 +167,10 @@ dateTime sumDuration(dateTime departure, Time duration) {
 		departure.date.month++;
 		departure.date.day = 1;
 	}
+	if (departure.date.month >13) {
+		departure.date.year++;
+		departure.date.month = 1;
+	}
 	return departure;
 }
 
