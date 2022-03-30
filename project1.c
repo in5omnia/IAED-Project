@@ -152,12 +152,14 @@ void sortFlights(Flight desiredFlights[MAX_FLIGHTS], /*Airport airportBank[],*/ 
 
 int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
 	int num_airports = n_airports;
+	if (!validAirportID(airportID))
+		return 0;
+
 	if ((++num_airports) > MAX_AIRPORTS) {
 		printf(TOO_MANY_AIRPORTS);
 		return 0;
 	}
-	return (validAirportID(airportID) &&
-		   !airportExist(airportID, airportBank, 'a'));
+	return (!airportExist(airportID, airportBank, 'a'));
 }
 
 
