@@ -1,5 +1,6 @@
 /*
- Created by Beatriz Gavilan on 29/03/2022.
+ Author: Beatriz Gavilan - 102463
+
 */
 
 #ifndef IAEDPROJ1_FLIGHT_H
@@ -88,6 +89,7 @@ int notDuplicateFlight(FlightID flightID, Date departureDate,
 	}
 	return 1;
 }
+
 
 int tooManyFlights(){
 	int num_flights = n_flights;

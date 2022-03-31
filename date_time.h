@@ -64,25 +64,11 @@ int pastDate(int day, int month, int year, Date today){
 }
 
 
-int oneYearAfter(int day, int month, int year, Date today/*,
-				 int daysPerMonth[12]*/) {
-/*	int days_between = 0;
+int oneYearAfter(int day, int month, int year, Date today) {
 
-
-	while (!(today.year == year && today.month == month)) {
-		if (today.month <= 12){
-			days_between += daysPerMonth[today.month-1];
-			today.month++;
-		}
-		else {
-			today.year++;
-			today.month = 1;
-		}
-	}
-	days_between += day - today.day;
-	return (days_between > 365);*/
 	Date later_than_one_year = createDate(today.day+1, today.month,
-									  today.year+1);
+										today.year+1);
+
 	return !pastDate(day, month, year, later_than_one_year);
 }
 

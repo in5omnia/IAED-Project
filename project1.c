@@ -1,4 +1,6 @@
-/* Projeto1.c */
+/*
+ * Author: Beatriz Gavilan -102463
+ * */
 
 #include <stdio.h>
 #include <string.h>
@@ -6,25 +8,18 @@
 
 
 
-
-
- /*existe %s +para scanf de strings e %02d para imprimir horas com 0 antes*/
-
 int n_airports = 0;
 int n_flights = 0;
 
 
-/*	a 	*/
 
-/*sortAlphabetically()------------------------------------------------------*/
+int beforeLetters(char beforeWord[MAX_AIRPORT_ID],
+				  char afterWord[MAX_AIRPORT_ID]) {
 
-
-int beforeLetters(char beforeWord[MAX_AIRPORT_ID], char afterWord[MAX_AIRPORT_ID]) {
 	return (less(beforeWord[0], afterWord[0]) ||
-			((beforeWord[0] == afterWord[0]) &&
-			 less(beforeWord[1], afterWord[1])) ||
-			((beforeWord[0] == afterWord[0]) && (beforeWord[1] == afterWord[1])
-			 && less(beforeWord[2], afterWord[2])));
+		((beforeWord[0] == afterWord[0]) && less(beforeWord[1], afterWord[1]))
+		|| ((beforeWord[0] == afterWord[0]) && (beforeWord[1] == afterWord[1])
+		&& less(beforeWord[2], afterWord[2])));
 }
 
 
@@ -34,17 +29,12 @@ void exch(Airport airportBank[MAX_AIRPORTS]/*, Flight desiredFlights[MAX_FLIGHTS
 		airportBank[i] = airportBank[right];
 		airportBank[right] = t;
 	}
-	/*else {	*//* flag == 'c' || flag == 'p'	*//*
-		Flight t = desiredFlights[i];
-		desiredFlights[i] = desiredFlights[right];
-		desiredFlights[right] = t;
-	}*/
 	return;
 
 }
 
-int partition(Airport airportBank[MAX_AIRPORTS]/*, Flight desiredFlights[MAX_FLIGHTS]*/,
-			  								int left, int right, char flag) {
+int partition(Airport airportBank[MAX_AIRPORTS], int left, int right, char flag)
+{
 	int i = left-1;
 	int j = right;
 	if (flag == 'l') {
@@ -58,56 +48,25 @@ int partition(Airport airportBank[MAX_AIRPORTS]/*, Flight desiredFlights[MAX_FLI
 					break;
 			}
 			if (i < j)
-				exch(airportBank, /*desiredFlights,*/ i, j, 'l');
+				exch(airportBank, i, j, 'l');
 		}
-		exch(airportBank, /*desiredFlights,*/ i, right, 'l');
+		exch(airportBank, i, right, 'l');
 	}
-/*
-	else if (flag == 'p') {
-		dateTime v;
-		v = desiredFlights[right].departureDateTime;
-
-		while (i < j) {
-			while (pastDateTime(desiredFlights[++i].departureDateTime, v));
-			while (pastDateTime(v, desiredFlights[--j].departureDateTime)){
-				if (j == left)
-					break;
-			}
-			if (i < j)
-				exch(airportBank, desiredFlights, i, j, 'p');
-		}
-		exch(airportBank, desiredFlights, i, right, 'p');
-	}
-
-	else {	*//* flag == 'c' *//*
-		dateTime v;
-		v = desiredFlights[right].arrivalDateTime;
-
-		while (i < j) {
-			while (pastDateTime(desiredFlights[++i].arrivalDateTime, v));
-			while (pastDateTime(v, desiredFlights[--j].arrivalDateTime)) {
-				if (j == left)
-					break;
-			}
-			if (i < j)
-				exch(airportBank, desiredFlights, i, j, 'c');
-		}
-		exch(airportBank, desiredFlights, i, right, 'c');
-	}*/
-
 	return i;
 }
 
 
 
-void insertionSort( Flight desiredFlights[MAX_FLIGHTS], int left, int right, char flag) {
+void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
+				 char flag) {
 	int i,j;
 	Flight v;
 	if (flag == 'p') {
 		for (i = left+1; i <= right; i++) {
 			v = desiredFlights[i];
 			j = i-1;
-			while ( j >= left && pastDateTime(v.departureDateTime, desiredFlights[j].departureDateTime)) {
+			while ( j >= left && pastDateTime(v.departureDateTime,
+							 desiredFlights[j].departureDateTime)) {
 				desiredFlights[j+1] = desiredFlights[j];
 				j--;
 			}
@@ -118,7 +77,8 @@ void insertionSort( Flight desiredFlights[MAX_FLIGHTS], int left, int right, cha
 		for (i = left+1; i <= right; i++) {
 			v = desiredFlights[i];
 			j = i-1;
-			while ( j >= left && pastDateTime(v.arrivalDateTime, desiredFlights[j].arrivalDateTime)) {
+			while ( j >= left && pastDateTime(v.arrivalDateTime,
+							 desiredFlights[j].arrivalDateTime)) {
 				desiredFlights[j+1] = desiredFlights[j];
 				j--;
 			}
@@ -129,24 +89,24 @@ void insertionSort( Flight desiredFlights[MAX_FLIGHTS], int left, int right, cha
 }
 
 
-void quicksort(Airport airportBank[MAX_AIRPORTS]/*, Flight desiredFlights[MAX_FLIGHTS]*/,
+void sortAirports(Airport airportBank[MAX_AIRPORTS]/*, Flight desiredFlights[MAX_FLIGHTS]*/,
 			   int left, int right, char flag)
 {
 	int i;
 	if (right <= left)
 		return;
 	i = partition(airportBank, /*desiredFlights,*/ left, right, flag);
-	quicksort(airportBank, /*desiredFlights,*/ left, i-1, flag);
-	quicksort(airportBank, /*desiredFlights,*/ i+1, right, flag);
+	sortAirports(airportBank, /*desiredFlights,*/ left, i - 1, flag);
+	sortAirports(airportBank, /*desiredFlights,*/ i + 1, right, flag);
 }
 
 
-void sortFlights(Flight desiredFlights[MAX_FLIGHTS], /*Airport airportBank[],*/ int num_desired_flights, char flag) {
-	/*quicksort(airportBank, desiredFlights,
-			  0, num_desired_flights, flag);*/
+/*void sortFlights(Flight desiredFlights[MAX_FLIGHTS], int num_desired_flights,
+				 char flag) {
+
 	insertionSort( desiredFlights, 0, num_desired_flights, flag);
 	return;
-}
+}*/
 
 
 int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
@@ -190,8 +150,7 @@ void outputFlights(Flight desiredFlights[MAX_FLIGHTS], int n_wanted_flights,
 				   f_date.day, f_date.month, f_date.year, f_time.hour,
 				   f_time.min);
 		}
-	}
-	else {	/*	flag == 'c'*/
+	} else {	/*	flag == 'c'*/
 		for (i=0; i < n_wanted_flights; i++) {
 			f = desiredFlights[i];
 			f_date = f.arrivalDateTime.date;
@@ -214,42 +173,41 @@ void listFlights(Flight flightBank[MAX_FLIGHTS]) {
 		f = flightBank[i];
 		f_date = f.departureDateTime.date;
 		f_time = f.departureDateTime.time;
-		printf(OUT_FLIGHT, f.ID.letters, f.ID.num, f.departureAirport, f.arrivalAirport,
-			   f_date.day, f_date.month, f_date.year, f_time.hour, f_time.min);
+		printf(OUT_FLIGHT, f.ID.letters, f.ID.num, f.departureAirport,
+			   f.arrivalAirport, f_date.day, f_date.month, f_date.year,
+			   f_time.hour, f_time.min);
 	}
 	return;
 }
 
+
 void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 			   char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID], int num_IDs){
-	int i, e, a, c;
+	int i, e, a, c, n=0, initialized = 0, existingID[MAX_AIRPORTS];
 	Airport requestedAirports[MAX_AIRPORTS];
-	int existingID[MAX_AIRPORTS];
-	int n=0, inicialized = 0;
+
 	for (c=0; c < num_IDs; c++){
 		existingID[c] = 0;
 	}
 	for (i=0; i < n_airports; i++){
-		if (n == num_IDs)	/*	ja temos todos os requested	*/
+		if (n == num_IDs)		/*	we have all the requested flights */
 			break;
 		for (e=0; e < num_IDs; e++){
-			if (!inicialized) {		/* inicializa a 0 o vetor que ira ver se IDs existem */
+			if (!initialized) {	 /* initializes vector that checks IDs with 0 */
 				existingID[e] = 0;
-				/*requestedAirports[e] = createAirport("", "", "");*/
 			}
-
 			if (!strcmp(airportBank[i].ID, requested_IDs[e])){
 				requestedAirports[e] = airportBank[i];
 				n++;
 				existingID[e] = 1;
-				break;	/*	TIRAR SE PEDIREM O MM ID 2 VEZES NO INPUT */
+				break;
 			}
 		}
-		inicialized = 1;
+		initialized = 1;
 	}
 
-	if (n != num_IDs){	/* so ve os nao existem se nao tiver encontrado todos*/
-		for (a=0; a < num_IDs; a++){	/* validar se existe o ID */
+	if (n != num_IDs){	/* only checks existence if not all were found */
+		for (a=0; a < num_IDs; a++){	/* validates ID's existence */
 			if (!existingID[a]){
 				printf(OUT_NO_AIRPORT_ID, requested_IDs[a]);
 			}
@@ -266,13 +224,6 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 	}
 	return;
 }
-
-
-
-/*três letras maiusculas, pais máximo de 30 carateres,
-	cidade(uma string não vazia com um máximo de 50 carateres;
-		   podem ocorrer carateres brancos(espaços ou tabulador \t))
-		país apenas contém letras minusculas ou maíusculas.*/
 
 
 
@@ -312,12 +263,12 @@ void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 	int airportIndexPlus1 = airportExist(airportID, airportBank, 'v');
 	Flight desiredFlights[MAX_FLIGHTS];
 
-	if (!airportIndexPlus1) {	/*	airport doesnt exist	*/
+	if (!airportIndexPlus1) {		/*	if airport doesnt exist	*/
 		return;
 	}
 	if (flag == 'p')
 		number_flights = airportBank[airportIndexPlus1-1].n_Departure_Flights;
-	else /* flag == 'c' */
+	else 	/* when flag == 'c' */
 		number_flights = airportBank[airportIndexPlus1-1].n_Arrival_Flights;
 
 	for (i=0; i < n_flights; i++) {
@@ -332,9 +283,8 @@ void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 			n_wanted_flights++;
 		}
 	}
-/*	if (n_wanted_flights==0)
-		return;*/
-	sortFlights(desiredFlights, /*airportBank,*/ n_wanted_flights-1, flag);
+	sortFlights( desiredFlights, 0, n_wanted_flights-1, flag);
+	/*sortFlights(desiredFlights, n_wanted_flights-1, flag);*/
 	outputFlights(desiredFlights, n_wanted_flights, flag);
 	return;
 }
@@ -359,7 +309,8 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 			break;
 		case 'l':
 			if (getchar() == '\n') {
-				quicksort(airportBank, /*flightBank,*/ 0, n_airports - 1, 'l');
+				sortAirports(airportBank, /*flightBank,*/ 0, n_airports - 1,
+							 'l');
 				listAirports(airportBank, 0);
 			} else {
 				char requested_IDs[MAX_AIRPORTS]
