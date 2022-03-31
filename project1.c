@@ -65,7 +65,7 @@ void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
 	for (i = left+1; i <= right; i++) {
 		v = desiredFlights[i];
 		j = i-1;
-		if (flag == 'p') {
+		if (CASE_P) {
 			while ( j >= left && pastDateTime( v.departureDateTime,
 											 desiredFlights[j].departureDateTime)) {
 				desiredFlights[j + 1] = desiredFlights[j];
@@ -131,7 +131,7 @@ void outputFlights(Flight desiredFlights[MAX_FLIGHTS], int n_wanted_flights,
 	Time f_time;
 	Flight f;
 	char airportInOutput[MAX_AIRPORT_ID];
-	if (flag == 'p'){
+	if (CASE_P){
 		for (i=0; i < n_wanted_flights; i++) {
 			f = desiredFlights[i];
 			f_date = f.departureDateTime.date;
@@ -253,7 +253,7 @@ void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 	if (!airportIndexPlus1) 		/*	if airport doesnt exist	*/
 		return;
 
-	if (flag == 'p')
+	if (CASE_P)
 		number_flights = airportBank[airportIndexPlus1-1].n_Departure_Flights;
 	else 	/* when flag == 'c' */
 		number_flights = airportBank[airportIndexPlus1-1].n_Arrival_Flights;
@@ -263,8 +263,8 @@ void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 		if (n_wanted_flights==number_flights)
 			break;
 
-		if ((flag == 'p' && !strcmp(flightBank[i].departureAirport, airportID))
-			|| (flag == 'c' && !strcmp(flightBank[i].arrivalAirport, airportID)))
+		if ((CASE_P && !strcmp(flightBank[i].departureAirport, airportID))
+			|| (CASE_C && !strcmp(flightBank[i].arrivalAirport, airportID)))
 		{
 			desiredFlights[n_wanted_flights] = flightBank[i];
 			n_wanted_flights++;
@@ -275,9 +275,9 @@ void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 	return;
 }
 
-/*
 
-void commandA(airportBank){
+void commandA(Airport airportBank[MAX_AIRPORTS]){
+	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
 	scanf(" %s %s ", airportID, country);
 	scanf("%[^\n]", city);
 	if (validate_case_a(airportID, airportBank)) {
@@ -289,24 +289,14 @@ void commandA(airportBank){
 
 	}
 }
-*/
 
 
 Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				 				Flight flightBank[MAX_FLIGHTS], Date today) {
-	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
+	char airportID[MAX_AIRPORT_ID];
 	switch (cmd) {
 		case 'a':
-			scanf(" %s %s ", airportID, country);
-			scanf("%[^\n]", city);
-			if (validate_case_a(airportID, airportBank)) {
-
-				Airport new_airport = createAirport(airportID, country, city);
-				addAirport(new_airport, airportBank);
-				printf(OUT_AIRPORT_ID, airportID);
-				n_airports++;
-
-			}
+			commandA(airportBank);
 			break;
 
 		case 'l':

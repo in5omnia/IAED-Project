@@ -11,6 +11,8 @@
 #define MAX_FLIGHTS 30000
 #define MAX_LETTERS_FLIGHT_ID 3
 
+#define END_PROGRAM 'q'
+
 #define OUT_AIRPORT_ID "airport %s\n"
 #define OUT_AIRPORT "%s %s %s %d\n"
 #define OUT_FLIGHT "%s%d %s %s %02d-%02d-%d %02d:%02d\n"
@@ -28,7 +30,10 @@
 #define OUT_P_C_FLIGHT_VARIABLES f.ID.letters, f.ID.num, airportInOutput,\
 f_date.day, f_date.month, f_date.year, f_time.hour, f_time.min
 
-#define END_PROGRAM 'q'
+#define CASE_P flag == 'p'
+#define CASE_C flag == 'c'
+
+
 
 #define less(A, B) (A < B)
 
