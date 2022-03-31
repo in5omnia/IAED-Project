@@ -25,7 +25,8 @@
 #define DUPLICATE_FLIGHT "flight already exists\n"
 #define INVALID_DATE "invalid date\n"
 #define INVALID_FLIGHT_ID "invalid flight code\n"
-#define DONE v.departureDateTime
+#define OUT_P_C_FLIGHT_VARIABLES f.ID.letters, f.ID.num, airportInOutput,\
+f_date.day, f_date.month, f_date.year, f_time.hour, f_time.min
 
 #define END_PROGRAM 'q'
 
