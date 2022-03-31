@@ -288,39 +288,49 @@ void commandA(Airport airportBank[MAX_AIRPORTS]){
 		n_airports++;
 
 	}
+	return;
+}
+
+
+void commandL(Airport airportBank[MAX_AIRPORTS]){
+	char airportID[MAX_AIRPORT_ID];
+	if (getchar() == '\n') {
+		sortAirports(airportBank, 0, n_airports - 1,'l');
+		listAirports(airportBank, 0);
+	}
+	else {
+		char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID];
+		int num_IDs = 0;
+		do {
+			scanf("%s", airportID);
+			strcpy(requested_IDs[num_IDs], airportID);
+			num_IDs++;
+
+		} while (getchar() != '\n');
+
+		listRequestedAirports(airportBank, requested_IDs, num_IDs);
+	}
+	return;
 }
 
 
 Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				 				Flight flightBank[MAX_FLIGHTS], Date today) {
-	char airportID[MAX_AIRPORT_ID];
+
 	switch (cmd) {
 		case 'a':
 			commandA(airportBank);
 			break;
 
 		case 'l':
-			if (getchar() == '\n') {
-				sortAirports(airportBank, 0, n_airports - 1,'l');
-				listAirports(airportBank, 0);
-			} else {
-				char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID];
-				int num_IDs = 0;
-				do {
-
-					scanf("%s", airportID);
-					strcpy(requested_IDs[num_IDs], airportID);
-					num_IDs++;
-
-				} while (getchar() != '\n');
-				listRequestedAirports(airportBank, requested_IDs, num_IDs);
-			}
+			commandL(airportBank);
 			break;
 
 		case 'v':
 		{
 			if (getchar() == '\n') {
 				listFlights(flightBank);
+
 			} else {
 				int flightID_num, capacity, day, month, year, hour, min;
 				int durationHour, durationMin;
