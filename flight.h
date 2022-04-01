@@ -23,8 +23,8 @@ typedef struct {
 	FlightID ID;
 	char departureAirport[MAX_AIRPORT_ID];
 	char arrivalAirport[MAX_AIRPORT_ID];
-	dateTime departureDateTime;
-	dateTime arrivalDateTime;
+	DateTime departureDateTime;
+	DateTime arrivalDateTime;
 	Time duration;
 	int capacity;
 
@@ -35,8 +35,7 @@ typedef struct {
 
 Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 					char arrivalAirportID[MAX_AIRPORT_ID],
-					dateTime departureDateTime,
-					dateTime arrivalDateTime, Time duration, int capacity) {
+					DateTime departureDateTime, DateTime arrivalDateTime, Time duration, int capacity) {
 
 	Flight newFlight;
 

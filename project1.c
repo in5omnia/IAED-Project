@@ -168,21 +168,22 @@ void listFlights(Flight flightBank[MAX_FLIGHTS]) {
 }
 
 
-void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
-			   char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID], int num_IDs){
-	int i, e, a, c, n=0, initialized = 0, existingID[MAX_AIRPORTS];
-	Airport requestedAirports[MAX_AIRPORTS];
+
+int findAirports(int num_IDs, int existingID[MAX_AIRPORTS],
+				 Airport airportBank[MAX_AIRPORTS],
+				 Airport requestedAirports[MAX_AIRPORTS],
+				 char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID]){
+
+	int i, e, c, n=0;
 
 	for (c=0; c < num_IDs; c++){
-		existingID[c] = 0;
+		existingID[c] = 0;	/* initializes vector that checks IDs with 0 */
 	}
+
 	for (i=0; i < g_total_of_airports; i++){
 		if (n == num_IDs)		/*	we have all the requested flights */
 			break;
 		for (e=0; e < num_IDs; e++){
-			if (!initialized) {	 /* initializes vector that checks IDs with 0 */
-				existingID[e] = 0;
-			}
 			if (!strcmp(airportBank[i].ID, requested_IDs[e])){
 				requestedAirports[e] = airportBank[i];
 				n++;
@@ -190,8 +191,20 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 				break;
 			}
 		}
-		initialized = 1;
 	}
+	return n;
+}
+
+
+
+void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
+			   char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID], int num_IDs){
+
+	int a, n, existingID[MAX_AIRPORTS];
+	Airport requestedAirports[MAX_AIRPORTS];
+
+	n = findAirports(num_IDs, existingID, airportBank, requestedAirports,
+					 requested_IDs);
 
 	if (n != num_IDs){	/* only checks existence if not all were found */
 		for (a=0; a < num_IDs; a++){	/* validates ID's existence */
@@ -247,7 +260,7 @@ void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 
 	int i, number_flights, n_wanted_flights=0;
 	int airportIndexPlus1 = airportExist(airportID, airportBank, 'v');
-	Flight desiredFlights[MAX_FLIGHTS];
+	Flight wanted_flights[MAX_FLIGHTS];
 
 	if (!airportIndexPlus1) 		/*	if airport doesnt exist	*/
 		return;
@@ -265,12 +278,12 @@ void case_p_c(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 		if ((CASE_P && !strcmp(flightBank[i].departureAirport, airportID))
 			|| (CASE_C && !strcmp(flightBank[i].arrivalAirport, airportID)))
 		{
-			desiredFlights[n_wanted_flights] = flightBank[i];
+			wanted_flights[n_wanted_flights] = flightBank[i];
 			n_wanted_flights++;
 		}
 	}
-	sortFlights( desiredFlights, 0, n_wanted_flights-1, flag);
-	outputFlights(desiredFlights, n_wanted_flights, flag);
+	sortFlights(wanted_flights, 0, n_wanted_flights-1, flag);
+	outputFlights(wanted_flights, n_wanted_flights, flag);
 	return;
 }
 
@@ -312,6 +325,29 @@ void commandL(Airport airportBank[MAX_AIRPORTS]){
 	return;
 }
 
+
+void commandV_aux(Date departure_date, Time departureTime, Time duration, int capacity,
+				 FlightID flightID, char depAirportID[MAX_AIRPORT_ID],
+				 char arrAirportID[MAX_AIRPORT_ID],
+				 Flight flightBank[MAX_FLIGHTS]){
+	DateTime departureDateTime;
+	DateTime arrivalDateTime;
+	Flight newFlight;
+
+	departureDateTime = createDateTime(departure_date,departureTime);
+	arrivalDateTime = sumDuration(departureDateTime, duration);
+
+	newFlight = createFlight(flightID,depAirportID, arrAirportID,
+							 departureDateTime, arrivalDateTime, duration,
+							 capacity);
+
+	addFlight(flightBank, newFlight);
+	g_total_of_flights++;
+
+	return;
+}
+
+
 void commandV(Airport airportBank[MAX_AIRPORTS], Flight flightBank[MAX_FLIGHTS],
 	Date today){
 	if (getchar() == '\n') {
@@ -321,40 +357,29 @@ void commandV(Airport airportBank[MAX_AIRPORTS], Flight flightBank[MAX_FLIGHTS],
 		int capacity;
 		char depAirportID[MAX_AIRPORT_ID], arrAirportID[MAX_AIRPORT_ID];
 		FlightID flightID;
-		Date departureDate;
+		Date departure_date;
 		Time duration, departureTime;
-		Flight newFlight;
-		dateTime departureDateTime, arrivalDateTime;
 
 		scanf("%02s%d", flightID.letters, &flightID.num);
 
 		scanf(" %s %s", depAirportID, arrAirportID);
-		scanf(" %d-%d-%d", &departureDate.day, &departureDate.month,
-			  &departureDate.year);
+		scanf(" %d-%d-%d", &departure_date.day, &departure_date.month,
+											&departure_date.year);
 		scanf(" %d:%d", &departureTime.hour, &departureTime.min);
 		scanf(" %d:%d %d", &duration.hour, &duration.min, &capacity);
 
 
-		if (!valid_case_v(flightID, arrAirportID,
-						  depAirportID, departureDate,
+		if (!valid_case_v(flightID, arrAirportID,depAirportID, departure_date,
 						  duration, capacity, airportBank, flightBank, today))
 			return;
 
-
-		departureDateTime = createDateTime(departureDate,
-										   departureTime);
-		arrivalDateTime = sumDuration(departureDateTime, duration);
-		newFlight = createFlight(flightID,
-								 depAirportID, arrAirportID,
-								 departureDateTime, arrivalDateTime,
-								 duration, capacity);
-
-		addFlight(flightBank, newFlight);
-		g_total_of_flights++;
+		commandV_aux(departure_date, departureTime, duration, capacity, flightID,
+		  			depAirportID, arrAirportID,  flightBank);
 
 	}
 	return;
 }
+
 
 
 void command_P_C(char flag, Airport airportBank[MAX_AIRPORTS],

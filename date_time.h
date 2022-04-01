@@ -23,7 +23,7 @@ typedef struct {
 typedef struct {
 	Date date;
 	Time time;
-} dateTime;
+} DateTime;
 
 
 Date createDate(int day, int month, int year) {
@@ -41,11 +41,11 @@ Time createTime(int hour, int min) {
 	return time;
 }
 
-dateTime createDateTime(Date date, Time time) {
-	dateTime DateTime;
-	DateTime.date = date;
-	DateTime.time = time;
-	return DateTime;
+DateTime createDateTime(Date date, Time time) {
+	DateTime dateTime;
+	dateTime.date = date;
+	dateTime.time = time;
+	return dateTime;
 }
 
 
@@ -122,7 +122,7 @@ int beforeTime(Time time1, Time time2){
 }
 
 
-int pastDateTime(dateTime dateTime1, dateTime dateTime2) {
+int pastDateTime(DateTime dateTime1, DateTime dateTime2) {
 	int day1 = dateTime1.date.day, month1 = dateTime1.date.month,
 		year1 = dateTime1.date.year;
 	if (pastDate(day1, month1, year1, dateTime2.date)){
@@ -135,8 +135,7 @@ int pastDateTime(dateTime dateTime1, dateTime dateTime2) {
 	return 0;
 }
 
-
-dateTime sumDuration(dateTime departure, Time duration) {
+DateTime sumDuration(DateTime departure, Time duration) {
 	int daysPerMonth[12] = {31,28,31,30,31, 30,
 							31, 31, 30, 31, 30, 31};
 	departure.time.hour += duration.hour;
