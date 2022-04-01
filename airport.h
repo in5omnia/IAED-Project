@@ -12,7 +12,7 @@
 #include <string.h>
 #include "flight.h"
 
-extern int n_airports;
+extern int g_total_of_airports;
 
 typedef struct {
 	char ID[MAX_AIRPORT_ID];
@@ -35,7 +35,7 @@ Airport createAirport(char airportID[MAX_AIRPORT_ID],
 
 
 void addAirport(Airport new_airport, Airport airportBank[MAX_AIRPORTS]){
-	airportBank[n_airports] = new_airport;
+	airportBank[g_total_of_airports] = new_airport;
 	return;
 }
 
@@ -62,7 +62,7 @@ int validAirportID(char airportID[MAX_AIRPORT_ID]){
 
 int airportExist(char airportID[], Airport airportBank[MAX_AIRPORTS], char flag){
 	int i;
-	for (i=0; i < n_airports; i++){
+	for (i=0; i < g_total_of_airports; i++){
 		if (!strcmp(airportID, airportBank[i].ID)) {
 			if (flag == 'a') {
 				printf(DUPLICATE_AIRPORT);
