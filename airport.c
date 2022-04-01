@@ -5,8 +5,8 @@
 */
 
 
-/*#include "BG_102463.h"*/
-#include "flight.c"
+#include "BG_102463.h"
+/*#include "flight.c"*/
 
 
 extern int g_total_of_airports;

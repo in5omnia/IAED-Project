@@ -4,10 +4,10 @@
 * Description:
 */
 
-/*#include "BG_102463.h"*/
+#include "BG_102463.h"
 /*#include "flight.c"*/
 
-#include "airport.c"
+/*#include "airport.c"*/
 
 Date createDate(int day, int month, int year) {
 	Date date;

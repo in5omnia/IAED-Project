@@ -4,12 +4,13 @@
  * Description:
 */
 
+#ifndef BG_102463_H
+#define BG_102463_H
+
+
 #include <stdio.h>
 #include <string.h>
 
-
-#ifndef BG_102463_H
-#define BG_102463_H
 
 #define MAX_CITY 51
 #define MAX_COUNTRY 31
@@ -110,7 +111,6 @@ void addFlight(Flight flightBank[MAX_FLIGHTS], Flight new_flight);
 
 
 Date createDate(int day, int month, int year);
-/*Time createTime(int hour, int min);*/
 DateTime createDateTime(Date date, Time time);
 Date newDate(Date possibleDate, Date today);
 int pastDate(int day, int month, int year, Date today);

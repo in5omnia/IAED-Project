@@ -4,8 +4,8 @@
 * Description:
 */
 
-/*#include "BG_102463.h"*/
-#include "date_time.c"
+#include "BG_102463.h"
+/*#include "date_time.c"*/
 /*#include "airport.c"
 #include "flight.c"*/
 
@@ -93,9 +93,9 @@ void sortAirports(Airport airportBank[MAX_AIRPORTS]/*, Flight desiredFlights[MAX
 	int i;
 	if (right <= left)
 		return;
-	i = partition(airportBank, /*desiredFlights,*/ left, right, flag);
-	sortAirports(airportBank, /*desiredFlights,*/ left, i - 1, flag);
-	sortAirports(airportBank, /*desiredFlights,*/ i + 1, right, flag);
+	i = partition(airportBank, left, right, flag);
+	sortAirports(airportBank, left, i - 1, flag);
+	sortAirports(airportBank, i + 1, right, flag);
 }
 
 
