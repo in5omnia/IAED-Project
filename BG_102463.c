@@ -1,8 +1,8 @@
 /*
 * File: BG_102463.c
 * Author: Beatriz Gavilan - 102463
-* Description:	main file with main functions and other supportive functions
- * 				to the airport management support system
+* Description: main file with main function and the functions that identifies
+ * the commands.
 */
 
 #include "BG_102463.h"

@@ -154,7 +154,7 @@ DateTime sumDuration(DateTime departure, Time duration);
 
 int pastDate(int day, int month, int year, Date today);
 
-int oneYearAfter(int day, int month, int year, Date today);
+int afterOneYear(int day, int month, int year, Date today);
 
 void outputDate(Date date);
 

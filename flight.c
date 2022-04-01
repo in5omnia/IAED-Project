@@ -1,7 +1,7 @@
 /*
 * File: flight.c
 * Author: Beatriz Gavilan - 102463
-* Description:
+* Description: Contains all the functions related to the flights.
 */
 
 
@@ -35,7 +35,8 @@ Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 
 
 /*	Checks flightID's validity - checks if it has 2, all upper case, letters
- * and if its number is within the correct interval	*/
+ * and if its number is within the correct interval. Returns 1 if it's valid
+ * and 0 if not.	*/
 int validFlightID(FlightID flightID){
 	int i;
 
@@ -63,7 +64,8 @@ int validCapacity(int capacity){
 }
 
 
-/*	Checks if flight already exists (is duplicate) in which case it returns 0 */
+/*	Checks if flight already exists (is duplicate). Returns 0 if it exists and
+ * 1 if not. */
 int notDuplicateFlight(FlightID flightID, Date departureDate,
 					   Flight flightBank[MAX_FLIGHTS]) {
 	int i;
@@ -84,12 +86,13 @@ int notDuplicateFlight(FlightID flightID, Date departureDate,
 }
 
 
-/*	Checks if adding a flight will exceed the system's limit of flights	*/
+/*	Checks if adding a flight will exceed the system's limit of flights.
+ * Returns 1 if it's valid and 0 if not.	*/
 int tooManyFlights(){
 
 	int num_flights = g_TotalOfFlights;
 
-	if (num_flights++ > MAX_FLIGHTS) {
+	if (++num_flights > MAX_FLIGHTS) {
 		printf(TOO_MANY_FLIGHTS);
 		return 1;
 	}
@@ -124,8 +127,8 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 }
 
 
-/*	Checks if the airport exists and if so, finds them in
- * flightBank, sorts and presents them in standard output	*/
+/*	Checks if the airport exists and if so, finds them in flightBank, sorts
+ * and presents them in standard output	*/
 void findFlights(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 				 Airport airportBank[MAX_AIRPORTS], char flag){
 
@@ -219,7 +222,7 @@ void listAllFlights(Flight flightBank[MAX_FLIGHTS]) {
  * standard output */
 void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 				   char flag){
-	int i=0;
+	int i;
 	Date f_date;
 	Time f_time;
 	Flight f;
