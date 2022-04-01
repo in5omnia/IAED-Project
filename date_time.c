@@ -104,7 +104,7 @@ int beforeTime(Time time1, Time time2){
 }
 
 
-int pastDateTime(DateTime dateTime1, DateTime dateTime2) {
+int beforeDateTime(DateTime dateTime1, DateTime dateTime2) {
 
 	int day1 = dateTime1.date.day, month1 = dateTime1.date.month,
 		year1 = dateTime1.date.year;

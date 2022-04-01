@@ -166,7 +166,7 @@ int sameDate(Date date1, Date date2);
 
 int beforeTime(Time time1, Time time2);
 
-int pastDateTime(DateTime dateTime1, DateTime dateTime2);
+int beforeDateTime(DateTime dateTime1, DateTime dateTime2);
 
 /*	airport.c functions	*/
 

@@ -67,8 +67,7 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 
 
 /*	Receives input for command "a" and, if it's valid, creates and adds a
- * new airport, presenting the corresponding message in standard output	and
- * increasing the global variable for the total of airports	*/
+ * new airport, presenting the corresponding message in standard output	*/
 void commandA(Airport airportBank[MAX_AIRPORTS]){
 
 	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
@@ -81,6 +80,7 @@ void commandA(Airport airportBank[MAX_AIRPORTS]){
 		addAirport(new_airport, airportBank);
 
 		printf(OUT_AIRPORT_ID, airportID);
+		/*	increases global variable (total of airports in the system)	*/
 		g_TotalOfAirports++;
 
 	}

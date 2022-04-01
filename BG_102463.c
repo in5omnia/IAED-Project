@@ -13,14 +13,7 @@ int g_TotalOfAirports = 0;
 int g_TotalOfFlights = 0;
 
 
-/*	identifies command from input and redirects to associated function
- *
- * cmd: command found in input
- * airportBank: array of all airports currently in the system
- * flightBank: array of all flights currently in the system
- * today: today's date
- */
-
+/*	identifies command and redirects to associated function	*/
 Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				 				Flight flightBank[MAX_FLIGHTS], Date today) {
 
@@ -55,12 +48,15 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 
 int main() {
 
+	/*	initializes array of all airports currently in the system	*/
 	Airport airportBank[MAX_AIRPORTS] = {0};
+	/*	initializes array of all flights currently in the system	*/
 	Flight flightBank[MAX_FLIGHTS] = {0};
 
 	Date today = FIRST_TODAY;
 	char cmd;
 
+	/*	gets commands from standar input	*/
 	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
 		today = readCommand(cmd, airportBank, flightBank, today);
 	}

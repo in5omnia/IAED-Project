@@ -8,10 +8,11 @@
 #include "BG_102463.h"
 
 
-/*	includes global variable */
+/*	Includes global variable */
 extern int g_TotalOfFlights;
 
 
+/*	Creates a Flight	*/
 Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 					char arrivalAirportID[MAX_AIRPORT_ID],
 					DateTime departureDateTime, DateTime arrivalDateTime,
@@ -33,6 +34,8 @@ Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 }
 
 
+/*	Checks flightID's validity - checks if it has 2, all upper case, letters
+ * and if its number is within the correct interval	*/
 int validFlightID(FlightID flightID){
 	int i;
 
@@ -47,6 +50,8 @@ int validFlightID(FlightID flightID){
 	return (flightID.num > 0 && flightID.num <= 9999);
 }
 
+
+/*	Checks capacity's validity - checks if it's within the correct interval	*/
 int validCapacity(int capacity){
 
 	if (capacity < 10 || capacity > 100) {
@@ -58,6 +63,7 @@ int validCapacity(int capacity){
 }
 
 
+/*	Checks if flight already exists (is duplicate) in which case it returns 0 */
 int notDuplicateFlight(FlightID flightID, Date departureDate,
 					   Flight flightBank[MAX_FLIGHTS]) {
 	int i;
@@ -78,6 +84,7 @@ int notDuplicateFlight(FlightID flightID, Date departureDate,
 }
 
 
+/*	Checks if adding a flight will exceed the system's limit of flights	*/
 int tooManyFlights(){
 
 	int num_flights = g_TotalOfFlights;
@@ -90,7 +97,7 @@ int tooManyFlights(){
 }
 
 
-/*	creates and adds new flight */
+/*	Creates and adds new flight to the system	*/
 void addFlight(Date departure_date, Time departureTime, Time duration,
 			   int capacity, FlightID flightID,
 			   char depAirportID[MAX_AIRPORT_ID],
@@ -102,6 +109,7 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 	Flight newFlight;
 
 	departureDateTime = createDateTime(departure_date,departureTime);
+
 	arrivalDateTime = sumDuration(departureDateTime, duration);
 
 	newFlight = createFlight(flightID,depAirportID, arrAirportID,
@@ -110,13 +118,13 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 
 	/* adds new flight to flightBank*/
 	flightBank[g_TotalOfFlights] = newFlight;
-
+	/*	increases global variable (total of flights in the system)	*/
 	g_TotalOfFlights++;
 
 }
 
 
-/*	function that checks if the airport exists and if so, finds them in
+/*	Checks if the airport exists and if so, finds them in
  * flightBank, sorts and presents them in standard output	*/
 void findFlights(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 				 Airport airportBank[MAX_AIRPORTS], char flag){
@@ -154,6 +162,8 @@ void findFlights(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
 }
 
 
+/*	Sorts flights by date from the oldest to the most recent, based on
+ * insertion sort's algorithm	*/
 void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
 				 char flag) {
 	int i,j;
@@ -165,16 +175,15 @@ void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
 		j = i-1;
 
 		if (CASE_P) {
-			while ( j >= left && pastDateTime( v.departureDateTime,
-									 desiredFlights[j].departureDateTime))
+			while ( j >= left && beforeDateTime(v.departureDateTime,
+							  	desiredFlights[j].departureDateTime))
 			{
 				desiredFlights[j + 1] = desiredFlights[j];
 				j--;
 			}
-		}
-		else {	/*	flag == 'c'	*/
-			while ( j >= left && pastDateTime(v.arrivalDateTime,
-										 desiredFlights[j].arrivalDateTime))
+		} else {	/*	CASE C	*/
+			while ( j >= left && beforeDateTime(v.arrivalDateTime,
+								  desiredFlights[j].arrivalDateTime))
 			{
 				desiredFlights[j + 1] = desiredFlights[j];
 				j--;
@@ -185,6 +194,8 @@ void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
 }
 
 
+/*	Lists all the system's flights (stored in flightBank) in the standard
+ * output	*/
 void listAllFlights(Flight flightBank[MAX_FLIGHTS]) {
 	int i;
 	Date f_date;
@@ -204,6 +215,8 @@ void listAllFlights(Flight flightBank[MAX_FLIGHTS]) {
 }
 
 
+/*	Lists flights (stored in wantedFlights) for P and C commands in the
+ * standard output */
 void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 				   char flag){
 	int i=0;
@@ -222,8 +235,9 @@ void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 
 			printf(OUT_P_C_FLIGHT, OUT_P_C_FLIGHT_VARIABLES);
 		}
-	}
-	else {	/*	flag == 'c'*/
+
+	} else {	/*	flag == 'c'*/
+
 		for (i=0; i < num_flights; i++) {
 
 			f = wantedFlights[i];
