@@ -5,38 +5,44 @@
 */
 
 #include "BG_102463.h"
-/*#include "flight.c"*/
 
-/*#include "airport.c"*/
 
 Date createDate(int day, int month, int year) {
+
 	Date date;
 	date.day = day;
 	date.month = month;
 	date.year = year;
+
 	return date;
 }
 
 DateTime createDateTime(Date date, Time time) {
+
 	DateTime dateTime;
 	dateTime.date = date;
 	dateTime.time = time;
+
 	return dateTime;
 }
 
 
 Date newDate(Date possibleDate, Date today){
+
 	today.day = possibleDate.day;
 	today.month = possibleDate.month;
 	today.year = possibleDate.year;
+
 	return today;
 }
 
 
 int pastDate(int day, int month, int year, Date today){
+
 	return ((year < today.year) ||
 			(year == today.year && month < today.month) ||
 			(year == today.year && month == today.month && day < today.day));
+
 }
 
 
@@ -50,8 +56,8 @@ int oneYearAfter(int day, int month, int year, Date today) {
 
 
 void outputDate(Date date){
+
 	printf("%02d-%02d-%d\n", date.day, date.month, date.year);
-	return;
 }
 
 
@@ -99,23 +105,30 @@ int beforeTime(Time time1, Time time2){
 
 
 int pastDateTime(DateTime dateTime1, DateTime dateTime2) {
+
 	int day1 = dateTime1.date.day, month1 = dateTime1.date.month,
 		year1 = dateTime1.date.year;
+
 	if (pastDate(day1, month1, year1, dateTime2.date)){
 		return 1;
 	}
+
 	if (sameDate(dateTime1.date, dateTime2.date) &&
 		beforeTime(dateTime1.time, dateTime2.time)) {
 		return 1;
 	}
+
 	return 0;
 }
 
 DateTime sumDuration(DateTime departure, Time duration) {
+
 	int daysPerMonth[12] = {31,28,31,30,31, 30,
 							31, 31, 30, 31, 30, 31};
+
 	departure.time.hour += duration.hour;
 	departure.time.min += duration.min;
+
 	if (departure.time.min > 59) {
 		departure.time.min -= 60;
 		departure.time.hour += 1;
