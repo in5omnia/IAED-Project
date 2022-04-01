@@ -313,6 +313,78 @@ void commandL(Airport airportBank[MAX_AIRPORTS]){
 	return;
 }
 
+void commandV(Airport airportBank[MAX_AIRPORTS], Flight flightBank[MAX_FLIGHTS],
+	Date today){
+	if (getchar() == '\n') {
+		listFlights(flightBank);
+
+	} else {
+		int capacity;
+		char depAirportID[MAX_AIRPORT_ID], arrAirportID[MAX_AIRPORT_ID];
+		FlightID flightID;
+		Date departureDate;
+		Time duration, departureTime;
+		Flight newFlight;
+		dateTime departureDateTime, arrivalDateTime;
+
+		scanf("%02s%d", flightID.letters, &flightID.num);
+
+		scanf(" %s %s", depAirportID, arrAirportID);
+		scanf(" %d-%d-%d", &departureDate.day, &departureDate.month,
+			  &departureDate.year);
+		scanf(" %d:%d", &departureTime.hour, &departureTime.min);
+		scanf(" %d:%d %d", &duration.hour, &duration.min, &capacity);
+
+
+		if (!valid_case_v(flightID, arrAirportID,
+						  depAirportID, departureDate,
+						  duration, capacity,
+						  airportBank, flightBank, today)){
+			return;
+		}
+
+		departureDateTime = createDateTime(departureDate,
+										   departureTime);
+		arrivalDateTime = sumDuration(departureDateTime, duration);
+		newFlight = createFlight(flightID,
+								 depAirportID, arrAirportID,
+								 departureDateTime, arrivalDateTime,
+								 duration, capacity);
+
+		addFlight(flightBank, newFlight);
+		n_flights++;
+
+	}
+	return;
+}
+
+
+void command_P_C(char flag, Airport airportBank[MAX_AIRPORTS],
+				 Flight flightBank[MAX_FLIGHTS]){
+
+	char airportID[MAX_AIRPORT_ID];
+	scanf(" %s", airportID);
+	case_p_c(airportID, flightBank, airportBank, flag);
+	return;
+}
+
+
+Date command_T(Date today){
+
+	int day, month, year;
+	Date possibleDate;
+
+	scanf("%d-%d-%d", &day, &month, &year);
+	possibleDate = createDate(day, month, year);
+
+	if (check_date(possibleDate, today))
+	{
+		today = newDate(possibleDate, today);
+		outputDate(today);
+	}
+	return today;
+}
+
 
 Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				 				Flight flightBank[MAX_FLIGHTS], Date today) {
@@ -327,83 +399,20 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 			break;
 
 		case 'v':
-		{
-			if (getchar() == '\n') {
-				listFlights(flightBank);
-
-			} else {
-				int flightID_num, capacity, day, month, year, hour, min;
-				int durationHour, durationMin;
-				char departureAirportID[MAX_AIRPORT_ID],
-					arrivalAirportID[MAX_AIRPORT_ID],
-					flightID_str[MAX_LETTERS_FLIGHT_ID];
-				FlightID flightID;
-				Date departureDate;
-				Time duration;
-
-				/*Time departureTime;*/
-				scanf("%02s%d", flightID_str, &flightID_num);
-				scanf(" %s %s", departureAirportID, arrivalAirportID);
-				scanf(" %d-%d-%d", &day, &month, &year);
-				scanf(" %d:%d", &hour, &min);
-				scanf(" %d:%d %d", &durationHour, &durationMin, &capacity);
-
-				flightID = createFlightID(flightID_str, flightID_num);
-				departureDate = createDate(day, month, year);
-				duration = createTime(durationHour, durationMin);
-
-				if (!valid_case_v(flightID, arrivalAirportID,
-							  departureAirportID, departureDate,
-							  duration, capacity,
-							  airportBank, flightBank, today))
-				{
-					break;
-				}
-				else{
-					Flight newFlight;
-					Time departureTime;
-					dateTime departureDateTime, arrivalDateTime;
-					departureTime = createTime(hour, min);
-					departureDateTime = createDateTime(departureDate,
-													   departureTime);
-					arrivalDateTime = sumDuration(departureDateTime, duration);
-					newFlight = createFlight(flightID,
-									departureAirportID, arrivalAirportID,
-									departureDateTime, arrivalDateTime,
-								 	duration, capacity);
-
-					addFlight(flightBank, newFlight);
-					n_flights++;
-				}
-			}
-			break; }
+			commandV(airportBank, flightBank, today);
+			break;
 
 		case 'p':
-		{
-			char departureAirportID[MAX_AIRPORT_ID];
-			/*getchar();*/
-			scanf(" %s", departureAirportID);
-			case_p_c(departureAirportID, flightBank, airportBank, 'p');
+			command_P_C('p', airportBank, flightBank);
 			break;
-		}
+
 		case 'c':
-		{
-			char arrivalAirportID[MAX_AIRPORT_ID];
-			scanf(" %s", arrivalAirportID);
-			case_p_c(arrivalAirportID, flightBank, airportBank, 'c');
+			command_P_C('c', airportBank, flightBank);
 			break;
-		}
-		case 't': {
-			int day, month, year;
-			Date possibleDate;
-			scanf("%d-%d-%d", &day, &month, &year);
-			possibleDate = createDate(day, month, year);
-			if (check_date(possibleDate, today)) {
-				today = newDate(possibleDate, today);
-				outputDate(today);
-			}
+
+		case 't':
+			today = command_T(today);
 			break;
-		}
 	}
 	return today;
 }

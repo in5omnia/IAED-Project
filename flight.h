@@ -11,12 +11,15 @@ extern int n_flights;
 
 
 typedef struct {
-	char letters[MAX_LETTERS_FLIGHT_ID];
+
+	char letters[MAX_FLIGHT_ID_STR];
 	int num;
+
 } FlightID;
 
 
 typedef struct {
+
 	FlightID ID;
 	char departureAirport[MAX_AIRPORT_ID];
 	char arrivalAirport[MAX_AIRPORT_ID];
@@ -24,29 +27,36 @@ typedef struct {
 	dateTime arrivalDateTime;
 	Time duration;
 	int capacity;
+
 } Flight;
 
 
 
 
 Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
-					char arrivalAirportID[MAX_AIRPORT_ID], dateTime departureDateTime,
+					char arrivalAirportID[MAX_AIRPORT_ID],
+					dateTime departureDateTime,
 					dateTime arrivalDateTime, Time duration, int capacity) {
+
 	Flight newFlight;
+
 	newFlight.ID = flightID;
 	strcpy(newFlight.departureAirport, departureAirportID);
 	strcpy(newFlight.arrivalAirport, arrivalAirportID);
+
 	newFlight.departureDateTime = departureDateTime;
 	newFlight.arrivalDateTime = arrivalDateTime;
+
 	newFlight.duration = duration;
 	newFlight.capacity = capacity;
+
 	return newFlight;
 }
 
 
 int validFlightID(FlightID flightID){
 	int i;
-	for (i=0; flightID.letters[i] != '\0' && i < MAX_LETTERS_FLIGHT_ID; i++) {
+	for (i=0; flightID.letters[i] != '\0' && i < MAX_FLIGHT_ID_STR; i++) {
 		if (flightID.letters[i] < 'A' || flightID.letters[i] > 'Z') {
 			printf(INVALID_FLIGHT_ID);
 			return 0;
@@ -64,16 +74,6 @@ int validCapacity(int capacity){
 }
 
 
-FlightID createFlightID(char flightID_str[MAX_LETTERS_FLIGHT_ID],
-						int flightID_num){
-	FlightID flightId;
-	flightID_str[MAX_LETTERS_FLIGHT_ID-1] = '\0';
-	strcpy(flightId.letters, flightID_str);
-	flightId.num = flightID_num;
-	return flightId;
-}
-
-
 int notDuplicateFlight(FlightID flightID, Date departureDate,
 					   Flight flightBank[MAX_FLIGHTS]) {
 	int i;
@@ -81,7 +81,8 @@ int notDuplicateFlight(FlightID flightID, Date departureDate,
 		if (flightID.num == flightBank[i].ID.num &&
 			!strcmp(flightID.letters, flightBank[i].ID.letters)
 			&& sameDate(departureDate,
-						flightBank[i].departureDateTime.date)) /* same code for same day*/
+						flightBank[i].departureDateTime.date))
+										/* same code for same day*/
 		{
 			printf(DUPLICATE_FLIGHT);
 			return 0;

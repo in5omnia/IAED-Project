@@ -9,7 +9,7 @@
 #define MAX_AIRPORT_ID 4
 #define MAX_AIRPORTS 40
 #define MAX_FLIGHTS 30000
-#define MAX_LETTERS_FLIGHT_ID 3
+#define MAX_FLIGHT_ID_STR 3
 
 #define END_PROGRAM 'q'
 
