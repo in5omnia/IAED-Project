@@ -26,12 +26,14 @@
 #define CASE_P flag == 'p'
 #define CASE_C flag == 'c'
 #define CASE_A (flag == 'a')
+#define CASE_L flag == 'l'
 #define CASE_V 'v'
 
 #define OUT_AIRPORT_ID "airport %s\n"
 #define OUT_AIRPORT "%s %s %s %d\n"
 #define OUT_FLIGHT "%s%d %s %s %02d-%02d-%d %02d:%02d\n"
 #define OUT_P_C_FLIGHT "%s%d %s %02d-%02d-%d %02d:%02d\n"
+
 #define OUT_NO_AIRPORT_ID "%s: no such airport ID\n"
 #define DUPLICATE_AIRPORT "duplicate airport\n"
 #define INVALID_AIRPORT_ID "invalid airport ID\n"
@@ -46,6 +48,10 @@
 
 #define IN_DATE "%d-%d-%d"
 #define IN_TIME "%d:%d"
+#define IN_FLIGHT_ID "%02s%d"
+#define IN_CAPACITY "%d"
+#define IN_AIRPORT_ID_OR_COUNTRY "%s"
+#define IN_CITY " %[^\n]"
 
 #define OUT_P_C_FLIGHT_VARIABLES f.ID.letters, f.ID.num, airportInOutput,\
 f_date.day, f_date.month, f_date.year, f_time.hour, f_time.min
@@ -183,13 +189,11 @@ int airportExist(char airportID[MAX_AIRPORT_ID],
 int beforeLetters(char beforeWord[MAX_AIRPORT_ID],
 				  char afterWord[MAX_AIRPORT_ID]);
 
-void exch(Airport airportBank[MAX_AIRPORTS], int i, int right, char flag);
+void exch(Airport airportBank[MAX_AIRPORTS], int i, int right);
 
-int partition(Airport airportBank[MAX_AIRPORTS], int left, int right,
-			  char flag);
+int partition(Airport airportBank[MAX_AIRPORTS], int left, int right);
 
-void sortAirports(Airport airportBank[MAX_AIRPORTS], int left, int right,
-				  char flag);
+void sortAirports(Airport airportBank[MAX_AIRPORTS], int left, int right);
 
 void listAirports(Airport airportBank[MAX_AIRPORTS], int num);
 

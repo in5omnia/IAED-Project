@@ -56,7 +56,7 @@ int main() {
 	Date today = FIRST_TODAY;
 	char cmd;
 
-	/*	gets commands from standar input	*/
+	/*	gets commands from standard input	*/
 	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
 		today = readCommand(cmd, airportBank, flightBank, today);
 	}

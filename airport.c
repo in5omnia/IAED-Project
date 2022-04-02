@@ -68,7 +68,7 @@ int airportExist(char airportID[MAX_AIRPORT_ID],
 	int i;
 
 	for (i=0; i < g_TotalOfAirports; i++){
-		/*	Compares the airportID with each system's airport' ID	*/
+		/*	Compares the airportID with each system's airport's ID	*/
 		if (!strcmp(airportID, airportBank[i].ID)) {	/*	same ID	*/
 			if (CASE_A) {
 				printf(DUPLICATE_AIRPORT);
@@ -77,7 +77,7 @@ int airportExist(char airportID[MAX_AIRPORT_ID],
 		}
 	}
 
-	if (!CASE_A)	/*	Case A doesn't require this message	*/
+	if (!CASE_A)	/*	Case A doesn't require this error message	*/
 		printf(OUT_NO_AIRPORT_ID, airportID);
 
 	return 0;
@@ -85,7 +85,7 @@ int airportExist(char airportID[MAX_AIRPORT_ID],
 
 
 /*	Compares 2 words made of 3 letters in relation to their alphabetical order.
- * Returns 1 if they're ordered and 0 if not.	*/
+ * Returns 1 if "beforeWord" should come before "afterWord" and 0 if not.	*/
 int beforeLetters(char beforeWord[MAX_AIRPORT_ID],
 				  char afterWord[MAX_AIRPORT_ID]) {
 
@@ -101,58 +101,64 @@ int beforeLetters(char beforeWord[MAX_AIRPORT_ID],
 
 
 /*	Exchanges 2 airports' placement in the airportBank array. */
-void exch(Airport airportBank[MAX_AIRPORTS], int i, int right, char flag){
+void exch(Airport airportBank[MAX_AIRPORTS], int i, int right){
 
-	if (flag == 'l') {
+	Airport t = airportBank[i];
+	airportBank[i] = airportBank[right];
+	airportBank[right] = t;
 
-		Airport t = airportBank[i];
-		airportBank[i] = airportBank[right];
-		airportBank[right] = t;
-	}
 }
 
-/*	Creates partitions of airports (based on quicksort's algorithm) to
- * sort alphabetically. */
-int partition(Airport airportBank[MAX_AIRPORTS], int left, int right, char flag)
+/*	Creates partitions of airports (based on quick sort's algorithm). */
+int partition(Airport airportBank[MAX_AIRPORTS], int left, int right)
 {
 	int i = left-1;
 	int j = right;
 
-	if (flag == 'l') {
+	char v[MAX_AIRPORT_ID];
+	/* v is the ID of the pivot airport at the right end of the partition */
+	strcpy(v, airportBank[right].ID);
 
-		char v[MAX_AIRPORT_ID];
-		strcpy(v, airportBank[right].ID);
 
-		while (i < j) {
+	while (i < j) {
+		/*	goes through airport IDs from the left to right until finding the
+		 * first one that should come after v */
+		while (beforeLetters(airportBank[++i].ID, v));
 
-			while (beforeLetters(airportBank[++i].ID, v));
-
-			while (beforeLetters(v, airportBank[--j].ID)){
-				if (j == left)
-					break;
-
-			}
-			if (i < j)
-				exch(airportBank, i, j, 'l');
+		/*	goes through airport IDs from the right to left until finding the
+		 * first one that should come before v */
+		while (beforeLetters(v, airportBank[--j].ID)){
+			if (j == left)
+				break;
 		}
-		exch(airportBank, i, right, 'l');
+		/*	exchanges the airports found to put them on the correct side of
+		 * the partition*/
+		if (i < j)
+			exch(airportBank, i, j);
+
 	}
-	return i;
+	/*	exchanges v's corresponding airport with the one that should come
+	 * after it	*/
+	exch(airportBank, i, right);
+
+	return i;	/*	returns the index of where the array was divided	*/
 }
 
 
-/*	Sorts an array of airports in alphabetical order. */
-void sortAirports(Airport airportBank[MAX_AIRPORTS], int left, int right,
-				  char flag)
+/*	Sorts an array of airports in alphabetical order (based on quick sort's
+ * algorithm) with the partition function and the recursive use of its
+ * algorithm, creating partitions from other partitions until all the airports
+ * are in order.	*/
+void sortAirports(Airport airportBank[MAX_AIRPORTS], int left, int right)
 {
 	int i;
 
 	if (right <= left)
 		return;
 
-	i = partition(airportBank, left, right, flag);
-	sortAirports(airportBank, left, i - 1, flag);
-	sortAirports(airportBank, i + 1, right, flag);
+	i = partition(airportBank, left, right);
+	sortAirports(airportBank, left, i - 1);
+	sortAirports(airportBank, i + 1, right);
 }
 
 
@@ -187,12 +193,12 @@ int findAirports(int num_IDs, int existingID[MAX_AIRPORTS],
 	}
 
 	for (i=0; i < g_TotalOfAirports; i++){
-		/*	we have all the requested flights */
+		/*	all the requested airports were found */
 		if (num_airports_found == num_IDs)
 			break;
 
 		for (e=0; e < num_IDs; e++){
-
+			/*	the requested airport is in the airportBank	*/
 			if (!strcmp(airportBank[i].ID, requested_IDs[e])){
 
 				requestedAirports[e] = airportBank[i];
