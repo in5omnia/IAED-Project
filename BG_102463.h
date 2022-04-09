@@ -26,7 +26,6 @@
 #define CASE_P flag == 'p'
 #define CASE_C flag == 'c'
 #define CASE_A (flag == 'a')
-#define CASE_L flag == 'l'
 #define CASE_V 'v'
 
 #define OUT_AIRPORT_ID "airport %s\n"

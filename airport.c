@@ -193,7 +193,7 @@ int findAirports(int num_IDs, int existingID[MAX_AIRPORTS],
 	}
 
 	for (i=0; i < g_TotalOfAirports; i++){
-		/*	all the requested airports were found */
+		/* all the requested airports were found */
 		if (num_airports_found == num_IDs)
 			break;
 
@@ -227,13 +227,12 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 	/* only checks existence if not all were found */
 	if (num_airports_found != num_IDs){
 
-		for (a=0; a < num_IDs; a++){	/* validates ID's existence */
+		for (a=0; a < num_IDs; a++){
 
-			if (!existingID[a]){
-
+			if (!existingID[a]){	/* if airport doesn't exist */
 				printf(OUT_NO_AIRPORT_ID, requested_IDs[a]);
 			}
-			else{
+			else {
 				printf(OUT_AIRPORT, requestedAirports[a].ID,
 					   requestedAirports[a].city,
 					   requestedAirports[a].country,
@@ -241,8 +240,8 @@ void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
 			}
 		}
 	}
-	else {
+	/* if all the requested airports exist */
+	else
 		listAirports(requestedAirports, num_IDs);
-	}
 
 }

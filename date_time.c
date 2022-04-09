@@ -130,6 +130,7 @@ int beforeDateTime(DateTime dateTime1, DateTime dateTime2) {
 	int day1 = dateTime1.date.day, month1 = dateTime1.date.month,
 		year1 = dateTime1.date.year;
 
+
 	if (pastDate(day1, month1, year1, dateTime2.date)){
 		return 1;
 	}
@@ -153,6 +154,7 @@ DateTime sumDuration(DateTime departure, Time duration) {
 	departure.time.hour += duration.hour;
 	departure.time.min += duration.min;
 
+	/* converts minutes and hours to their correct interval */
 	if (departure.time.min > 59) {
 		departure.time.min -= 60;
 		departure.time.hour += 1;
@@ -161,6 +163,7 @@ DateTime sumDuration(DateTime departure, Time duration) {
 		departure.time.hour -= 24;
 		departure.date.day += 1;
 	}
+	/* converts day, month and year to their correct interval */
 	if (departure.date.day > daysPerMonth[departure.date.month-1]) {
 		departure.date.month++;
 		departure.date.day = 1;
@@ -169,6 +172,7 @@ DateTime sumDuration(DateTime departure, Time duration) {
 		departure.date.year++;
 		departure.date.month = 1;
 	}
+
 	return departure;
 }
 

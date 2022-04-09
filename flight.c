@@ -48,7 +48,11 @@ int validFlightID(FlightID flightID){
 			return 0;
 		}
 	}
-	return (flightID.num > 0 && flightID.num <= 9999);
+	if (flightID.num < 1 || flightID.num > 9999){
+		printf(INVALID_FLIGHT_ID);
+		return 0;
+	}
+	return 1;
 }
 
 
@@ -239,7 +243,7 @@ void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 			printf(OUT_P_C_FLIGHT, OUT_P_C_FLIGHT_VARIABLES);
 		}
 
-	} else {	/*	flag == 'c'*/
+	} else {	/* case C */
 
 		for (i=0; i < num_flights; i++) {
 
