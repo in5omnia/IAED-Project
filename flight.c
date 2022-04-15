@@ -6,7 +6,7 @@
 
 
 #include "BG_102463.h"
-
+#include "reservations.h"
 
 /*	Includes global variable */
 extern int g_TotalOfFlights;
@@ -29,6 +29,9 @@ Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 
 	newFlight.duration = duration;
 	newFlight.capacity = capacity;
+
+	newFlight.numPassengers = 0;
+	newFlight.reservationHead = NULL;
 
 	return newFlight;
 }
@@ -56,10 +59,11 @@ int validFlightID(FlightID flightID){
 }
 
 
+
 /*	Checks capacity's validity - checks if it's within the correct interval	*/
 int validCapacity(int capacity){
 
-	if (capacity < 10 || capacity > 100) {
+	if (capacity < 10) {
 
 		printf(INVALID_CAPACITY);
 		return 0;
@@ -70,8 +74,8 @@ int validCapacity(int capacity){
 
 /*	Checks if flight already exists (is duplicate). Returns 0 if it exists and
  * 1 if not. */
-int notDuplicateFlight(FlightID flightID, Date departureDate,
-					   Flight flightBank[MAX_FLIGHTS]) {
+int duplicateFlight(FlightID flightID, Date departureDate,
+					   Flight flightBank[MAX_FLIGHTS], char flag) {
 	int i;
 
 	for (i=0; i < g_TotalOfFlights; i++) {
@@ -82,11 +86,14 @@ int notDuplicateFlight(FlightID flightID, Date departureDate,
 						flightBank[i].departureDateTime.date))
 										/* same code for same day*/
 		{
-			printf(DUPLICATE_FLIGHT);
-			return 0;
+			if (flag == 'v')
+					printf(DUPLICATE_FLIGHT);
+			return (i+1);
 		}
 	}
-	return 1;
+	if (flag == 'r')
+		printf(FLIGHT_DOESNT_EXIST);
+	return 0;
 }
 
 

@@ -18,29 +18,29 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 				 				Flight flightBank[MAX_FLIGHTS], Date today) {
 
 	switch (cmd) {
-		case 'a':
-			commandA(airportBank);
+		case 'a': commandA(airportBank);
 			break;
 
-		case 'l':
-			commandL(airportBank);
+		case 'l': commandL(airportBank);
 			break;
 
-		case 'v':
-			commandV(airportBank, flightBank, today);
+		case 'v': commandV(airportBank, flightBank, today);
 			break;
 
-		case 'p':
-			command_P_C('p', airportBank, flightBank);
+		case 'p': command_P_C('p', airportBank, flightBank);
 			break;
 
-		case 'c':
-			command_P_C('c', airportBank, flightBank);
+		case 'c': command_P_C('c', airportBank, flightBank);
 			break;
 
-		case 't':
-			today = command_T(today);
+		case 't': today = command_T(today);
 			break;
+
+		case 'r': commandR(flightBank);
+			break;
+
+		/*case 'e': commandE(flightBank);
+			break;*/
 	}
 	return today;
 }

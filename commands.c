@@ -40,7 +40,7 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 	int departureIndexPlus1, arrivalIndexPlus1;
 
 	if (validFlightID(flightID) &&
-		notDuplicateFlight(flightID, departureDate, flightBank) &&
+		!duplicateFlight(flightID, departureDate, flightBank, 'v') &&
 		validAirportID(departureAirportID) &&
 		validAirportID(arrivalAirportID)) {
 

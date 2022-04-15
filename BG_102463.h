@@ -9,10 +9,10 @@
 #ifndef BG_102463_H
 #define BG_102463_H
 
-
+#include "reservations.h"
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h>
 
 #define MAX_CITY 51
 #define MAX_COUNTRY 31
@@ -20,6 +20,7 @@
 #define MAX_AIRPORTS 40
 #define MAX_FLIGHTS 30000
 #define MAX_FLIGHT_ID_STR 3
+#define MAX_CMD 65518
 
 #define END_PROGRAM 'q'
 
@@ -43,6 +44,9 @@
 #define DUPLICATE_FLIGHT "flight already exists\n"
 #define INVALID_DATE "invalid date\n"
 #define INVALID_FLIGHT_ID "invalid flight code\n"
+
+
+#define VALID_PASSENGER_NUM (passengerNum > 0)
 #define FIRST_TODAY {1,1,2022}
 
 #define IN_DATE "%d-%d-%d"
@@ -91,13 +95,13 @@ typedef struct {
 } DateTime;
 
 
-
 typedef struct {
 
 	char letters[MAX_FLIGHT_ID_STR];
 	int num;
 
 } FlightID;
+
 
 
 typedef struct {
@@ -109,8 +113,11 @@ typedef struct {
 	DateTime arrivalDateTime;
 	Time duration;
 	int capacity;
+	int numPassengers;
+	Reservation *reservationHead;
 
 } Flight;
+
 
 
 /*	flight.c functions	*/
@@ -124,8 +131,8 @@ int validFlightID(FlightID flightID);
 
 int validCapacity(int capacity);
 
-int notDuplicateFlight(FlightID flightID, Date departureDate,
-					   Flight flightBank[MAX_FLIGHTS]);
+int duplicateFlight(FlightID flightID, Date departureDate,
+					   Flight flightBank[MAX_FLIGHTS], char flag);
 
 int tooManyFlights();
 
@@ -233,6 +240,17 @@ void command_P_C(char flag, Airport airportBank[MAX_AIRPORTS],
 
 Date command_T(Date today);
 
+void commandR(Flight flightBank[MAX_FLIGHTS]);
 
+/*void commandE(Flight flightBank[MAX_FLIGHTS]);*/
+
+
+/*	reservation file functions	*/
+void add_Reservation(Flight flightBank[MAX_FLIGHTS], FlightID flightId,
+				Date flightDate, char* reservationCode,
+				int passengerNum, Date today);
+
+void listReservations(Flight flightBank[MAX_FLIGHTS], FlightID flightId,
+				 Date flightDate);
 
 #endif
