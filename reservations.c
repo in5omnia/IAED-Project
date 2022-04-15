@@ -10,6 +10,7 @@
 /* includes global variable */
 extern int g_TotalOfFlights;
 
+Reservation *g_resListHead = NULL;
 
 int validReservationCode(char* reservationCode){
 	int i;
@@ -57,7 +58,6 @@ int tooManyReservations(int reservationPassengers, int index,
 }
 
 
-
 int validReservation(Flight flightBank[MAX_FLIGHTS], FlightID flightId,
 					  Date flightDate, char* reservationCode,
 					  int passengerNum, Date today){
@@ -99,10 +99,17 @@ void add_Reservation(Flight flightBank[MAX_FLIGHTS], FlightID flightId,
 	new.reservationCode = reservationCode;
 	new.passengerNum = passengerNum;
 
+	/* new reservation must be added to the list of all reservations */
+	new.resListNext = g_resListHead;
+	g_resListHead = &new;
+
 	/* new reservation will point to reservationHead */
 	new.next = flightBank[--index].reservationHead;
 	/* reservationHead will point to the new reservation */
 	flightBank[index].reservationHead = &new;
+
+
+
 }
 
 
@@ -110,35 +117,11 @@ void add_Reservation(Flight flightBank[MAX_FLIGHTS], FlightID flightId,
 void listReservations(Flight flightBank[MAX_FLIGHTS], FlightID flightId,
 				 Date flightDate){
 
+
+
 }
 
 
-void commandR(Flight flightBank[MAX_FLIGHTS], Date today)
-{
-	char *reservationCode;
-	int passengerNum;
-	FlightID flightId;
-	Date flightDate;
-
-	scanf(IN_FLIGHT_ID, flightId.letters, &flightId.num);
-	scanf(IN_DATE, &flightDate.day, &flightDate.month, &flightDate.year);
-
-	if (getchar()!='\n'){
-
-		reservationCode = malloc(sizeof (char)*MAX_CMD);
-		scanf(IN_RES_CODE_AND_PASS, reservationCode, &passengerNum);
-
-		reservationCode = realloc(reservationCode,
-								  sizeof(char)*strlen(reservationCode));
-
-		add_Reservation(flightBank, flightId, flightDate, reservationCode,
-						passengerNum, today);
-	}
-	else{
-		listReservations(flightBank, flightId, flightDate);
-	}
-
-}
 
 
 

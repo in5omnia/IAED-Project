@@ -36,7 +36,7 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 		case 't': today = command_T(today);
 			break;
 
-		case 'r': commandR(flightBank);
+		case 'r': commandR(flightBank, today);
 			break;
 
 		/*case 'e': commandE(flightBank);

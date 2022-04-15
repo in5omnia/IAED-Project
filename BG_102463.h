@@ -240,7 +240,7 @@ void command_P_C(char flag, Airport airportBank[MAX_AIRPORTS],
 
 Date command_T(Date today);
 
-void commandR(Flight flightBank[MAX_FLIGHTS]);
+void commandR(Flight flightBank[MAX_FLIGHTS], Date today);
 
 /*void commandE(Flight flightBank[MAX_FLIGHTS]);*/
 

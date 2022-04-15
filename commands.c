@@ -177,3 +177,32 @@ Date command_T(Date today){
 	}
 	return today;
 }
+
+
+
+void commandR(Flight flightBank[MAX_FLIGHTS], Date today)
+{
+	char *reservationCode;
+	int passengerNum;
+	FlightID flightId;
+	Date flightDate;
+
+	scanf(IN_FLIGHT_ID, flightId.letters, &flightId.num);
+	scanf(IN_DATE, &flightDate.day, &flightDate.month, &flightDate.year);
+
+	if (getchar()!='\n'){
+
+		reservationCode = malloc(sizeof (char)*MAX_CMD);
+		scanf(IN_RES_CODE_AND_PASS, reservationCode, &passengerNum);
+
+		reservationCode = realloc(reservationCode,
+								  sizeof(char)*strlen(reservationCode));
+
+		add_Reservation(flightBank, flightId, flightDate, reservationCode,
+						passengerNum, today);
+	}
+	else{
+		listReservations(flightBank, flightId, flightDate);
+	}
+
+}

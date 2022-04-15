@@ -20,8 +20,8 @@ typedef struct reservation {
 	char* reservationCode;
 	int passengerNum;
 	struct reservation *next;
+	struct reservation *resListNext;
 } Reservation;
-
 
 
 
