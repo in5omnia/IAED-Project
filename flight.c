@@ -8,8 +8,10 @@
 #include "BG_102463.h"
 #include "reservations.h"
 
-/*	Includes global variable */
+/*	Includes global variables */
 extern int g_TotalOfFlights;
+extern Flight* flightBank;
+extern Airport *airportBank;
 
 
 /*	Creates a Flight	*/
@@ -31,11 +33,18 @@ Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 	newFlight.capacity = capacity;
 
 	newFlight.numPassengers = 0;
-	newFlight.reservationHead = NULL;
+	newFlight.reservationList = NULL;
+	newFlight.numReservations = 0;
 
 	return newFlight;
 }
 
+
+
+/* Compares 2 flightIDs. Returns 1 if they are the same and 0 if not. */
+int sameFlightID(FlightID id_1, FlightID id_2){
+	return (!strcmp(id_1.letters, id_2.letters) && id_1.num == id_2.num);
+}
 
 /*	Checks flightID's validity - checks if it has 2, all upper case, letters
  * and if its number is within the correct interval. Returns 1 if it's valid
@@ -75,13 +84,12 @@ int validCapacity(int capacity){
 /*	Checks if flight already exists (is duplicate). Returns 0 if it exists and
  * 1 if not. */
 int duplicateFlight(FlightID flightID, Date departureDate,
-					   Flight flightBank[MAX_FLIGHTS], char flag) {
+					char flag) {
 	int i;
 
 	for (i=0; i < g_TotalOfFlights; i++) {
 
-		if (flightID.num == flightBank[i].ID.num &&
-			!strcmp(flightID.letters, flightBank[i].ID.letters)
+		if (sameFlightID(flightID, flightBank[i].ID)
 			&& sameDate(departureDate,
 						flightBank[i].departureDateTime.date))
 										/* same code for same day*/
@@ -115,8 +123,7 @@ int tooManyFlights(){
 void addFlight(Date departure_date, Time departureTime, Time duration,
 			   int capacity, FlightID flightID,
 			   char depAirportID[MAX_AIRPORT_ID],
-			   char arrAirportID[MAX_AIRPORT_ID],
-			   Flight flightBank[MAX_FLIGHTS]){
+			   char arrAirportID[MAX_AIRPORT_ID]){
 
 	DateTime departureDateTime;
 	DateTime arrivalDateTime;
@@ -130,6 +137,7 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 							 departureDateTime, arrivalDateTime, duration,
 							 capacity);
 
+	flightBank = (Flight*)realloc(flightBank, sizeof(Flight)*(g_TotalOfFlights+1));
 	/* adds new flight to flightBank*/
 	flightBank[g_TotalOfFlights] = newFlight;
 	/*	increases global variable (total of flights in the system)	*/
@@ -140,12 +148,11 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 
 /*	Checks if the airport exists and if so, finds them in flightBank, sorts
  * and presents them in standard output	*/
-void findFlights(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
-				 Airport airportBank[MAX_AIRPORTS], char flag){
+void findFlights(char airportID[MAX_AIRPORT_ID], char flag){
 
 	Flight wantedFlights[MAX_FLIGHTS];
-	int i, number_flights, num_flights_found =0;
-	int airportIndexPlus1 = airportExist(airportID, airportBank, CASE_V);
+	int i, number_flights, num_flights_found=0;
+	int airportIndexPlus1 = airportExist(airportID, CASE_V);
 
 	if (!airportIndexPlus1) 	/*	if airport doesn't exist	*/
 		return;
@@ -210,7 +217,7 @@ void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
 
 /*	Lists all the system's flights (stored in flightBank) in the standard
  * output	*/
-void listAllFlights(Flight flightBank[MAX_FLIGHTS]) {
+void listAllFlights() {
 	int i;
 	Date f_date;
 	Time f_time;
@@ -265,4 +272,59 @@ void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 }
 
 
+FlightID readFlightID(){
+	FlightID flightId;
+	char *id = (char*)malloc(sizeof(char)*7);
+	int i;
+	scanf("%s", id);
+	for (i=0; i < MAX_FLIGHT_ID_STR-1; i++)
+		flightId.letters[i] = id[i];
 
+	flightId.letters[i] = '\0';
+
+	for (; id[i]!='\0'; i++){
+		flightId.letters[i] = id[i];
+		id[i] = id[i+2];
+	}
+
+	id = (char*)realloc(id, sizeof(char)*4);
+	flightId.num = atoi(id);
+	free(id);
+	return flightId;
+}
+
+
+void deleteFlightReservations(int index){
+
+	Reservation *prev, *current;
+	int i, numRes = flightBank[index].numReservations;
+	for (i=0; i<numRes; i++){
+
+		prev = flightBank[index].reservationList[i].allRes_Prev;
+		current = flightBank[index].reservationList + i;
+
+		prev->allRes_Next = current->allRes_Next;
+		current->allRes_Next->allRes_Prev = prev;
+		current = NULL;
+
+	}
+	/* frees the memory of all this flight's reservations */
+	free(flightBank[index].reservationList);
+}
+
+
+
+int deleteFlight(FlightID flightID){
+	int i, count=0;
+	for (i=0; i<g_TotalOfFlights-count; i++){
+
+		if (sameFlightID(flightID, flightBank[i].ID)){
+			deleteFlightReservations(i);
+			++count;
+		}
+		if (count)
+			flightBank[i] = flightBank[i+count];
+	}
+	flightBank = realloc(flightBank, g_TotalOfFlights-count);
+	return 0;
+}

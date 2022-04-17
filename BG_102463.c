@@ -9,34 +9,39 @@
 
 
 /*	initializes global variables */
+
 int g_TotalOfAirports = 0;
 int g_TotalOfFlights = 0;
+/*	initializes array of all airports currently in the system	*/
+Airport *airportBank = NULL;
+/*	initializes array of all flights currently in the system	*/
+Flight *flightBank = NULL;
+
 
 
 /*	identifies command and redirects to associated function	*/
-Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
-				 				Flight flightBank[MAX_FLIGHTS], Date today) {
+Date readCommand(char cmd, Date today) {
 
 	switch (cmd) {
-		case 'a': commandA(airportBank);
+		case 'a': commandA();
 			break;
 
-		case 'l': commandL(airportBank);
+		case 'l': commandL();
 			break;
 
-		case 'v': commandV(airportBank, flightBank, today);
+		case 'v': commandV(today);
 			break;
 
-		case 'p': command_P_C('p', airportBank, flightBank);
+		case 'p': command_P_C('p');
 			break;
 
-		case 'c': command_P_C('c', airportBank, flightBank);
+		case 'c': command_P_C('c');
 			break;
 
 		case 't': today = command_T(today);
 			break;
 
-		case 'r': commandR(flightBank, today);
+		case 'r': commandR(today);
 			break;
 
 		/*case 'e': commandE(flightBank);
@@ -48,18 +53,19 @@ Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
 
 int main() {
 
-	/*	initializes array of all airports currently in the system	*/
-	Airport airportBank[MAX_AIRPORTS] = {0};
-	/*	initializes array of all flights currently in the system	*/
-	Flight flightBank[MAX_FLIGHTS] = {0};
-
 	Date today = FIRST_TODAY;
 	char cmd;
 
 	/*	gets commands from standard input	*/
 	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
-		today = readCommand(cmd, airportBank, flightBank, today);
+		today = readCommand(cmd, today);
 	}
+	/*free(g_allResHead and all other pointers);*/
+	/*freeAll();*/
+	if(flightBank != NULL)
+		free(flightBank);
+	if (airportBank != NULL)
+		free(airportBank);
 	return 0;
 }
 

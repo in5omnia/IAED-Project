@@ -78,12 +78,10 @@ int check_date(Date date, Date today) {
 							31, 31, 30, 31, 30, 31};
 
 	if (pastDate(date.day, date.month, date.year, today) ||
-		afterOneYear(date.day, date.month, date.year, today)) {
+		afterOneYear(date.day, date.month, date.year, today) ||
+		date.day > daysPerMonth[date.month-1]) {
 		printf(INVALID_DATE);
 
-		return 0;
-	}
-	if (date.day > daysPerMonth[date.month-1]){
 		return 0;
 	}
 	return 1;

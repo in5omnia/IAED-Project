@@ -7,8 +7,9 @@
 
 #include "BG_102463.h"
 
-/*	includes global variable */
+/*	includes global variables */
 extern int g_TotalOfAirports;
+extern Airport *airportBank;
 
 
 /*	Creates an airport	*/
@@ -26,8 +27,8 @@ Airport createAirport(char airportID[MAX_AIRPORT_ID],
 
 
 /*	Adds an airport to the system	*/
-void addAirport(Airport new_airport, Airport airportBank[MAX_AIRPORTS]){
-
+void addAirport(Airport new_airport){
+	airportBank = (Airport*)realloc(airportBank, sizeof(Airport)*(g_TotalOfAirports+1));
 	airportBank[g_TotalOfAirports] = new_airport;
 }
 
@@ -63,8 +64,7 @@ int validAirportID(char airportID[MAX_AIRPORT_ID]){
 
 
 /*	Checks if an airport exists in the system. Returns 1 if so and 0 if not. */
-int airportExist(char airportID[MAX_AIRPORT_ID],
-				 Airport airportBank[MAX_AIRPORTS], char flag){
+int airportExist(char airportID[MAX_AIRPORT_ID], char flag){
 	int i;
 
 	for (i=0; i < g_TotalOfAirports; i++){
@@ -101,7 +101,7 @@ int beforeLetters(char beforeWord[MAX_AIRPORT_ID],
 
 
 /*	Exchanges 2 airports' placement in the airportBank array. */
-void exch(Airport airportBank[MAX_AIRPORTS], int i, int right){
+void exch(int i, int right){
 
 	Airport t = airportBank[i];
 	airportBank[i] = airportBank[right];
@@ -110,7 +110,7 @@ void exch(Airport airportBank[MAX_AIRPORTS], int i, int right){
 }
 
 /*	Creates partitions of airports (based on quick sort's algorithm). */
-int partition(Airport airportBank[MAX_AIRPORTS], int left, int right)
+int partition(int left, int right)
 {
 	int i = left-1;
 	int j = right;
@@ -134,12 +134,12 @@ int partition(Airport airportBank[MAX_AIRPORTS], int left, int right)
 		/*	exchanges the airports found to put them on the correct side of
 		 * the partition*/
 		if (i < j)
-			exch(airportBank, i, j);
+			exch(i, j);
 
 	}
 	/*	exchanges v's corresponding airport with the one that should come
 	 * after it	*/
-	exch(airportBank, i, right);
+	exch(i, right);
 
 	return i;	/*	returns the index of where the array was divided	*/
 }
@@ -149,21 +149,21 @@ int partition(Airport airportBank[MAX_AIRPORTS], int left, int right)
  * algorithm) with the partition function and the recursive use of its
  * algorithm, creating partitions from other partitions until all the airports
  * are in order.	*/
-void sortAirports(Airport airportBank[MAX_AIRPORTS], int left, int right)
+void sortAirports(int left, int right)
 {
 	int i;
 
 	if (right <= left)
 		return;
 
-	i = partition(airportBank, left, right);
-	sortAirports(airportBank, left, i - 1);
-	sortAirports(airportBank, i + 1, right);
+	i = partition(left, right);
+	sortAirports(left, i - 1);
+	sortAirports(i + 1, right);
 }
 
 
 /*	Lists airports of an array in the standard output.	*/
-void listAirports(Airport airportList[MAX_AIRPORTS], int num){
+void listAirports(Airport* airportList, int num){
 	int i;
 
 	if (!num) {
@@ -182,8 +182,7 @@ void listAirports(Airport airportList[MAX_AIRPORTS], int num){
  * requestedAirports array for posterior access and returns the number of
  * airports found. */
 int findAirports(int num_IDs, int existingID[MAX_AIRPORTS],
-				 Airport airportBank[MAX_AIRPORTS],
-				 Airport requestedAirports[MAX_AIRPORTS],
+				 Airport* requestedAirports,
 				 char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID]){
 
 	int i, e, c, num_airports_found=0;
@@ -214,14 +213,13 @@ int findAirports(int num_IDs, int existingID[MAX_AIRPORTS],
 
 /*	Lists in the standard output the airports associated to the requested IDs
  * if they exist, and the error messages to those that don't.   */
-void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
-						   char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
+void listRequestedAirports(char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
 						   int num_IDs){
 
 	int a, num_airports_found, existingID[MAX_AIRPORTS];
 	Airport requestedAirports[MAX_AIRPORTS];
 
-	num_airports_found = findAirports(num_IDs, existingID, airportBank,
+	num_airports_found = findAirports(num_IDs, existingID,
 									  requestedAirports, requested_IDs);
 
 	/* only checks existence if not all were found */

@@ -10,11 +10,14 @@
 /*	Includes global variables */
 extern int g_TotalOfAirports;
 extern int g_TotalOfFlights;
+extern Flight* flightBank;
+extern Airport *airportBank;
 
 
 /*	Checks validity for "case a" : returns 1 if the airportID is valid and if
  * the limit of airports won't be exceeded when adding one */
-int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
+int validate_case_a(char airportID[]){
+
 	int num_airports = g_TotalOfAirports;
 	if (!validAirportID(airportID))
 		return 0;
@@ -23,7 +26,7 @@ int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
 		printf(TOO_MANY_AIRPORTS);
 		return 0;
 	}
-	return (!airportExist(airportID, airportBank, 'a'));
+	return (!airportExist(airportID, 'a'));
 }
 
 
@@ -34,23 +37,20 @@ int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]){
 
 int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 				 char departureAirportID[MAX_AIRPORT_ID], Date departureDate,
-				 Time duration, int capacity, Airport airportBank[MAX_AIRPORTS],
-				 Flight flightBank[MAX_FLIGHTS], Date today) {
+				 Time duration, int capacity, Date today) {
 
 	int departureIndexPlus1, arrivalIndexPlus1;
 
 	if (validFlightID(flightID) &&
-		!duplicateFlight(flightID, departureDate, flightBank, 'v') &&
+		!duplicateFlight(flightID, departureDate, 'v') &&
 		validAirportID(departureAirportID) &&
 		validAirportID(arrivalAirportID)) {
 
 		/* airportExist returns 0 or (airport index in airportBank + 1)
 		 * if it exists*/
-		departureIndexPlus1 = airportExist(departureAirportID,
-										   airportBank, CASE_V);
+		departureIndexPlus1 = airportExist(departureAirportID,CASE_V);
 
-		arrivalIndexPlus1 = airportExist(arrivalAirportID,
-										 airportBank, CASE_V);
+		arrivalIndexPlus1 = airportExist(arrivalAirportID,CASE_V);
 
 		if (!(!departureIndexPlus1 || !arrivalIndexPlus1) &&
 			!tooManyFlights() &&
@@ -68,17 +68,17 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 
 /*	Receives input for command "a" and, if it's valid, creates and adds a
  * new airport, presenting the corresponding message in standard output.	*/
-void commandA(Airport airportBank[MAX_AIRPORTS]){
+void commandA(){
 
 	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
 	scanf(IN_AIRPORT_ID_OR_COUNTRY, airportID);
 	scanf(IN_AIRPORT_ID_OR_COUNTRY, country);
 	scanf(IN_CITY, city);
 
-	if (validate_case_a(airportID, airportBank)) {
+	if (validate_case_a(airportID)) {
 
 		Airport new_airport = createAirport(airportID, country, city);
-		addAirport(new_airport, airportBank);
+		addAirport(new_airport);
 
 		printf(OUT_AIRPORT_ID, airportID);
 		/*	increases global variable (total of airports in the system)	*/
@@ -91,10 +91,11 @@ void commandA(Airport airportBank[MAX_AIRPORTS]){
 /*	Receives remaining input for command "l" and: if there isn't any, presents
  * sorted airports; if there is, stores the airports asked for and presents the
  * valid ones */
-void commandL(Airport airportBank[MAX_AIRPORTS]){
+void commandL(){
+
 	char airportID[MAX_AIRPORT_ID];
 	if (getchar() == '\n') {
-		sortAirports(airportBank, 0, g_TotalOfAirports - 1);
+		sortAirports(0, g_TotalOfAirports - 1);
 		listAirports(airportBank, 0);
 	}
 	else {
@@ -107,7 +108,7 @@ void commandL(Airport airportBank[MAX_AIRPORTS]){
 
 		} while (getchar() != '\n');
 
-		listRequestedAirports(airportBank, requested_IDs, num_IDs);
+		listRequestedAirports(requested_IDs, num_IDs);
 	}
 }
 
@@ -115,8 +116,7 @@ void commandL(Airport airportBank[MAX_AIRPORTS]){
 /*	Receives remaining input for command "v" and: if there isn't any, presents
 * all flights; if there is, checks if it's valid and, if so, adds new flight to
  * FlightBank	*/
-void commandV(Airport airportBank[MAX_AIRPORTS], Flight flightBank[MAX_FLIGHTS],
-			  Date today){
+void commandV(Date today){
 
 	if (getchar() == '\n') {
 		listAllFlights(flightBank);
@@ -141,23 +141,22 @@ void commandV(Airport airportBank[MAX_AIRPORTS], Flight flightBank[MAX_FLIGHTS],
 		scanf(IN_CAPACITY, &capacity);
 
 		if (!valid_case_v(flightID, arrAirportID,depAirportID, departure_date,
-						  duration, capacity, airportBank, flightBank, today))
+						  duration, capacity, today))
 			return;
 
 		addFlight(departure_date, departureTime, duration, capacity, flightID,
-				  depAirportID, arrAirportID, flightBank);
+				  depAirportID, arrAirportID);
 
 	}
 }
 
 
 /*	Receives airportID for P and C commands and finds associated flights	*/
-void command_P_C(char flag, Airport airportBank[MAX_AIRPORTS],
-				 Flight flightBank[MAX_FLIGHTS]){
+void command_P_C(char flag){
 
 	char airportID[MAX_AIRPORT_ID];
 	scanf(IN_AIRPORT_ID_OR_COUNTRY, airportID);
-	findFlights(airportID, flightBank, airportBank, flag);
+	findFlights(airportID, flag);
 }
 
 
@@ -179,30 +178,80 @@ Date command_T(Date today){
 }
 
 
-
-void commandR(Flight flightBank[MAX_FLIGHTS], Date today)
+void commandR(Date today)
 {
 	char *reservationCode;
 	int passengerNum;
 	FlightID flightId;
 	Date flightDate;
-
+	/*flightId = readFlightID();*/
 	scanf(IN_FLIGHT_ID, flightId.letters, &flightId.num);
 	scanf(IN_DATE, &flightDate.day, &flightDate.month, &flightDate.year);
 
 	if (getchar()!='\n'){
 
-		reservationCode = malloc(sizeof (char)*MAX_CMD);
+		reservationCode = malloc(sizeof (char)*MAX_CMD_R);
+
+		if (reservationCode == NULL){
+			printf(NO_MEMORY);
+			exit(1);
+		}
+
 		scanf(IN_RES_CODE_AND_PASS, reservationCode, &passengerNum);
 
 		reservationCode = realloc(reservationCode,
 								  sizeof(char)*strlen(reservationCode));
 
-		add_Reservation(flightBank, flightId, flightDate, reservationCode,
-						passengerNum, today);
+		if (!add_Reservation(flightId, flightDate, reservationCode,
+						passengerNum, today))
+			free(reservationCode);
 	}
 	else{
-		listReservations(flightBank, flightId, flightDate);
+		listReservations(flightId, flightDate, today);
+	}
+}
+
+
+/*FlightID getFlightID(char* code){
+	FlightID id;
+	char* temp = NULL;
+	int i;
+	for (i=0; i < 2; i++){
+		id.letters[i] = code[i];
 	}
 
-}
+	for (i=0; i < 4 && code[i] != '\0'; i++){
+		temp = realloc(temp, sizeof(char)*(i+1));
+		temp[i]= code[i+2];
+	}
+
+	id.num = atoi(temp);
+	free(temp);
+
+	return id;
+}*/
+
+
+
+/*void commandE(Flight* flightBank){
+	char *code = malloc(sizeof (char)*MAX_CMD_E);
+	int len;
+	FlightID flightID;
+	scanf("%s", code);
+	len = strlen(code);
+	code = realloc(code, sizeof (char)*(len+1));
+
+	if (len < 10){
+		flightID = getFlightID(code);
+		if (!deleteFlight(flightID, flightBank)){
+			printf(NOT_FOUND);
+		}
+	}
+	else {
+		if (!deleteReservation(code, flightBank)){
+			printf(NOT_FOUND);
+		}
+	}
+	free(code);
+}*/
+

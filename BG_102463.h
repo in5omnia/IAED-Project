@@ -20,7 +20,8 @@
 #define MAX_AIRPORTS 40
 #define MAX_FLIGHTS 30000
 #define MAX_FLIGHT_ID_STR 3
-#define MAX_CMD 65518
+#define MAX_CMD_R 65518
+#define MAX_CMD_E 65535
 
 #define END_PROGRAM 'q'
 
@@ -114,7 +115,8 @@ typedef struct {
 	Time duration;
 	int capacity;
 	int numPassengers;
-	Reservation *reservationHead;
+	Reservation * reservationList;
+	int numReservations;
 
 } Flight;
 
@@ -132,27 +134,26 @@ int validFlightID(FlightID flightID);
 int validCapacity(int capacity);
 
 int duplicateFlight(FlightID flightID, Date departureDate,
-					   Flight flightBank[MAX_FLIGHTS], char flag);
+					char flag);
 
 int tooManyFlights();
 
 void addFlight(Date departure_date, Time departureTime, Time duration,
 				  int capacity, FlightID flightID,
 				  char depAirportID[MAX_AIRPORT_ID],
-				  char arrAirportID[MAX_AIRPORT_ID],
-				  Flight flightBank[MAX_FLIGHTS]);
+				  char arrAirportID[MAX_AIRPORT_ID]);
 
-void findFlights(char airportID[MAX_AIRPORT_ID], Flight flightBank[MAX_FLIGHTS],
-				Airport airportBank[MAX_AIRPORTS], char flag);
+void findFlights(char airportID[MAX_AIRPORT_ID], char flag);
 
 void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
 				 char flag);
 
-void listAllFlights(Flight flightBank[MAX_FLIGHTS]);
+void listAllFlights();
 
 void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 					   char flag);
 
+int deleteFlight(FlightID flightID);
 
 /*	date_time.c functions	*/
 
@@ -185,72 +186,71 @@ int beforeDateTime(DateTime dateTime1, DateTime dateTime2);
 Airport createAirport(char airportID[MAX_AIRPORT_ID],
 					  char country[MAX_COUNTRY], char city[MAX_CITY]);
 
-void addAirport(Airport new_airport, Airport airportBank[MAX_AIRPORTS]);
+void addAirport(Airport new_airport);
 
 int validAirportID(char airportID[MAX_AIRPORT_ID]);
 
-int airportExist(char airportID[MAX_AIRPORT_ID],
-				 Airport airportBank[MAX_AIRPORTS], char flag);
+int airportExist(char airportID[MAX_AIRPORT_ID], char flag);
 
 int beforeLetters(char beforeWord[MAX_AIRPORT_ID],
 				  char afterWord[MAX_AIRPORT_ID]);
 
-void exch(Airport airportBank[MAX_AIRPORTS], int i, int right);
+void exch(int i, int right);
 
-int partition(Airport airportBank[MAX_AIRPORTS], int left, int right);
+int partition(int left, int right);
 
-void sortAirports(Airport airportBank[MAX_AIRPORTS], int left, int right);
+void sortAirports(int left, int right);
 
-void listAirports(Airport airportBank[MAX_AIRPORTS], int num);
+void listAirports(Airport* airportList, int num);
 
 int findAirports(int num_IDs, int existingID[MAX_AIRPORTS],
-				 Airport airportBank[MAX_AIRPORTS],
-				 Airport requestedAirports[MAX_AIRPORTS],
+				 Airport* requestedAirports,
 				 char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID]);
 
-void listRequestedAirports(Airport airportBank[MAX_AIRPORTS],
-						   char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
+void listRequestedAirports(char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
 						   int num_IDs);
 
 
 /*	main file functions	*/
 
-Date readCommand(char cmd, Airport airportBank[MAX_AIRPORTS],
-				 Flight flightBank[MAX_FLIGHTS], Date today);
+Date readCommand(char cmd, Date today);
 
 /*	aux file functions	*/
 
-int validate_case_a(char airportID[], Airport airportBank[MAX_AIRPORTS]);
+int validate_case_a(char airportID[]);
 
 int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 				 char departureAirportID[MAX_AIRPORT_ID], Date departureDate,
-				 Time duration, int capacity, Airport airportBank[MAX_AIRPORTS],
-				 Flight flightBank[MAX_FLIGHTS], Date today);
+				 Time duration, int capacity, Date today);
 
 
-void commandA(Airport airportBank[MAX_AIRPORTS]);
+void commandA();
 
-void commandL(Airport airportBank[MAX_AIRPORTS]);
+void commandL();
 
-void commandV(Airport airportBank[MAX_AIRPORTS], Flight flightBank[MAX_FLIGHTS],
-			  Date today);
+void commandV(Date today);
 
-void command_P_C(char flag, Airport airportBank[MAX_AIRPORTS],
-				 Flight flightBank[MAX_FLIGHTS]);
+void command_P_C(char flag);
 
 Date command_T(Date today);
 
-void commandR(Flight flightBank[MAX_FLIGHTS], Date today);
+void commandR(Date today);
 
 /*void commandE(Flight flightBank[MAX_FLIGHTS]);*/
 
 
 /*	reservation file functions	*/
-void add_Reservation(Flight flightBank[MAX_FLIGHTS], FlightID flightId,
+int add_Reservation(FlightID flightId,
 				Date flightDate, char* reservationCode,
 				int passengerNum, Date today);
 
-void listReservations(Flight flightBank[MAX_FLIGHTS], FlightID flightId,
-				 Date flightDate);
+void listReservations(FlightID flightId,
+				 Date flightDate, Date today);
+
+
+FlightID readFlightID();
+
+/*
+int deleteReservation(char* code, Flight* flightBank);*/
 
 #endif
