@@ -14,6 +14,17 @@ extern Flight* flightBank;
 extern Airport *airportBank;
 
 
+/*Flight* flightBank_Tail;
+
+void insertEnd(Flight* new){
+	new->prev = flightBank_Tail;
+	new->next = NULL;
+	flightBank_Tail->next = new;
+	flightBank_Tail = new;
+
+}*/
+
+
 /*	Creates a Flight	*/
 Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 					char arrivalAirportID[MAX_AIRPORT_ID],
@@ -117,6 +128,8 @@ int tooManyFlights(){
 	}
 	return 0;
 }
+
+
 
 
 /*	Creates and adds new flight to the system	*/
@@ -315,6 +328,7 @@ void deleteFlightReservations(int index){
 
 
 int deleteFlight(FlightID flightID){
+
 	int i, count=0;
 	for (i=0; i<g_TotalOfFlights-count; i++){
 
@@ -328,3 +342,5 @@ int deleteFlight(FlightID flightID){
 	flightBank = realloc(flightBank, g_TotalOfFlights-count);
 	return 0;
 }
+
+
