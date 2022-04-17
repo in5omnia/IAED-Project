@@ -15,9 +15,10 @@ int g_TotalOfFlights = 0;
 /*	initializes array of all airports currently in the system	*/
 Airport *airportBank = NULL;
 /*	initializes array of all flights currently in the system	*/
-Flight *flightBank = NULL;
+/*Flight *flightBank = NULL;*/
 
-
+Flight* flightBank_Tail = NULL;
+Flight* flightBank_Head = NULL;
 
 /*	identifies command and redirects to associated function	*/
 Date readCommand(char cmd, Date today) {
@@ -62,8 +63,10 @@ int main() {
 	}
 	/*free(g_allResHead and all other pointers);*/
 	/*freeAll();*/
-	if(flightBank != NULL)
-		free(flightBank);
+	if(flightBank_Head != NULL)
+		free(flightBank_Head);
+	if(flightBank_Tail != NULL)
+		free(flightBank_Tail);
 	if (airportBank != NULL)
 		free(airportBank);
 	return 0;

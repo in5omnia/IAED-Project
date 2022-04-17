@@ -7,6 +7,8 @@
 #ifndef RESERVATIONS_H
 #define RESERVATIONS_H
 
+/*#include "BG_102463.h"*/
+#include "reservations.h"
 
 #define FLIGHT_DOESNT_EXIST "flight does not exist\n"
 #define OUT_INVALID_PASSENGER_NUM "invalid passenger number\n"
@@ -19,15 +21,16 @@
 #define IN_RES_CODE_AND_PASS "%s %d"
 
 
-typedef struct reservation {
-	/*Flight resFlight;        obtido atraves de flightid e date */
+/*typedef struct reservation {
+	*//*Flight resFlight;        obtido atraves de flightid e date *//*
 	char* reservationCode;
 	int passengerNum;
-	int flightBankIndex;
+*//*	int flightBankIndex;*//*
+	Flight *flight_ptr;
 	int flightResListIndex;
-	/*struct reservation *flightRes_Before, *flightRes_Next;*/
+	*//*struct reservation *flightRes_Before, *flightRes_Next;*//*
 	struct reservation *allRes_Next, *allRes_Prev;
-} Reservation;
+} Reservation;*/
 
 
 

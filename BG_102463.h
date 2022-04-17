@@ -105,7 +105,7 @@ typedef struct {
 
 
 
-typedef struct {
+typedef struct flight{
 
 	FlightID ID;
 	char departureAirport[MAX_AIRPORT_ID];
@@ -115,11 +115,24 @@ typedef struct {
 	Time duration;
 	int capacity;
 	int numPassengers;
-	Reservation * reservationList;
+	struct reservation * reservationList;
 	int numReservations;
+	struct flight *next;
+	struct flight *prev;
 
 } Flight;
 
+
+typedef struct reservation {
+	/*Flight resFlight;        obtido atraves de flightid e date */
+	char* reservationCode;
+	int passengerNum;
+	/*	int flightBankIndex;*/
+	Flight *flight_ptr;
+	int flightResListIndex;
+	/*struct reservation *flightRes_Before, *flightRes_Next;*/
+	struct reservation *allRes_Next, *allRes_Prev;
+} Reservation;
 
 
 /*	flight.c functions	*/
@@ -133,7 +146,7 @@ int validFlightID(FlightID flightID);
 
 int validCapacity(int capacity);
 
-int duplicateFlight(FlightID flightID, Date departureDate,
+Flight* duplicateFlight(FlightID flightID, Date departureDate,
 					char flag);
 
 int tooManyFlights();

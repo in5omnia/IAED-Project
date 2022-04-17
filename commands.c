@@ -10,7 +10,6 @@
 /*	Includes global variables */
 extern int g_TotalOfAirports;
 extern int g_TotalOfFlights;
-extern Flight* flightBank;
 extern Airport *airportBank;
 
 
@@ -42,7 +41,7 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 	int departureIndexPlus1, arrivalIndexPlus1;
 
 	if (validFlightID(flightID) &&
-		!duplicateFlight(flightID, departureDate, 'v') &&
+		duplicateFlight(flightID, departureDate, 'v') == NULL &&
 		validAirportID(departureAirportID) &&
 		validAirportID(arrivalAirportID)) {
 
@@ -119,7 +118,7 @@ void commandL(){
 void commandV(Date today){
 
 	if (getchar() == '\n') {
-		listAllFlights(flightBank);
+		listAllFlights();
 
 	} else {
 
