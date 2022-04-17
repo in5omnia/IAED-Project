@@ -178,21 +178,23 @@ void listReservations(FlightID flightId, Date flightDate, Date today){
 
 int deleteReservation(char* code){
 
-	Reservation *aux=NULL/*, *last=NULL*/;
+	Reservation *aux=NULL;
 	int i, numRes, resIndex;
 	Flight *flightPtr;
-	for (aux = g_allResHead; aux != NULL; /*last = aux, */aux = aux->allRes_Next){
+	for (aux = g_allResHead; aux != NULL; aux = aux->allRes_Next){
 
 		if (!strcmp(aux->reservationCode, code)){
 
 			/* remove from all reservations list */
-			if (aux == g_allResHead)
+			if (aux == g_allResHead){
 				g_allResHead = aux->allRes_Next;
+				g_allResHead->allRes_Prev = NULL;
+			}
 
-			else
+			else {
 				aux->allRes_Prev->allRes_Next = aux->allRes_Next;
-				/*last->allRes_Next = aux->allRes_Next;*/
-
+				aux->allRes_Next->allRes_Prev = aux->allRes_Prev;
+			}
 
 			/* removes from flight's list of reservations */
 			flightPtr = aux->flight_ptr;
@@ -223,5 +225,21 @@ int deleteReservation(char* code){
 
 
 
+void deleteFlightReservations(Flight* flight_ptr){
 
+	Reservation *prev, *current;
+	int i, numRes = flight_ptr->numReservations;
+	for (i=0; i<numRes; i++){
+
+		prev = flight_ptr->reservationList[i].allRes_Prev;
+		current = flight_ptr->reservationList + i;
+
+		prev->allRes_Next = current->allRes_Next;
+		current->allRes_Next->allRes_Prev = prev;
+		current = NULL;
+
+	}
+	/* frees the memory of all this flight's reservations */
+	free(flight_ptr->reservationList);
+}
 

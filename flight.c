@@ -295,6 +295,28 @@ void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 }
 
 
+
+FlightID getFlightID(char* code){
+	FlightID id;
+	char* temp = NULL;
+	int i;
+	for (i=0; i < 2; i++){
+		id.letters[i] = code[i];
+	}
+	id.letters[i] = '\0';
+	for (i=0; i < 4 && code[i] != '\0'; i++){
+		temp = realloc(temp, sizeof(char)*(i+1));
+		temp[i]= code[i+2];
+	}
+
+	id.num = atoi(temp);
+	free(temp);
+
+	return id;
+}
+
+
+/*
 FlightID readFlightID(){
 	FlightID flightId;
 	char *id = (char*)malloc(sizeof(char)*7);
@@ -314,49 +336,29 @@ FlightID readFlightID(){
 	flightId.num = atoi(id);
 	free(id);
 	return flightId;
-}
+}*/
 
-/*
-
-void deleteFlightReservations(int index){
-
-	Reservation *prev, *current;
-	int i, numRes = flightBank[index].numReservations;
-	for (i=0; i<numRes; i++){
-
-		prev = flightBank[index].reservationList[i].allRes_Prev;
-		current = flightBank[index].reservationList + i;
-
-		prev->allRes_Next = current->allRes_Next;
-		current->allRes_Next->allRes_Prev = prev;
-		current = NULL;
-
-	}
-	*/
-/* frees the memory of all this flight's reservations *//*
-
-	free(flightBank[index].reservationList);
-}
-*/
-
-/*
 
 
 int deleteFlight(FlightID flightID){
 
-	int i, count=0;
-	for (i=0; i<g_TotalOfFlights-count; i++){
+	Flight* aux, *next;
+	int flag=0;
+	for (aux = flightBank_Head; aux != NULL; aux = next){
 
-		if (sameFlightID(flightID, flightBank[i].ID)){
-			deleteFlightReservations(i);
-			++count;
+		if (sameFlightID(flightID, aux->ID)){
+
+			deleteFlightReservations(aux);
+			aux->prev->next = aux->next;
+			aux->next->prev = aux->prev;
+
+			next = aux->next;
+			free(aux);
+			flag=1;
 		}
-		if (count)
-			flightBank[i] = flightBank[i+count];
 	}
-	flightBank = realloc(flightBank, g_TotalOfFlights-count);
-	return 0;
+	return flag;
 }
-*/
+
 
 

@@ -14,9 +14,7 @@ int g_TotalOfAirports = 0;
 int g_TotalOfFlights = 0;
 /*	initializes array of all airports currently in the system	*/
 Airport *airportBank = NULL;
-/*	initializes array of all flights currently in the system	*/
-/*Flight *flightBank = NULL;*/
-
+/*	initializes doubly linked list of flights currently in the system	*/
 Flight* flightBank_Tail = NULL;
 Flight* flightBank_Head = NULL;
 
@@ -45,10 +43,24 @@ Date readCommand(char cmd, Date today) {
 		case 'r': commandR(today);
 			break;
 
-		/*case 'e': commandE(flightBank);
-			break;*/
+		case 'e': commandE();
+			break;
 	}
 	return today;
+}
+
+
+void freeAll(){
+	Flight *aux, *temp;
+	for (aux = flightBank_Head; aux != NULL; aux = temp){
+		/* free memory allocated to flight */
+		free(aux->ID.letters);
+		if (aux->reservationList != NULL)
+			free(aux->reservationList);
+		temp = aux->next;
+		free(aux);
+	}
+	free(airportBank);
 }
 
 
@@ -62,13 +74,7 @@ int main() {
 		today = readCommand(cmd, today);
 	}
 	/*free(g_allResHead and all other pointers);*/
-	/*freeAll();*/
-	if(flightBank_Head != NULL)
-		free(flightBank_Head);
-	if(flightBank_Tail != NULL)
-		free(flightBank_Tail);
-	if (airportBank != NULL)
-		free(airportBank);
+	freeAll();
 	return 0;
 }
 

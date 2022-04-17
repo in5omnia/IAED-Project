@@ -124,10 +124,8 @@ typedef struct flight{
 
 
 typedef struct reservation {
-	/*Flight resFlight;        obtido atraves de flightid e date */
 	char* reservationCode;
 	int passengerNum;
-	/*	int flightBankIndex;*/
 	Flight *flight_ptr;
 	int flightResListIndex;
 	/*struct reservation *flightRes_Before, *flightRes_Next;*/
@@ -228,6 +226,8 @@ void listRequestedAirports(char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
 
 Date readCommand(char cmd, Date today);
 
+void freeAll();
+
 /*	aux file functions	*/
 
 int validate_case_a(char airportID[]);
@@ -249,21 +249,32 @@ Date command_T(Date today);
 
 void commandR(Date today);
 
-/*void commandE(Flight flightBank[MAX_FLIGHTS]);*/
+void commandE();
 
 
 /*	reservation file functions	*/
-int add_Reservation(FlightID flightId,
-				Date flightDate, char* reservationCode,
+int add_Reservation(FlightID flightId, Date flightDate, char* reservationCode,
 				int passengerNum, Date today);
 
-void listReservations(FlightID flightId,
-				 Date flightDate, Date today);
+void listReservations(FlightID flightId, Date flightDate, Date today);
+
+FlightID getFlightID(char* code);
+
+int deleteReservation(char* code);
+
+void sortReservations(Reservation *reservationList, int numRes);
+
+Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCode,
+						 int passengerNum, Date today);
+
+int tooManyReservations(int reservationPassengers, Flight *flight_ptr);
+
+int duplicateReservation(char* reservation_code);
+
+int validReservationCode(char* reservationCode);
+
+void deleteFlightReservations(Flight* flight_ptr);
 
 
-FlightID readFlightID();
-
-/*
-int deleteReservation(char* code, Flight* flightBank);*/
 
 #endif

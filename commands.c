@@ -211,28 +211,7 @@ void commandR(Date today)
 }
 
 
-/*FlightID getFlightID(char* code){
-	FlightID id;
-	char* temp = NULL;
-	int i;
-	for (i=0; i < 2; i++){
-		id.letters[i] = code[i];
-	}
-
-	for (i=0; i < 4 && code[i] != '\0'; i++){
-		temp = realloc(temp, sizeof(char)*(i+1));
-		temp[i]= code[i+2];
-	}
-
-	id.num = atoi(temp);
-	free(temp);
-
-	return id;
-}*/
-
-
-
-/*void commandE(Flight* flightBank){
+void commandE(){
 	char *code = malloc(sizeof (char)*MAX_CMD_E);
 	int len;
 	FlightID flightID;
@@ -241,16 +220,18 @@ void commandR(Date today)
 	code = realloc(code, sizeof (char)*(len+1));
 
 	if (len < 10){
+
 		flightID = getFlightID(code);
-		if (!deleteFlight(flightID, flightBank)){
+		if (!deleteFlight(flightID))
 			printf(NOT_FOUND);
-		}
+
 	}
+
 	else {
-		if (!deleteReservation(code, flightBank)){
+		if (!deleteReservation(code)){
 			printf(NOT_FOUND);
 		}
 	}
 	free(code);
-}*/
+}
 
