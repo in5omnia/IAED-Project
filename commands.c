@@ -193,6 +193,7 @@ void commandR(Date today)
 
 		if (reservationCode == NULL){
 			printf(NO_MEMORY);
+			freeAll();
 			exit(1);
 		}
 
@@ -201,9 +202,8 @@ void commandR(Date today)
 		reservationCode = realloc(reservationCode,
 								  sizeof(char)*strlen(reservationCode));
 
-		if (!add_Reservation(flightId, flightDate, reservationCode,
-						passengerNum, today))
-			free(reservationCode);
+		add_Reservation(flightId, flightDate, reservationCode,
+						passengerNum, today);
 	}
 	else{
 		listReservations(flightId, flightDate, today);

@@ -18,6 +18,7 @@ Airport *airportBank = NULL;
 Flight* flightBank_Tail = NULL;
 Flight* flightBank_Head = NULL;
 
+
 /*	identifies command and redirects to associated function	*/
 Date readCommand(char cmd, Date today) {
 
@@ -50,30 +51,38 @@ Date readCommand(char cmd, Date today) {
 }
 
 
+void del(){
+	Flight *temp = flightBank_Head;
+	if (temp->reservationList != NULL)
+		free(temp->reservationList);
+	flightBank_Head = flightBank_Head->next;
+	free(temp);
+	temp=NULL;
+	flightBank_Head->prev = NULL;
+}
+
 void freeAll(){
-	Flight *aux, *temp;
-	for (aux = flightBank_Head; aux != NULL; aux = temp){
-		/* free memory allocated to flight */
-		free(aux->ID.letters);
-		if (aux->reservationList != NULL)
-			free(aux->reservationList);
-		temp = aux->next;
-		free(aux);
+	while (flightBank_Head != flightBank_Tail){
+		/*free(temp->ID.letters);*/
+		del();
 	}
+	if (flightBank_Tail->reservationList != NULL)
+		free(flightBank_Tail->reservationList);
+	free(flightBank_Tail);
 	free(airportBank);
 }
+
+
 
 
 int main() {
 
 	Date today = FIRST_TODAY;
 	char cmd;
-
 	/*	gets commands from standard input	*/
 	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
 		today = readCommand(cmd, today);
 	}
-	/*free(g_allResHead and all other pointers);*/
 	freeAll();
 	return 0;
 }

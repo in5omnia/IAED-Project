@@ -85,7 +85,6 @@ int validFlightID(FlightID flightID){
 }
 
 
-
 /*	Checks capacity's validity - checks if it's within the correct interval	*/
 int validCapacity(int capacity){
 
@@ -160,10 +159,6 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 	}
 	else
 		insertEnd(newFlight);
-	/*
-	flightBank = (Flight*)realloc(flightBank, sizeof(Flight)*(g_TotalOfFlights+1));
-	*//* adds new flight to flightBank*//*
-	flightBank[g_TotalOfFlights] = newFlight;*/
 	/*	increases global variable (total of flights in the system)	*/
 	g_TotalOfFlights++;
 
@@ -349,12 +344,22 @@ int deleteFlight(FlightID flightID){
 		if (sameFlightID(flightID, aux->ID)){
 
 			deleteFlightReservations(aux);
-			aux->prev->next = aux->next;
-			aux->next->prev = aux->prev;
+			if (aux == flightBank_Head)
+				flightBank_Head = aux->next;
+			else
+				aux->prev->next = aux->next;
+
+			if (aux == flightBank_Tail)
+				flightBank_Tail = aux->prev;
+			else
+				aux->next->prev = aux->prev;
 
 			next = aux->next;
 			free(aux);
 			flag=1;
+		}
+		else{
+			next = aux->next;
 		}
 	}
 	return flag;
