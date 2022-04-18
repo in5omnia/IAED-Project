@@ -128,8 +128,8 @@ int add_Reservation(FlightID flightId, Date flightDate,
 	/* adds new reservation to the flight's list of reservations */
 	numRes = flight_ptr->numReservations;
 
-	flight_ptr->reservationList = (Reservation*)realloc(
-		flight_ptr->reservationList,sizeof(Reservation)*(numRes + 1));
+	flight_ptr->reservationList = (Reservation**)realloc(
+		flight_ptr->reservationList,sizeof(Reservation*)*(numRes + 1));
 
 	if (flight_ptr->reservationList == NULL){
 		printf(NO_MEMORY);
@@ -145,7 +145,7 @@ int add_Reservation(FlightID flightId, Date flightDate,
 	new->flightResListIndex = numRes;
 	new->resNode_ptr = NULL;
 
-	flight_ptr->reservationList[numRes] = *new;
+	flight_ptr->reservationList[numRes] = new;
 
 	/* updates flight info */
 	++(flight_ptr->numReservations);
@@ -153,10 +153,10 @@ int add_Reservation(FlightID flightId, Date flightDate,
 
 	/* links new reservation to the list of all reservations */
 	if (resListIsEmpty()) {
-		flight_ptr->reservationList[numRes].resNode_ptr = resListInit(new);
+		flight_ptr->reservationList[numRes]->resNode_ptr = resListInit(new);
 
 	} else {
-		flight_ptr->reservationList[numRes].resNode_ptr =
+		flight_ptr->reservationList[numRes]->resNode_ptr =
 			insertAtBeginning(new);
 	}
 
@@ -164,16 +164,16 @@ int add_Reservation(FlightID flightId, Date flightDate,
 }
 
 
-void sortReservations(Reservation *reservationList, int numRes){
+void sortReservations(Reservation **reservationList, int numRes){
 	/*very slow basic selection sort*/
-	Reservation temp;
+	Reservation* temp;
 	int i,j;
 	for (i=0; i < numRes; i++){
 		for(j=i+1; j < numRes; j++){
-			if (strlen(reservationList[i].reservationCode) >
-					strlen(reservationList[j].reservationCode) ||
-				(strcmp(reservationList[i].reservationCode,
-						reservationList[j].reservationCode) > 0))
+			if (strlen(reservationList[i]->reservationCode) >
+					strlen(reservationList[j]->reservationCode) ||
+				(strcmp(reservationList[i]->reservationCode,
+						reservationList[j]->reservationCode) > 0))
 			{
 				temp = reservationList[i];
 				reservationList[i] = reservationList[j];
@@ -188,7 +188,7 @@ void sortReservations(Reservation *reservationList, int numRes){
 void listReservations(FlightID flightId, Date flightDate, Date today){
 
 	int i, numRes;
-	Reservation res;
+	Reservation* res;
 	Flight *flight_ptr = duplicateFlight(flightId, flightDate, 'r');
 
 	if (flight_ptr == NULL || !check_date(flightDate, today))
@@ -200,7 +200,7 @@ void listReservations(FlightID flightId, Date flightDate, Date today){
 
 	for (i=0; i < numRes; i++){
 		res = flight_ptr->reservationList[i];
-		printf("%s %d\n", res.reservationCode, res.passengerNum);
+		printf("%s %d\n", res->reservationCode, res->passengerNum);
 	}
 
 }
@@ -267,7 +267,7 @@ void deleteFlightReservations(Flight* flight_ptr){
 	int i, numRes = flight_ptr->numReservations;
 	for (i=0; i<numRes; i++){
 
-		current = flight_ptr->reservationList[i].resNode_ptr;
+		current = flight_ptr->reservationList[i]->resNode_ptr;
 		deleteResNode(current);
 	}
 	/* frees the memory of all this flight's reservations */

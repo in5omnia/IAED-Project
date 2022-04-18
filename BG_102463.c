@@ -58,7 +58,8 @@ void freeFlight(){
 	int i;
 	if (temp->reservationList != NULL){
 		for (i = 0; i < temp->numReservations; i++){
-			free(temp->reservationList[i].reservationCode);
+			free(temp->reservationList[i]->reservationCode);
+			free(temp->reservationList[i]->resNode_ptr->reservation);
 		}
 		free(temp->reservationList);
 	}

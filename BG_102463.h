@@ -112,10 +112,9 @@ typedef struct flight{
    char arrivalAirport[MAX_AIRPORT_ID];
    DateTime departureDateTime;
    DateTime arrivalDateTime;
-   Time duration;
    int capacity;
    int numPassengers;
-   struct reservation * reservationList;
+   struct reservation ** reservationList;
    int numReservations;
    struct flight *next;
    struct flight *prev;
@@ -129,8 +128,6 @@ typedef struct reservation {
    Flight *flight_ptr;
    int flightResListIndex;
    struct node *resNode_ptr;
-   /*struct reservation *flightRes_Before, *flightRes_Next;*/
-   /*struct reservation *allRes_Next, *allRes_Prev;*/
 } Reservation;
 
 
@@ -149,7 +146,7 @@ typedef struct node {
 Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 				   char arrivalAirportID[MAX_AIRPORT_ID],
 				   DateTime departureDateTime, DateTime arrivalDateTime,
-				   Time duration, int capacity);
+				  int capacity);
 
 int validFlightID(FlightID flightID);
 
@@ -273,7 +270,7 @@ FlightID getFlightID(char* code);
 
 int deleteReservation(char* code);
 
-void sortReservations(Reservation *reservationList, int numRes);
+void sortReservations(Reservation **reservationList, int numRes);
 
 Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCode,
 						int passengerNum, Date today);

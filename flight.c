@@ -33,7 +33,7 @@ void insertEnd(Flight* new){
 Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 					char arrivalAirportID[MAX_AIRPORT_ID],
 					DateTime departureDateTime, DateTime arrivalDateTime,
-					Time duration, int capacity) {
+					int capacity) {
 
 	Flight newFlight;
 
@@ -44,7 +44,7 @@ Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 	newFlight.departureDateTime = departureDateTime;
 	newFlight.arrivalDateTime = arrivalDateTime;
 
-	newFlight.duration = duration;
+	/*newFlight.duration = duration;*/
 	newFlight.capacity = capacity;
 
 	newFlight.numPassengers = 0;
@@ -152,7 +152,7 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 	arrivalDateTime = sumDuration(departureDateTime, duration);
 
 	*newFlight = createFlight(flightID,depAirportID, arrAirportID,
-							  departureDateTime, arrivalDateTime, duration,
+							  departureDateTime, arrivalDateTime,
 							  capacity);
 
 	if (flightBank_Head==NULL){
