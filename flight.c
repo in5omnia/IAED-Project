@@ -2,7 +2,7 @@
 * File: flight.c
 * Author: Beatriz Gavilan - 102463
 * Description: Contains all the functions related to the flights.
-*/
+ */
 
 
 #include "BG_102463.h"
@@ -108,10 +108,10 @@ Flight* duplicateFlight(FlightID flightID, Date departureDate, char flag) {
 		if (sameFlightID(flightID, aux->ID)
 			&& sameDate(departureDate,
 						aux->departureDateTime.date))
-										/* same code for same day*/
+		/* same code for same day*/
 		{
 			if (flag == 'v')
-					printf(DUPLICATE_FLIGHT);
+				printf(DUPLICATE_FLIGHT);
 			return aux;
 		}
 	}
@@ -152,8 +152,8 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 	arrivalDateTime = sumDuration(departureDateTime, duration);
 
 	*newFlight = createFlight(flightID,depAirportID, arrAirportID,
-							 departureDateTime, arrivalDateTime, duration,
-							 capacity);
+							  departureDateTime, arrivalDateTime, duration,
+							  capacity);
 
 	if (flightBank_Head==NULL){
 		initFlightBank(newFlight);
@@ -217,14 +217,14 @@ void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
 
 		if (CASE_P) {
 			while ( j >= left && beforeDateTime(v.departureDateTime,
-							  	desiredFlights[j].departureDateTime))
+											   desiredFlights[j].departureDateTime))
 			{
 				desiredFlights[j + 1] = desiredFlights[j];
 				j--;
 			}
 		} else {	/*	CASE C	*/
 			while ( j >= left && beforeDateTime(v.arrivalDateTime,
-								  desiredFlights[j].arrivalDateTime))
+											   desiredFlights[j].arrivalDateTime))
 			{
 				desiredFlights[j + 1] = desiredFlights[j];
 				j--;
@@ -258,7 +258,7 @@ void listAllFlights() {
 /*	Lists flights (stored in wantedFlights) for P and C commands in the
  * standard output */
 void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
-				   char flag){
+					   char flag){
 	int i;
 	Date f_date;
 	Time f_time;
@@ -312,31 +312,7 @@ FlightID getFlightID(char* code){
 }
 
 
-/*
-FlightID readFlightID(){
-	FlightID flightId;
-	char *id = (char*)malloc(sizeof(char)*7);
-	int i;
-	scanf("%s", id);
-	for (i=0; i < MAX_FLIGHT_ID_STR-1; i++)
-		flightId.letters[i] = id[i];
-
-	flightId.letters[i] = '\0';
-
-	for (; id[i]!='\0'; i++){
-		flightId.letters[i] = id[i];
-		id[i] = id[i+2];
-	}
-
-	id = (char*)realloc(id, sizeof(char)*4);
-	flightId.num = atoi(id);
-	free(id);
-	return flightId;
-}*/
-
-
-
-ResNode* deleteFlight(FlightID flightID, ResNode* g_allRes_Head_ptr){
+int deleteFlight(FlightID flightID){
 
 	Flight* aux, *next;
 	int flag=0;
@@ -344,7 +320,7 @@ ResNode* deleteFlight(FlightID flightID, ResNode* g_allRes_Head_ptr){
 
 		if (sameFlightID(flightID, aux->ID)){
 
-			g_allRes_Head_ptr = deleteFlightReservations(aux, g_allRes_Head_ptr);
+			deleteFlightReservations(aux);
 			if (aux == flightBank_Head)
 				flightBank_Head = aux->next;
 			else
@@ -363,10 +339,7 @@ ResNode* deleteFlight(FlightID flightID, ResNode* g_allRes_Head_ptr){
 			next = aux->next;
 		}
 	}
-	if (!flag)
-		printf(NOT_FOUND);
-
-	return g_allRes_Head_ptr;
+	return flag;
 }
 
 

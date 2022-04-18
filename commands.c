@@ -2,7 +2,7 @@
 * File: commands.c
 * Author: Beatriz Gavilan - 102463
 * Description: file with functions that execute or validate commands.
-*/
+ */
 
 #include "BG_102463.h"
 
@@ -11,7 +11,7 @@
 extern int g_TotalOfAirports;
 extern int g_TotalOfFlights;
 extern Airport *airportBank;
-/*extern ResNode *g_allRes_Head_ptr;*/
+extern ResNode *g_allRes_Head_ptr;
 
 
 /*	Checks validity for "case a" : returns 1 if the airportID is valid and if
@@ -131,7 +131,7 @@ void commandV(Date today){
 
 		scanf(IN_FLIGHT_ID, flightID.letters, &flightID.num);
 		scanf(IN_AIRPORT_ID_OR_COUNTRY, depAirportID);
-	  	scanf(IN_AIRPORT_ID_OR_COUNTRY, arrAirportID);
+		scanf(IN_AIRPORT_ID_OR_COUNTRY, arrAirportID);
 
 		scanf(IN_DATE, &departure_date.day, &departure_date.month,
 			  &departure_date.year);
@@ -178,7 +178,7 @@ Date command_T(Date today){
 }
 
 
-ResNode* commandR(Date today, ResNode* g_allRes_Head_ptr)
+void commandR(Date today)
 {
 	char *reservation_code=NULL, temp[MAX_CMD_R];
 	int passengerNum;
@@ -190,6 +190,15 @@ ResNode* commandR(Date today, ResNode* g_allRes_Head_ptr)
 
 	if (getchar()!='\n'){
 
+		/*reservation_code = (char*)malloc(sizeof (char)*MAX_CMD_R);*/
+
+		/*if (reservation_code == NULL){
+			printf(NO_MEMORY);
+			freeAll();
+			exit(0);
+		}*/
+
+
 		scanf(IN_RES_CODE_AND_PASS, temp, &passengerNum);
 
 		reservation_code = (char*)malloc(sizeof (char)*(strlen(temp)+1));
@@ -200,19 +209,17 @@ ResNode* commandR(Date today, ResNode* g_allRes_Head_ptr)
 		}
 		strcpy(reservation_code, temp);
 
-		g_allRes_Head_ptr = add_Reservation(flightId, flightDate, reservation_code,
-							 passengerNum, today,g_allRes_Head_ptr);
-		free(reservation_code);
+		if (!add_Reservation(flightId, flightDate, reservation_code,
+							 passengerNum, today))
+			free(reservation_code);
 	}
 	else{
 		listReservations(flightId, flightDate, today);
 	}
-	reservation_code = NULL;
-	return g_allRes_Head_ptr;
 }
 
 
-ResNode* commandE(ResNode* g_allRes_Head_ptr){
+void commandE(){
 	char *code = malloc(sizeof (char)*MAX_CMD_E);
 	int len;
 	FlightID flightID;
@@ -223,14 +230,17 @@ ResNode* commandE(ResNode* g_allRes_Head_ptr){
 	if (len < 10){
 
 		flightID = getFlightID(code);
-		g_allRes_Head_ptr = deleteFlight(flightID, g_allRes_Head_ptr);
+		if (!deleteFlight(flightID))
+			printf(NOT_FOUND);
 
 	}
 
 	else {
-		g_allRes_Head_ptr = deleteReservation(code, g_allRes_Head_ptr);
+		if (!deleteReservation(code)){
+			printf(NOT_FOUND);
+		}
 	}
 	free(code);
-	return g_allRes_Head_ptr;
 }
+
 

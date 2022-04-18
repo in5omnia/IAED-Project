@@ -1,8 +1,8 @@
 /*
- * File: BG_102463.h
- * Author: Beatriz Gavilan - 102463
- * Description: header file with definitions and prototypes useful to the
- * 				project functions
+* File: BG_102463.h
+* Author: Beatriz Gavilan - 102463
+* Description: header file with definitions and prototypes useful to the
+* 				project functions
 */
 
 
@@ -69,37 +69,37 @@ f_date.day, f_date.month, f_date.year, f_time.hour, f_time.min
 
 
 typedef struct {
-	char ID[MAX_AIRPORT_ID];
-	char country[MAX_COUNTRY];
-	char city[MAX_CITY];
-	int n_Departure_Flights;
-	int n_Arrival_Flights;
+   char ID[MAX_AIRPORT_ID];
+   char country[MAX_COUNTRY];
+   char city[MAX_CITY];
+   int n_Departure_Flights;
+   int n_Arrival_Flights;
 } Airport;
 
 
 typedef struct {
-	int day;
-	int month;
-	int year;
+   int day;
+   int month;
+   int year;
 } Date;
 
 
 typedef struct {
-	int hour;
-	int min;
+   int hour;
+   int min;
 } Time;
 
 
 typedef struct {
-	Date date;
-	Time time;
+   Date date;
+   Time time;
 } DateTime;
 
 
 typedef struct {
 
-	char letters[MAX_FLIGHT_ID_STR];
-	int num;
+   char letters[MAX_FLIGHT_ID_STR];
+   int num;
 
 } FlightID;
 
@@ -107,37 +107,37 @@ typedef struct {
 
 typedef struct flight{
 
-	FlightID ID;
-	char departureAirport[MAX_AIRPORT_ID];
-	char arrivalAirport[MAX_AIRPORT_ID];
-	DateTime departureDateTime;
-	DateTime arrivalDateTime;
-	Time duration;
-	int capacity;
-	int numPassengers;
-	struct reservation * reservationList;
-	int numReservations;
-	struct flight *next;
-	struct flight *prev;
+   FlightID ID;
+   char departureAirport[MAX_AIRPORT_ID];
+   char arrivalAirport[MAX_AIRPORT_ID];
+   DateTime departureDateTime;
+   DateTime arrivalDateTime;
+   Time duration;
+   int capacity;
+   int numPassengers;
+   struct reservation * reservationList;
+   int numReservations;
+   struct flight *next;
+   struct flight *prev;
 
 } Flight;
 
 
 typedef struct reservation {
-	char* reservationCode;
-	int passengerNum;
-	Flight *flight_ptr;
-	int flightResListIndex;
-	struct node *resNode_ptr;
-	/*struct reservation *flightRes_Before, *flightRes_Next;*/
-	/*struct reservation *allRes_Next, *allRes_Prev;*/
+   char* reservationCode;
+   int passengerNum;
+   Flight *flight_ptr;
+   int flightResListIndex;
+   struct node *resNode_ptr;
+   /*struct reservation *flightRes_Before, *flightRes_Next;*/
+   /*struct reservation *allRes_Next, *allRes_Prev;*/
 } Reservation;
 
 
 typedef struct node {
-	Reservation *reservation;
-	struct node *AllRes_next;
-	struct node *AllRes_prev;
+   Reservation *reservation;
+   struct node *AllRes_next;
+   struct node *AllRes_prev;
 } ResNode;
 
 
@@ -147,35 +147,35 @@ typedef struct node {
 /*	flight.c functions	*/
 
 Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
-					char arrivalAirportID[MAX_AIRPORT_ID],
-					DateTime departureDateTime, DateTime arrivalDateTime,
-					Time duration, int capacity);
+				   char arrivalAirportID[MAX_AIRPORT_ID],
+				   DateTime departureDateTime, DateTime arrivalDateTime,
+				   Time duration, int capacity);
 
 int validFlightID(FlightID flightID);
 
 int validCapacity(int capacity);
 
 Flight* duplicateFlight(FlightID flightID, Date departureDate,
-					char flag);
+					   char flag);
 
 int tooManyFlights();
 
 void addFlight(Date departure_date, Time departureTime, Time duration,
-				  int capacity, FlightID flightID,
-				  char depAirportID[MAX_AIRPORT_ID],
-				  char arrAirportID[MAX_AIRPORT_ID]);
+			  int capacity, FlightID flightID,
+			  char depAirportID[MAX_AIRPORT_ID],
+			  char arrAirportID[MAX_AIRPORT_ID]);
 
 void findFlights(char airportID[MAX_AIRPORT_ID], char flag);
 
 void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
-				 char flag);
+				char flag);
 
 void listAllFlights();
 
 void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
-					   char flag);
+					  char flag);
 
-ResNode* deleteFlight(FlightID flightID, ResNode* g_allRes_Head_ptr);
+int deleteFlight(FlightID flightID);
 
 /*	date_time.c functions	*/
 
@@ -206,7 +206,7 @@ int beforeDateTime(DateTime dateTime1, DateTime dateTime2);
 /*	airport.c functions	*/
 
 Airport createAirport(char airportID[MAX_AIRPORT_ID],
-					  char country[MAX_COUNTRY], char city[MAX_CITY]);
+					 char country[MAX_COUNTRY], char city[MAX_CITY]);
 
 void addAirport(Airport new_airport);
 
@@ -215,7 +215,7 @@ int validAirportID(char airportID[MAX_AIRPORT_ID]);
 int airportExist(char airportID[MAX_AIRPORT_ID], char flag);
 
 int beforeLetters(char beforeWord[MAX_AIRPORT_ID],
-				  char afterWord[MAX_AIRPORT_ID]);
+				 char afterWord[MAX_AIRPORT_ID]);
 
 void exch(int i, int right);
 
@@ -226,16 +226,16 @@ void sortAirports(int left, int right);
 void listAirports(Airport* airportList, int num);
 
 int findAirports(int num_IDs, int existingID[MAX_AIRPORTS],
-				 Airport* requestedAirports,
-				 char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID]);
+				Airport* requestedAirports,
+				char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID]);
 
 void listRequestedAirports(char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
-						   int num_IDs);
+						  int num_IDs);
 
 
 /*	main file functions	*/
 
-ResNode* readCommand(char cmd, ResNode* g_allRes_Head_ptr);
+Date readCommand(char cmd, Date today);
 
 void freeAll();
 
@@ -244,8 +244,8 @@ void freeAll();
 int validate_case_a(char airportID[]);
 
 int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
-				 char departureAirportID[MAX_AIRPORT_ID], Date departureDate,
-				 Time duration, int capacity, Date today);
+				char departureAirportID[MAX_AIRPORT_ID], Date departureDate,
+				Time duration, int capacity, Date today);
 
 
 void commandA();
@@ -258,33 +258,33 @@ void command_P_C(char flag);
 
 Date command_T(Date today);
 
-ResNode* commandR(Date today, ResNode* g_allRes_Head_ptr);
+void commandR(Date today);
 
-ResNode* commandE(ResNode* g_allRes_Head_ptr);
+void commandE();
 
 
 /*	reservation file functions	*/
-ResNode* add_Reservation(FlightID flightId, Date flightDate, char* reservationCode,
-				int passengerNum, Date today, ResNode* g_allRes_Head_ptr);
+int add_Reservation(FlightID flightId, Date flightDate, char* reservationCode,
+				   int passengerNum, Date today);
 
 void listReservations(FlightID flightId, Date flightDate, Date today);
 
 FlightID getFlightID(char* code);
 
-ResNode* deleteReservation(char* code, ResNode* g_allRes_Head_ptr);
+int deleteReservation(char* code);
 
 void sortReservations(Reservation *reservationList, int numRes);
 
 Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCode,
-						 int passengerNum, Date today, ResNode* g_allRes_Head_ptr);
+						int passengerNum, Date today);
 
 int tooManyReservations(int reservationPassengers, Flight *flight_ptr);
 
-int duplicateReservation(char* reservation_code, ResNode* g_allRes_Head_ptr);
+int duplicateReservation(char* reservation_code);
 
 int validReservationCode(char* reservationCode);
 
-ResNode* deleteFlightReservations(Flight* flight_ptr, ResNode* g_allRes_Head_ptr);
+void deleteFlightReservations(Flight* flight_ptr);
 
 
 

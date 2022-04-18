@@ -11,35 +11,34 @@
 extern int g_TotalOfFlights;
 extern Flight* flightBank_Tail;
 extern Flight* flightBank_Head;
-/*extern ResNode* g_allRes_Head_ptr;*/
+extern ResNode* g_allRes_Head_ptr;
 /*extern ResNode g_allRes_Head;*/
 
-int resListIsEmpty(ResNode* g_allRes_Head_ptr){
+int resListIsEmpty(){
 	return (g_allRes_Head_ptr == NULL);
 }
 
 
-ResNode* resListInit(Reservation* newRes, ResNode* g_allRes_Head_ptr){
+ResNode* resListInit(Reservation* newRes){
 	/*ResNode *head = &g_allRes_Head;*/
-	g_allRes_Head_ptr = (ResNode*)malloc(sizeof(ResNode));
-	g_allRes_Head_ptr->reservation = newRes;
-	/*g_allRes_Head_ptr->reservation->reservationCode = newRes->reservationCode;*/
-	g_allRes_Head_ptr->AllRes_next = NULL;
-	g_allRes_Head_ptr->AllRes_prev = NULL;
-	/*g_allRes_Head_ptr = head;*/
+	ResNode *head = (ResNode*)malloc(sizeof(ResNode));
+	head->reservation = newRes;
+	head->AllRes_next = NULL;
+	head->AllRes_prev = NULL;
+	g_allRes_Head_ptr = head;
 	return g_allRes_Head_ptr;
 }
 
-ResNode* insertAtBeginning(Reservation *newRes, ResNode* g_allRes_Head_ptr){
+ResNode* insertAtBeginning(Reservation *newRes){
 	ResNode *newNode = (ResNode*)malloc(sizeof(ResNode));
 	newNode->reservation = newRes;
 	newNode->AllRes_next = NULL;
 	newNode->AllRes_prev = NULL;
-	/*newNode->reservation->reservationCode = newRes->reservationCode;*/
+
 	newNode->AllRes_next = g_allRes_Head_ptr; /* new.next points to head */
 	g_allRes_Head_ptr->AllRes_prev = newNode; /* old_head.before  points to new */
 	g_allRes_Head_ptr = newNode; /* new becomes new head */
-	return g_allRes_Head_ptr;
+	return newNode;
 }
 
 
@@ -63,13 +62,12 @@ int validReservationCode(char* reservationCode){
 }
 
 
-int duplicateReservation(char* reservation_code, ResNode* g_allRes_Head_ptr){
+int duplicateReservation(char* reservation_code){
 
 	ResNode *aux=NULL;
 
 	for (aux = g_allRes_Head_ptr; aux != NULL; aux = aux->AllRes_next) {
-		if (aux->reservation->reservationCode!= NULL &&
-			!strcmp(aux->reservation->reservationCode, reservation_code))
+		if (aux->reservation->reservationCode!= NULL && !strcmp(aux->reservation->reservationCode, reservation_code))
 		{
 			printf(DUPLICATE_RESERVATION, reservation_code);
 			return 1;
@@ -91,7 +89,7 @@ int tooManyReservations(int reservationPassengers, Flight *flight_ptr){
 
 
 Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCode,
-					 int passengerNum, Date today, ResNode* g_allRes_Head_ptr){
+						 int passengerNum, Date today){
 
 	Flight * flight_ptr;
 	if (!validReservationCode(reservationCode)){
@@ -102,7 +100,7 @@ Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCo
 	/* if the flight exists */
 	if (flight_ptr != NULL){
 
-		if (duplicateReservation(reservationCode, g_allRes_Head_ptr) ||
+		if (duplicateReservation(reservationCode) ||
 			tooManyReservations(passengerNum, flight_ptr) ||
 			!check_date(flightDate, today))
 			return NULL;
@@ -116,17 +114,16 @@ Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCo
 }
 
 
-ResNode* add_Reservation(FlightID flightId, Date flightDate,
-					 char* reservationCode, int passengerNum, Date today,
-						 ResNode* g_allRes_Head_ptr) {
-	Reservation new;
+int add_Reservation(FlightID flightId, Date flightDate,
+					char* reservationCode, int passengerNum, Date today) {
+	Reservation* new=(Reservation*)malloc(sizeof(Reservation));
 	int numRes;
 
 	/* validReservation returns pointer to flight */
 	Flight *flight_ptr = validReservation(flightId, flightDate,
-								 reservationCode, passengerNum, today, g_allRes_Head_ptr);
+										  reservationCode, passengerNum, today);
 	if (flight_ptr == NULL)
-		return g_allRes_Head_ptr;
+		return 0;
 
 	/* adds new reservation to the flight's list of reservations */
 	numRes = flight_ptr->numReservations;
@@ -141,30 +138,29 @@ ResNode* add_Reservation(FlightID flightId, Date flightDate,
 	}
 
 	/* defining the new reservation's info */
-	new.reservationCode = (char*)malloc(sizeof(char)*(strlen(reservationCode) + 1));
-	strcpy(new.reservationCode, reservationCode);
-	new.passengerNum = passengerNum;
-	new.flight_ptr = flight_ptr;
-	new.flightResListIndex = numRes;
-	new.resNode_ptr = NULL;
 
-	flight_ptr->reservationList[numRes] = new;
+	new->reservationCode = reservationCode;
+	new->passengerNum = passengerNum;
+	new->flight_ptr = flight_ptr;
+	new->flightResListIndex = numRes;
+	new->resNode_ptr = NULL;
+
+	flight_ptr->reservationList[numRes] = *new;
 
 	/* updates flight info */
 	++(flight_ptr->numReservations);
 	flight_ptr->numPassengers += passengerNum;
 
 	/* links new reservation to the list of all reservations */
-	if (resListIsEmpty(g_allRes_Head_ptr)) {
-		g_allRes_Head_ptr = resListInit(&new, g_allRes_Head_ptr);
-		flight_ptr->reservationList[numRes].resNode_ptr = g_allRes_Head_ptr;
+	if (resListIsEmpty()) {
+		flight_ptr->reservationList[numRes].resNode_ptr = resListInit(new);
 
 	} else {
-		g_allRes_Head_ptr = insertAtBeginning(&new, g_allRes_Head_ptr);
-		flight_ptr->reservationList[numRes].resNode_ptr = g_allRes_Head_ptr;
+		flight_ptr->reservationList[numRes].resNode_ptr =
+			insertAtBeginning(new);
 	}
-	/*free(reservationCode);*/
-	return g_allRes_Head_ptr;
+
+	return 1;
 }
 
 
@@ -211,7 +207,7 @@ void listReservations(FlightID flightId, Date flightDate, Date today){
 
 
 /* removes reservatiuon node from all reservations linked list */
-ResNode* deleteResNode(ResNode *current, ResNode* g_allRes_Head_ptr){
+void deleteResNode(ResNode *current){
 	ResNode *prev = current->AllRes_prev, *next = current->AllRes_next;
 
 	if (current == g_allRes_Head_ptr){
@@ -223,11 +219,10 @@ ResNode* deleteResNode(ResNode *current, ResNode* g_allRes_Head_ptr){
 	if (next != NULL)
 		next->AllRes_prev = prev;
 
-	return g_allRes_Head_ptr;
 }
 
 
-ResNode* deleteReservation(char* code, ResNode* g_allRes_Head_ptr){
+int deleteReservation(char* code){
 
 	ResNode *aux=NULL;
 	int i, numRes, resIndex;
@@ -236,7 +231,7 @@ ResNode* deleteReservation(char* code, ResNode* g_allRes_Head_ptr){
 
 		if (!strcmp(aux->reservation->reservationCode, code)){
 			/* remove from all reservations list */
-			deleteResNode(aux, g_allRes_Head_ptr);
+			deleteResNode(aux);
 
 			/* removes from flight's list of reservations */
 			flightPtr = aux->reservation->flight_ptr;
@@ -253,35 +248,31 @@ ResNode* deleteReservation(char* code, ResNode* g_allRes_Head_ptr){
 			flightPtr->reservationList =
 				realloc(flightPtr->reservationList,
 						sizeof(Reservation)*
-						(--flightPtr->numReservations));
+							(--flightPtr->numReservations));
 
 			/* deletes aux reservation's memory block */
 			/*free(aux);*/	/* NECESSARY??????*/
-
-			return g_allRes_Head_ptr;
+			return 1;
 		}
 	}
-	printf(NOT_FOUND);
 	/* if the reservation wasn't found */
-	return g_allRes_Head_ptr;
+	return 0;
 }
 
 
 
-ResNode* deleteFlightReservations(Flight* flight_ptr, ResNode* g_allRes_Head_ptr){
+void deleteFlightReservations(Flight* flight_ptr){
 
 	ResNode *current;
 	int i, numRes = flight_ptr->numReservations;
 	for (i=0; i<numRes; i++){
 
 		current = flight_ptr->reservationList[i].resNode_ptr;
-		g_allRes_Head_ptr = deleteResNode(current, g_allRes_Head_ptr);
+		deleteResNode(current);
 	}
 	/* frees the memory of all this flight's reservations */
 	if (flight_ptr->reservationList != NULL)
 		free(flight_ptr->reservationList);
-
-	return g_allRes_Head_ptr;
 }
 
 
