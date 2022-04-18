@@ -11,6 +11,7 @@
 extern int g_TotalOfAirports;
 extern int g_TotalOfFlights;
 extern Airport *airportBank;
+/*extern ResNode *g_allRes_Head_ptr;*/
 
 
 /*	Checks validity for "case a" : returns 1 if the airportID is valid and if
@@ -177,41 +178,41 @@ Date command_T(Date today){
 }
 
 
-void commandR(Date today)
+ResNode* commandR(Date today, ResNode* g_allRes_Head_ptr)
 {
-	char *reservationCode;
+	char *reservation_code=NULL, temp[MAX_CMD_R];
 	int passengerNum;
 	FlightID flightId;
 	Date flightDate;
-	/*flightId = readFlightID();*/
+
 	scanf(IN_FLIGHT_ID, flightId.letters, &flightId.num);
 	scanf(IN_DATE, &flightDate.day, &flightDate.month, &flightDate.year);
 
 	if (getchar()!='\n'){
 
-		reservationCode = malloc(sizeof (char)*MAX_CMD_R);
+		scanf(IN_RES_CODE_AND_PASS, temp, &passengerNum);
 
-		if (reservationCode == NULL){
+		reservation_code = (char*)malloc(sizeof (char)*(strlen(temp)+1));
+		if (reservation_code == NULL){
 			printf(NO_MEMORY);
 			freeAll();
-			exit(1);
+			exit(0);
 		}
+		strcpy(reservation_code, temp);
 
-		scanf(IN_RES_CODE_AND_PASS, reservationCode, &passengerNum);
-
-		reservationCode = realloc(reservationCode,
-								  sizeof(char)*strlen(reservationCode));
-
-		add_Reservation(flightId, flightDate, reservationCode,
-						passengerNum, today);
+		g_allRes_Head_ptr = add_Reservation(flightId, flightDate, reservation_code,
+							 passengerNum, today,g_allRes_Head_ptr);
+		free(reservation_code);
 	}
 	else{
 		listReservations(flightId, flightDate, today);
 	}
+	reservation_code = NULL;
+	return g_allRes_Head_ptr;
 }
 
 
-void commandE(){
+ResNode* commandE(ResNode* g_allRes_Head_ptr){
 	char *code = malloc(sizeof (char)*MAX_CMD_E);
 	int len;
 	FlightID flightID;
@@ -222,16 +223,14 @@ void commandE(){
 	if (len < 10){
 
 		flightID = getFlightID(code);
-		if (!deleteFlight(flightID))
-			printf(NOT_FOUND);
+		g_allRes_Head_ptr = deleteFlight(flightID, g_allRes_Head_ptr);
 
 	}
 
 	else {
-		if (!deleteReservation(code)){
-			printf(NOT_FOUND);
-		}
+		g_allRes_Head_ptr = deleteReservation(code, g_allRes_Head_ptr);
 	}
 	free(code);
+	return g_allRes_Head_ptr;
 }
 

@@ -128,9 +128,20 @@ typedef struct reservation {
 	int passengerNum;
 	Flight *flight_ptr;
 	int flightResListIndex;
+	struct node *resNode_ptr;
 	/*struct reservation *flightRes_Before, *flightRes_Next;*/
-	struct reservation *allRes_Next, *allRes_Prev;
+	/*struct reservation *allRes_Next, *allRes_Prev;*/
 } Reservation;
+
+
+typedef struct node {
+	Reservation *reservation;
+	struct node *AllRes_next;
+	struct node *AllRes_prev;
+} ResNode;
+
+
+
 
 
 /*	flight.c functions	*/
@@ -164,7 +175,7 @@ void listAllFlights();
 void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 					   char flag);
 
-int deleteFlight(FlightID flightID);
+ResNode* deleteFlight(FlightID flightID, ResNode* g_allRes_Head_ptr);
 
 /*	date_time.c functions	*/
 
@@ -224,7 +235,7 @@ void listRequestedAirports(char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
 
 /*	main file functions	*/
 
-Date readCommand(char cmd, Date today);
+ResNode* readCommand(char cmd, ResNode* g_allRes_Head_ptr);
 
 void freeAll();
 
@@ -247,33 +258,33 @@ void command_P_C(char flag);
 
 Date command_T(Date today);
 
-void commandR(Date today);
+ResNode* commandR(Date today, ResNode* g_allRes_Head_ptr);
 
-void commandE();
+ResNode* commandE(ResNode* g_allRes_Head_ptr);
 
 
 /*	reservation file functions	*/
-int add_Reservation(FlightID flightId, Date flightDate, char* reservationCode,
-				int passengerNum, Date today);
+ResNode* add_Reservation(FlightID flightId, Date flightDate, char* reservationCode,
+				int passengerNum, Date today, ResNode* g_allRes_Head_ptr);
 
 void listReservations(FlightID flightId, Date flightDate, Date today);
 
 FlightID getFlightID(char* code);
 
-int deleteReservation(char* code);
+ResNode* deleteReservation(char* code, ResNode* g_allRes_Head_ptr);
 
 void sortReservations(Reservation *reservationList, int numRes);
 
 Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCode,
-						 int passengerNum, Date today);
+						 int passengerNum, Date today, ResNode* g_allRes_Head_ptr);
 
 int tooManyReservations(int reservationPassengers, Flight *flight_ptr);
 
-int duplicateReservation(char* reservation_code);
+int duplicateReservation(char* reservation_code, ResNode* g_allRes_Head_ptr);
 
 int validReservationCode(char* reservationCode);
 
-void deleteFlightReservations(Flight* flight_ptr);
+ResNode* deleteFlightReservations(Flight* flight_ptr, ResNode* g_allRes_Head_ptr);
 
 
 

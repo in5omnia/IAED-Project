@@ -15,6 +15,7 @@ extern Flight* flightBank_Tail;
 extern Flight* flightBank_Head;
 
 
+
 void initFlightBank(Flight* new){
 	flightBank_Head = new;
 	flightBank_Tail = new;
@@ -115,7 +116,7 @@ Flight* duplicateFlight(FlightID flightID, Date departureDate, char flag) {
 		}
 	}
 	if (flag == 'r')
-		printf(FLIGHT_DOESNT_EXIST);
+		printf(FLIGHT_DOESNT_EXIST, flightID.letters, flightID.num);
 	return NULL;
 }
 
@@ -335,7 +336,7 @@ FlightID readFlightID(){
 
 
 
-int deleteFlight(FlightID flightID){
+ResNode* deleteFlight(FlightID flightID, ResNode* g_allRes_Head_ptr){
 
 	Flight* aux, *next;
 	int flag=0;
@@ -343,7 +344,7 @@ int deleteFlight(FlightID flightID){
 
 		if (sameFlightID(flightID, aux->ID)){
 
-			deleteFlightReservations(aux);
+			g_allRes_Head_ptr = deleteFlightReservations(aux, g_allRes_Head_ptr);
 			if (aux == flightBank_Head)
 				flightBank_Head = aux->next;
 			else
@@ -362,7 +363,10 @@ int deleteFlight(FlightID flightID){
 			next = aux->next;
 		}
 	}
-	return flag;
+	if (!flag)
+		printf(NOT_FOUND);
+
+	return g_allRes_Head_ptr;
 }
 
 
