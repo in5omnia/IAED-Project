@@ -19,6 +19,8 @@ extern Flight* flightBank_Head;
 void initFlightBank(Flight* new){
 	flightBank_Head = new;
 	flightBank_Tail = new;
+	flightBank_Tail->next = NULL;
+	flightBank_Head->prev = NULL;
 }
 
 
@@ -46,8 +48,7 @@ Flight createFlight(char flightID[], char departureAirportID[MAX_AIRPORT_ID],
 	newFlight.capacity = capacity;
 
 	newFlight.numPassengers = 0;
-	newFlight.reservationList = NULL;
-	newFlight.numReservations = 0;
+	newFlight.flightResHead = NULL;
 
 	newFlight.next = NULL;
 	newFlight.prev = NULL;
@@ -63,8 +64,10 @@ Flight createFlight(char flightID[], char departureAirportID[MAX_AIRPORT_ID],
 int validFlightID(char flightID[]){
 	int i;
 
-	if (strlen(flightID) > FLIGHT_ID_MAXLEN)
+	if (strlen(flightID) > FLIGHT_ID_MAXLEN){
+		printf(INVALID_FLIGHT_ID);
 		return 0;
+	}
 
 	for (i=0; flightID[i] != '\0' && i < 2; i++) {
 
@@ -80,7 +83,7 @@ int validFlightID(char flightID[]){
 	}
 
 	for (i=3; flightID[i] != '\0'; i++) {
-		if (flightID[i] < '0' || flightID[i] > '9') {
+		if (flightID[i] < '0' || flightID[i] > '9' || i > 5) {
 			printf(INVALID_FLIGHT_ID);
 			return 0;
 		}
@@ -152,11 +155,11 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 
 	arrivalDateTime = sumDuration(departureDateTime, duration);
 
-	if (newFlight==NULL){
+	if (newFlight == NULL){
 		noMemory();
 	}
 
-	*newFlight = createFlight(flightID,depAirportID, arrAirportID,
+	(*newFlight) = createFlight(flightID,depAirportID, arrAirportID,
 							  departureDateTime, arrivalDateTime,
 							  capacity);
 
@@ -293,39 +296,4 @@ void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 		}
 	}
 }
-
-
-int deleteFlight(char flightID[]){
-
-	Flight* aux, *next;
-	int flag=0;
-	for (aux = flightBank_Head; aux != NULL; aux = next){
-
-		if (!strcmp(flightID, aux->ID)){
-
-			deleteFlightReservations(aux);
-
-			if (aux == flightBank_Head)
-				flightBank_Head = aux->next;
-			else
-				aux->prev->next = aux->next;
-
-			if (aux == flightBank_Tail)
-				flightBank_Tail = aux->prev;
-			else
-				aux->next->prev = aux->prev;
-
-			next = aux->next;
-			free(aux);
-			flag=1;
-
-		}
-		else{
-			next = aux->next;
-		}
-	}
-	return flag;
-}
-
-
 

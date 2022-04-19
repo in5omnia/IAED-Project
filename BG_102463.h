@@ -23,6 +23,7 @@
 #define FLIGHT_ID_MAXLEN 6
 #define MAX_CMD_R 65518
 #define MAX_CMD_E 65535
+#define HASH_TABLE_SIZE 32297
 
 #define END_PROGRAM 'q'
 
@@ -94,35 +95,40 @@ typedef struct {
 
 typedef struct flight{
 
-   char ID[MAX_FLIGHT_ID];
-   char departureAirport[MAX_AIRPORT_ID];
-   char arrivalAirport[MAX_AIRPORT_ID];
-   DateTime departureDateTime;
-   DateTime arrivalDateTime;
-   int capacity;
-   int numPassengers;
-   struct reservation ** reservationList;
-   int numReservations;
-   struct flight *next;
-   struct flight *prev;
+	char ID[MAX_FLIGHT_ID];
+	char departureAirport[MAX_AIRPORT_ID];
+	char arrivalAirport[MAX_AIRPORT_ID];
+	DateTime departureDateTime;
+	DateTime arrivalDateTime;
+	int capacity;
+	int numPassengers;
+	struct reservation *flightResHead;
+	/*linked list*/
+
+	/*int numReservations;*/
+	struct flight *next;
+	struct flight *prev;
 
 } Flight;
 
 
 typedef struct reservation {
-   char* reservationCode;
-   int passengerNum;
-   Flight *flight_ptr;
-   int flightResListIndex;
-   struct node *resNode_ptr;
+	char* reservationCode;
+	int passengerNum;
+	Flight *flight_ptr;
+	struct reservation * prev;
+	struct reservation *next;
+	/*struct node *resNode_ptr;*/
 } Reservation;
 
 
 typedef struct node {
-   Reservation *reservation;
-   struct node *AllRes_next;
-   struct node *AllRes_prev;
+	Reservation *reservation;
+	struct node *prevNode;
+	struct node *nextNode;
 } ResNode;
+
+
 
 
 /*	flight.c functions	*/
@@ -247,29 +253,46 @@ void commandE();
 
 
 /*	reservation file functions	*/
-int add_Reservation(char flightId[], Date flightDate, char* reservationCode,
-				   int passengerNum, Date today);
 
-void listReservations(char flightId[], Date flightDate, Date today);
 
-/*char* getFlightID(char* code);*/
 
-int deleteReservation(char* code);
 
-void sortReservations(Reservation **reservationList, int numRes);
 
-Flight* validReservation(char flightId[], Date flightDate, char* reservationCode,
-						int passengerNum, Date today);
+int hash(char *code);
 
-int tooManyReservations(int reservationPassengers, Flight *flight_ptr);
+ResNode* STsearch(char* code, int hashValue);
 
-int duplicateReservation(char* reservation_code);
+void insertInHashTable(Reservation* new, int hashValue);
 
 int validReservationCode(char* reservationCode);
 
+int duplicateReservation(char* reservation_code);
+
+int tooManyReservations(int reservationPassengers, Flight *flight_ptr);
+
+Flight* validReservation(char flightId[], Date flightDate, char* reservationCode,
+						 int passengerNum, Date today);
+
+void listReservations(char flightId[], Date flightDate, Date today);
+
+void flightResList_Init(Flight *flight_ptr, Reservation* new);
+
+int beforeRes(Reservation* res1, Reservation* res2);
+
+void insertBetween(Reservation* prev, Reservation* next, Reservation* new, Flight* flight_ptr);
+
+int add_Reservation(char flightId[], Date flightDate,
+					char* reservationCode, int passengerNum, Date today);
+
+void deleteResFromFlight(Reservation* res);
+
+int deleteReservation(char* code, int flag);
+
 void deleteFlightReservations(Flight* flight_ptr);
 
-void sorting(Reservation **reservations);
+int deleteFlight(char flightID[]);
+
+
 
 #endif
 

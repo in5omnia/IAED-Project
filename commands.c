@@ -223,7 +223,7 @@ void commandE(){
 			printf(NOT_FOUND);
 	}
 	else {
-		if (!deleteReservation(code)){
+		if (!deleteReservation(code, 1)){
 			printf(NOT_FOUND);
 		}
 	}

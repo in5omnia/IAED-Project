@@ -12,14 +12,14 @@
 
 int g_TotalOfAirports = 0;
 int g_TotalOfFlights = 0;
-/*	initializes array of all airports currently in the system	*/
+
 Airport *airportBank = NULL;
-/*	initializes doubly linked list of flights currently in the system	*/
+
 Flight* flightBank_Tail = NULL;
 Flight* flightBank_Head = NULL;
-/* initializes linked list of reservations */
-ResNode *g_allRes_Head = NULL;
 
+/*ResNode *g_allRes_Head = NULL;*/
+ResNode* hashTable[HASH_TABLE_SIZE];
 
 /*	identifies command and redirects to associated function	*/
 Date readCommand(char cmd, Date today) {
@@ -48,6 +48,7 @@ Date readCommand(char cmd, Date today) {
 
 		case 'e': commandE();
 			break;
+
 	}
 	return today;
 }
@@ -63,18 +64,12 @@ void noMemory(){
 /* frees memory associated with each flight and its reservations */
 void freeFlight(){
 	Flight *temp = flightBank_Head;
-	int i;
-	if (temp->reservationList != NULL){
-		for (i = 0; i < temp->numReservations; i++){
-			free(temp->reservationList[i]->reservationCode);
-			free(temp->reservationList[i]->resNode_ptr->reservation);
-		}
-		free(temp->reservationList);
-	}
+	deleteFlightReservations(temp);
 	flightBank_Head = flightBank_Head->next;
 	free(temp);
 	temp=NULL;
-	flightBank_Head->prev = NULL;
+	if (flightBank_Head != NULL)
+		flightBank_Head->prev = NULL;
 }
 
 
@@ -84,24 +79,42 @@ void freeAll(){
 		freeFlight();
 	}
 	if (flightBank_Tail != NULL) {
-		if(flightBank_Tail->reservationList != NULL){
-			free(flightBank_Tail->reservationList);
+		/*if(flightBank_Tail->flightResHead != NULL){
+			*//*free(flightBank_Tail->flightResHead);*//*
 		}
-		free(flightBank_Tail);
+		free(flightBank_Tail);*/
+		freeFlight();
 	}
+
+	/*while (flightBank_Head != NULL){
+		freeFlight();
+	}
+	if (flightBank_Tail != NULL){
+		free(flightBank_Tail);
+	}*/
+
+
 	if (airportBank != NULL) {
 		free(airportBank);
 	}
 }
 
 
+void Init_HashTable() {
+	int i;
+	for (i = 0; i < HASH_TABLE_SIZE; i++)
+		hashTable[i] = NULL;
+}
+
+
 int main() {
 	Date today = FIRST_TODAY;
 	char cmd;
+	Init_HashTable();
+
 	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
 		today = readCommand(cmd, today);
 	}
-
 	freeAll();
 	return 0;
 }
