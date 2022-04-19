@@ -219,6 +219,8 @@ void listRequestedAirports(char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
 
 Date readCommand(char cmd, Date today);
 
+void noMemory();
+
 void freeAll();
 
 /*	aux file functions	*/
@@ -271,3 +273,4 @@ void deleteFlightReservations(Flight* flight_ptr);
 
 
 #endif
+

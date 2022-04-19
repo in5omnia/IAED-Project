@@ -152,6 +152,10 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 
 	arrivalDateTime = sumDuration(departureDateTime, duration);
 
+	if (newFlight==NULL){
+		noMemory();
+	}
+
 	*newFlight = createFlight(flightID,depAirportID, arrAirportID,
 							  departureDateTime, arrivalDateTime,
 							  capacity);
@@ -300,6 +304,7 @@ int deleteFlight(char flightID[]){
 		if (!strcmp(flightID, aux->ID)){
 
 			deleteFlightReservations(aux);
+
 			if (aux == flightBank_Head)
 				flightBank_Head = aux->next;
 			else
@@ -313,6 +318,7 @@ int deleteFlight(char flightID[]){
 			next = aux->next;
 			free(aux);
 			flag=1;
+
 		}
 		else{
 			next = aux->next;

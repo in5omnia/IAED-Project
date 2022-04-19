@@ -189,10 +189,9 @@ void commandR(Date today)
 		scanf(IN_RES_CODE_AND_PASS, temp, &passengerNum);
 
 		reservation_code = (char*)malloc(sizeof (char)*(strlen(temp)+1));
+
 		if (reservation_code == NULL){
-			printf(NO_MEMORY);
-			freeAll();
-			exit(0);
+			noMemory();
 		}
 		strcpy(reservation_code, temp);
 
@@ -209,17 +208,19 @@ void commandR(Date today)
 void commandE(){
 	char *code = malloc(sizeof (char)*MAX_CMD_E);
 	int len;
+
+	if (code == NULL){
+		noMemory();
+	}
+
 	scanf(IN_STR, code);
 	len = strlen(code);
 	code = realloc(code, sizeof (char)*(len+1));
 
 	if (len < 10){
-
 		if (!deleteFlight(code))
 			printf(NOT_FOUND);
-
 	}
-
 	else {
 		if (!deleteReservation(code)){
 			printf(NOT_FOUND);

@@ -22,6 +22,9 @@ int resListIsEmpty(){
 ResNode* resListInit(Reservation* newRes){
 	/*ResNode *head = &g_allRes_Head;*/
 	ResNode *head = (ResNode*)malloc(sizeof(ResNode));
+	if (head == NULL){
+		noMemory();
+	}
 	head->reservation = newRes;
 	head->AllRes_next = NULL;
 	head->AllRes_prev = NULL;
@@ -33,6 +36,9 @@ ResNode* resListInit(Reservation* newRes){
 /* links new reservation to the doubly linked list of all reservations */
 ResNode* insertAtBeginning(Reservation *newRes){
 	ResNode *newNode = (ResNode*)malloc(sizeof(ResNode));
+	if (newNode == NULL){
+		noMemory();
+	}
 	newNode->reservation = newRes;
 	newNode->AllRes_next = NULL;
 	newNode->AllRes_prev = NULL;
@@ -121,11 +127,14 @@ int add_Reservation(char flightId[], Date flightDate,
 	Reservation* new=(Reservation*)malloc(sizeof(Reservation));
 	int numRes;
 
-	/* validReservation returns pointer to flight */
 	Flight *flight_ptr = validReservation(flightId, flightDate,
 										  reservationCode, passengerNum, today);
 	if (flight_ptr == NULL)
 		return 0;
+
+	if (new == NULL){
+		noMemory();
+	}
 
 	/* adds new reservation to the flight's list of reservations */
 	numRes = flight_ptr->numReservations;
@@ -134,9 +143,7 @@ int add_Reservation(char flightId[], Date flightDate,
 		flight_ptr->reservationList,sizeof(Reservation*)*(numRes + 1));
 
 	if (flight_ptr->reservationList == NULL){
-		printf(NO_MEMORY);
-		freeAll();
-		exit(1);
+		noMemory();
 	}
 
 	/* defining the new reservation's info */
@@ -219,7 +226,7 @@ void deleteResNode(ResNode *current){
 	}
 	if (next != NULL)
 		next->AllRes_prev = prev;
-
+	free(current->reservation->reservationCode);
 }
 
 
@@ -233,7 +240,6 @@ int deleteReservation(char* code){
 		if (!strcmp(aux->reservation->reservationCode, code)){
 			/* remove from all reservations list */
 			deleteResNode(aux);
-
 			/* removes from flight's list of reservations */
 			flightPtr = aux->reservation->flight_ptr;
 			numRes = flightPtr->numReservations;
@@ -249,8 +255,8 @@ int deleteReservation(char* code){
 			flightPtr->reservationList =
 				realloc(flightPtr->reservationList,
 						sizeof(Reservation)*
-							(--flightPtr->numReservations));
-
+							(flightPtr->numReservations-1));
+			--flightPtr->numReservations;
 			return 1;
 		}
 	}

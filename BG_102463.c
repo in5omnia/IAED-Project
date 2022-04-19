@@ -52,6 +52,14 @@ Date readCommand(char cmd, Date today) {
 	return today;
 }
 
+
+void noMemory(){
+	printf(NO_MEMORY);
+	freeAll();
+	exit(1);
+}
+
+
 /* frees memory associated with each flight and its reservations */
 void freeFlight(){
 	Flight *temp = flightBank_Head;
@@ -68,6 +76,7 @@ void freeFlight(){
 	temp=NULL;
 	flightBank_Head->prev = NULL;
 }
+
 
 /* frees all memory allocated manually */
 void freeAll(){
