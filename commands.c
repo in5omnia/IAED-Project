@@ -177,11 +177,11 @@ Date command_T(Date today){
 
 void commandR(Date today)
 {
-	char *reservation_code=NULL, temp[MAX_CMD_R], flightId[MAX_FLIGHT_ID];
+	char *reservation_code=NULL, temp[MAX_CMD_R], flightID[MAX_FLIGHT_ID];
 	int passengerNum;
 	Date flightDate;
 
-	scanf(IN_STR, flightId);
+	scanf(IN_STR, flightID);
 	scanf(IN_DATE, &flightDate.day, &flightDate.month, &flightDate.year);
 
 	if (getchar()!='\n'){
@@ -195,12 +195,13 @@ void commandR(Date today)
 		}
 		strcpy(reservation_code, temp);
 
-		if (!add_Reservation(flightId, flightDate, reservation_code,
-							 passengerNum, today))
+		if (!add_Reservation(flightID, flightDate, reservation_code,
+							 passengerNum, today)){
 			free(reservation_code);
+		}
 	}
 	else{
-		listReservations(flightId, flightDate, today);
+		listReservations(flightID, flightDate, today);
 	}
 }
 

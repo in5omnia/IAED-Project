@@ -105,20 +105,23 @@ Flight* validReservation(char flightId[], Date flightDate, char* reservationCode
 	}
 	flight_ptr = duplicateFlight(flightId, flightDate, 'r');
 
-	/* if the flight exists */
-	if (flight_ptr != NULL){
+	if (flight_ptr == NULL){
+		return NULL;
+	}
 
-		if (duplicateReservation(reservationCode) ||
-			tooManyReservations(passengerNum, flight_ptr) ||
-			!check_date(flightDate, today))
-			return NULL;
+	if (!duplicateReservation(reservationCode) &&
+		!tooManyReservations(passengerNum, flight_ptr) &&
+		check_date(flightDate, today)){
 
 		if (!VALID_PASSENGER_NUM) {
 			printf(OUT_INVALID_PASSENGER_NUM);
 			return NULL;
 		}
+		return flight_ptr;
 	}
-	return flight_ptr;
+	else
+		return NULL;
+
 }
 
 
@@ -173,7 +176,7 @@ int add_Reservation(char flightId[], Date flightDate,
 
 
 void sortReservations(Reservation **reservationList, int numRes){
-	/*very slow basic selection sort*/
+
 	Reservation* temp;
 	int i,j;
 	for (i=0; i < numRes; i++){
@@ -238,8 +241,10 @@ int deleteReservation(char* code){
 	for (aux = g_allRes_Head; aux != NULL; aux = aux->AllRes_next){
 
 		if (!strcmp(aux->reservation->reservationCode, code)){
+
 			/* remove from all reservations list */
 			deleteResNode(aux);
+
 			/* removes from flight's list of reservations */
 			flightPtr = aux->reservation->flight_ptr;
 			numRes = flightPtr->numReservations;

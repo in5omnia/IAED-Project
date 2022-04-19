@@ -19,7 +19,6 @@
 #define MAX_AIRPORT_ID 4
 #define MAX_AIRPORTS 40
 #define MAX_FLIGHTS 30000
-#define MAX_FLIGHT_ID_STR 3
 #define MAX_FLIGHT_ID 7
 #define FLIGHT_ID_MAXLEN 6
 #define MAX_CMD_R 65518
@@ -270,7 +269,7 @@ int validReservationCode(char* reservationCode);
 
 void deleteFlightReservations(Flight* flight_ptr);
 
-
+void sorting(Reservation **reservations);
 
 #endif
 
