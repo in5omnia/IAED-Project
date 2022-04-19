@@ -41,12 +41,11 @@ int validAirportID(char airportID[MAX_AIRPORT_ID]){
 
 	for (i=0; airportID[i] != '\0'; i++){
 
-		if (i >= MAX_AIRPORT_ID-1) {	/*	more than 3 letters */
+		if (i >= MAX_AIRPORT_ID-1) {
 			printf(INVALID_AIRPORT_ID);
 			return 0;
 		}
 
-		/* not all upper case */
 		if (airportID[i] < 'A' || airportID[i] > 'Z') {
 			printf(INVALID_AIRPORT_ID);
 			return 0;
@@ -54,7 +53,7 @@ int validAirportID(char airportID[MAX_AIRPORT_ID]){
 
 	}
 
-	if (i < MAX_AIRPORT_ID-1) {	/* menos de 3 letras */
+	if (i < MAX_AIRPORT_ID-1) {
 		printf(INVALID_AIRPORT_ID);
 		return 0;
 	}
@@ -68,8 +67,8 @@ int airportExist(char airportID[MAX_AIRPORT_ID], char flag){
 	int i;
 
 	for (i=0; i < g_TotalOfAirports; i++){
-		/*	Compares the airportID with each system's airport's ID	*/
-		if (!strcmp(airportID, airportBank[i].ID)) {	/*	same ID	*/
+
+		if (!strcmp(airportID, airportBank[i].ID)) {
 			if (CASE_A) {
 				printf(DUPLICATE_AIRPORT);
 			}
@@ -77,7 +76,7 @@ int airportExist(char airportID[MAX_AIRPORT_ID], char flag){
 		}
 	}
 
-	if (!CASE_A)	/*	Case A doesn't require this error message	*/
+	if (!CASE_A)
 		printf(OUT_NO_AIRPORT_ID, airportID);
 
 	return 0;
@@ -116,32 +115,22 @@ int partition(int left, int right)
 	int j = right;
 
 	char v[MAX_AIRPORT_ID];
-	/* v is the ID of the pivot airport at the right end of the partition */
 	strcpy(v, airportBank[right].ID);
 
 
 	while (i < j) {
-		/*	goes through airport IDs from the left to right until finding the
-		 * first one that should come after v */
 		while (beforeLetters(airportBank[++i].ID, v));
 
-		/*	goes through airport IDs from the right to left until finding the
-		 * first one that should come before v */
 		while (beforeLetters(v, airportBank[--j].ID)){
 			if (j == left)
 				break;
 		}
-		/*	exchanges the airports found to put them on the correct side of
-		 * the partition*/
 		if (i < j)
 			exch(i, j);
 
 	}
-	/*	exchanges v's corresponding airport with the one that should come
-	 * after it	*/
 	exch(i, right);
-
-	return i;	/*	returns the index of where the array was divided	*/
+	return i;
 }
 
 
@@ -188,16 +177,16 @@ int findAirports(int num_IDs, int existingID[MAX_AIRPORTS],
 	int i, e, c, num_airports_found=0;
 
 	for (c=0; c < num_IDs; c++){
-		existingID[c] = 0;	/* initializes vector that checks IDs with 0 */
+		existingID[c] = 0;
 	}
 
 	for (i=0; i < g_TotalOfAirports; i++){
-		/* all the requested airports were found */
+
 		if (num_airports_found == num_IDs)
 			break;
 
 		for (e=0; e < num_IDs; e++){
-			/*	the requested airport is in the airportBank	*/
+
 			if (!strcmp(airportBank[i].ID, requested_IDs[e])){
 
 				requestedAirports[e] = airportBank[i];
@@ -222,12 +211,11 @@ void listRequestedAirports(char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
 	num_airports_found = findAirports(num_IDs, existingID,
 									  requestedAirports, requested_IDs);
 
-	/* only checks existence if not all were found */
 	if (num_airports_found != num_IDs){
 
 		for (a=0; a < num_IDs; a++){
 
-			if (!existingID[a]){	/* if airport doesn't exist */
+			if (!existingID[a]){
 				printf(OUT_NO_AIRPORT_ID, requested_IDs[a]);
 			}
 			else {
@@ -238,7 +226,7 @@ void listRequestedAirports(char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID],
 			}
 		}
 	}
-	/* if all the requested airports exist */
+
 	else
 		listAirports(requestedAirports, num_IDs);
 

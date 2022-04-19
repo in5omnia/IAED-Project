@@ -20,6 +20,8 @@
 #define MAX_AIRPORTS 40
 #define MAX_FLIGHTS 30000
 #define MAX_FLIGHT_ID_STR 3
+#define MAX_FLIGHT_ID 7
+#define FLIGHT_ID_MAXLEN 6
 #define MAX_CMD_R 65518
 #define MAX_CMD_E 65535
 
@@ -32,8 +34,8 @@
 
 #define OUT_AIRPORT_ID "airport %s\n"
 #define OUT_AIRPORT "%s %s %s %d\n"
-#define OUT_FLIGHT "%s%d %s %s %02d-%02d-%d %02d:%02d\n"
-#define OUT_P_C_FLIGHT "%s%d %s %02d-%02d-%d %02d:%02d\n"
+#define OUT_FLIGHT "%s %s %s %02d-%02d-%d %02d:%02d\n"
+#define OUT_P_C_FLIGHT "%s %s %02d-%02d-%d %02d:%02d\n"
 
 #define OUT_NO_AIRPORT_ID "%s: no such airport ID\n"
 #define DUPLICATE_AIRPORT "duplicate airport\n"
@@ -52,17 +54,12 @@
 
 #define IN_DATE "%d-%d-%d"
 #define IN_TIME "%d:%d"
-#define IN_FLIGHT_ID "%02s%d"
 #define IN_CAPACITY "%d"
-#define IN_AIRPORT_ID_OR_COUNTRY "%s"
+#define IN_STR "%s"
 #define IN_CITY " %[^\n]"
 
-#define OUT_P_C_FLIGHT_VARIABLES f.ID.letters, f.ID.num, airportInOutput,\
+#define OUT_P_C_FLIGHT_VARIABLES f.ID, airportInOutput,\
 f_date.day, f_date.month, f_date.year, f_time.hour, f_time.min
-
-
-
-
 
 #define less(A, B) (A < B)
 
@@ -96,18 +93,9 @@ typedef struct {
 } DateTime;
 
 
-typedef struct {
-
-   char letters[MAX_FLIGHT_ID_STR];
-   int num;
-
-} FlightID;
-
-
-
 typedef struct flight{
 
-   FlightID ID;
+   char ID[MAX_FLIGHT_ID];
    char departureAirport[MAX_AIRPORT_ID];
    char arrivalAirport[MAX_AIRPORT_ID];
    DateTime departureDateTime;
@@ -138,27 +126,24 @@ typedef struct node {
 } ResNode;
 
 
-
-
-
 /*	flight.c functions	*/
 
-Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
+Flight createFlight(char flightID[], char departureAirportID[MAX_AIRPORT_ID],
 				   char arrivalAirportID[MAX_AIRPORT_ID],
 				   DateTime departureDateTime, DateTime arrivalDateTime,
 				  int capacity);
 
-int validFlightID(FlightID flightID);
+int validFlightID(char flightID[]);
 
 int validCapacity(int capacity);
 
-Flight* duplicateFlight(FlightID flightID, Date departureDate,
+Flight* duplicateFlight(char flightID[], Date departureDate,
 					   char flag);
 
 int tooManyFlights();
 
 void addFlight(Date departure_date, Time departureTime, Time duration,
-			  int capacity, FlightID flightID,
+			  int capacity, char flightID[],
 			  char depAirportID[MAX_AIRPORT_ID],
 			  char arrAirportID[MAX_AIRPORT_ID]);
 
@@ -172,7 +157,7 @@ void listAllFlights();
 void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 					  char flag);
 
-int deleteFlight(FlightID flightID);
+int deleteFlight(char flightID[]);
 
 /*	date_time.c functions	*/
 
@@ -240,7 +225,7 @@ void freeAll();
 
 int validate_case_a(char airportID[]);
 
-int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
+int valid_case_v(char flightID[], char arrivalAirportID[MAX_AIRPORT_ID],
 				char departureAirportID[MAX_AIRPORT_ID], Date departureDate,
 				Time duration, int capacity, Date today);
 
@@ -261,18 +246,18 @@ void commandE();
 
 
 /*	reservation file functions	*/
-int add_Reservation(FlightID flightId, Date flightDate, char* reservationCode,
+int add_Reservation(char flightId[], Date flightDate, char* reservationCode,
 				   int passengerNum, Date today);
 
-void listReservations(FlightID flightId, Date flightDate, Date today);
+void listReservations(char flightId[], Date flightDate, Date today);
 
-FlightID getFlightID(char* code);
+/*char* getFlightID(char* code);*/
 
 int deleteReservation(char* code);
 
 void sortReservations(Reservation **reservationList, int numRes);
 
-Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCode,
+Flight* validReservation(char flightId[], Date flightDate, char* reservationCode,
 						int passengerNum, Date today);
 
 int tooManyReservations(int reservationPassengers, Flight *flight_ptr);

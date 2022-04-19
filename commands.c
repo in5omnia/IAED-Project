@@ -11,7 +11,7 @@
 extern int g_TotalOfAirports;
 extern int g_TotalOfFlights;
 extern Airport *airportBank;
-extern ResNode *g_allRes_Head_ptr;
+extern ResNode *g_allRes_Head;
 
 
 /*	Checks validity for "case a" : returns 1 if the airportID is valid and if
@@ -35,7 +35,7 @@ int validate_case_a(char airportID[]){
  * if adding a flight will exceed the limit of flights; if the flight date,
  * duration and capacity are valid	*/
 
-int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
+int valid_case_v(char flightID[], char arrivalAirportID[MAX_AIRPORT_ID],
 				 char departureAirportID[MAX_AIRPORT_ID], Date departureDate,
 				 Time duration, int capacity, Date today) {
 
@@ -46,8 +46,6 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 		validAirportID(departureAirportID) &&
 		validAirportID(arrivalAirportID)) {
 
-		/* airportExist returns 0 or (airport index in airportBank + 1)
-		 * if it exists*/
 		departureIndexPlus1 = airportExist(departureAirportID,CASE_V);
 
 		arrivalIndexPlus1 = airportExist(arrivalAirportID,CASE_V);
@@ -71,8 +69,8 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 void commandA(){
 
 	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
-	scanf(IN_AIRPORT_ID_OR_COUNTRY, airportID);
-	scanf(IN_AIRPORT_ID_OR_COUNTRY, country);
+	scanf(IN_STR, airportID);
+	scanf(IN_STR, country);
 	scanf(IN_CITY, city);
 
 	if (validate_case_a(airportID)) {
@@ -81,7 +79,6 @@ void commandA(){
 		addAirport(new_airport);
 
 		printf(OUT_AIRPORT_ID, airportID);
-		/*	increases global variable (total of airports in the system)	*/
 		g_TotalOfAirports++;
 
 	}
@@ -102,7 +99,7 @@ void commandL(){
 		char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID];
 		int num_IDs = 0;
 		do {
-			scanf(IN_AIRPORT_ID_OR_COUNTRY, airportID);
+			scanf(IN_STR, airportID);
 			strcpy(requested_IDs[num_IDs], airportID);
 			num_IDs++;
 
@@ -124,14 +121,14 @@ void commandV(Date today){
 	} else {
 
 		int capacity;
-		char depAirportID[MAX_AIRPORT_ID], arrAirportID[MAX_AIRPORT_ID];
-		FlightID flightID;
+		char depAirportID[MAX_AIRPORT_ID], arrAirportID[MAX_AIRPORT_ID],
+			flightID[MAX_FLIGHT_ID];
 		Date departure_date;
 		Time duration, departureTime;
 
-		scanf(IN_FLIGHT_ID, flightID.letters, &flightID.num);
-		scanf(IN_AIRPORT_ID_OR_COUNTRY, depAirportID);
-		scanf(IN_AIRPORT_ID_OR_COUNTRY, arrAirportID);
+		scanf(IN_STR, flightID);
+		scanf(IN_STR, depAirportID);
+		scanf(IN_STR, arrAirportID);
 
 		scanf(IN_DATE, &departure_date.day, &departure_date.month,
 			  &departure_date.year);
@@ -155,7 +152,7 @@ void commandV(Date today){
 void command_P_C(char flag){
 
 	char airportID[MAX_AIRPORT_ID];
-	scanf(IN_AIRPORT_ID_OR_COUNTRY, airportID);
+	scanf(IN_STR, airportID);
 	findFlights(airportID, flag);
 }
 
@@ -169,7 +166,7 @@ Date command_T(Date today){
 	scanf(IN_DATE, &day, &month, &year);
 	possibleDate = createDate(day, month, year);
 
-	if (check_date(possibleDate, today))	/*	checks date's validity	*/
+	if (check_date(possibleDate, today))
 	{
 		today = newDate(possibleDate, today);
 		outputDate(today);
@@ -180,24 +177,14 @@ Date command_T(Date today){
 
 void commandR(Date today)
 {
-	char *reservation_code=NULL, temp[MAX_CMD_R];
+	char *reservation_code=NULL, temp[MAX_CMD_R], flightId[MAX_FLIGHT_ID];
 	int passengerNum;
-	FlightID flightId;
 	Date flightDate;
 
-	scanf(IN_FLIGHT_ID, flightId.letters, &flightId.num);
+	scanf(IN_STR, flightId);
 	scanf(IN_DATE, &flightDate.day, &flightDate.month, &flightDate.year);
 
 	if (getchar()!='\n'){
-
-		/*reservation_code = (char*)malloc(sizeof (char)*MAX_CMD_R);*/
-
-		/*if (reservation_code == NULL){
-			printf(NO_MEMORY);
-			freeAll();
-			exit(0);
-		}*/
-
 
 		scanf(IN_RES_CODE_AND_PASS, temp, &passengerNum);
 
@@ -222,15 +209,13 @@ void commandR(Date today)
 void commandE(){
 	char *code = malloc(sizeof (char)*MAX_CMD_E);
 	int len;
-	FlightID flightID;
-	scanf("%s", code);
+	scanf(IN_STR, code);
 	len = strlen(code);
 	code = realloc(code, sizeof (char)*(len+1));
 
 	if (len < 10){
 
-		flightID = getFlightID(code);
-		if (!deleteFlight(flightID))
+		if (!deleteFlight(code))
 			printf(NOT_FOUND);
 
 	}

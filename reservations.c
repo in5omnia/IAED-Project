@@ -11,33 +11,35 @@
 extern int g_TotalOfFlights;
 extern Flight* flightBank_Tail;
 extern Flight* flightBank_Head;
-extern ResNode* g_allRes_Head_ptr;
+extern ResNode* g_allRes_Head;
 /*extern ResNode g_allRes_Head;*/
 
 int resListIsEmpty(){
-	return (g_allRes_Head_ptr == NULL);
+	return (g_allRes_Head == NULL);
 }
 
-
+/* initializes doubly linked list of all reservations */
 ResNode* resListInit(Reservation* newRes){
 	/*ResNode *head = &g_allRes_Head;*/
 	ResNode *head = (ResNode*)malloc(sizeof(ResNode));
 	head->reservation = newRes;
 	head->AllRes_next = NULL;
 	head->AllRes_prev = NULL;
-	g_allRes_Head_ptr = head;
-	return g_allRes_Head_ptr;
+	g_allRes_Head = head;
+	return g_allRes_Head;
 }
 
+
+/* links new reservation to the doubly linked list of all reservations */
 ResNode* insertAtBeginning(Reservation *newRes){
 	ResNode *newNode = (ResNode*)malloc(sizeof(ResNode));
 	newNode->reservation = newRes;
 	newNode->AllRes_next = NULL;
 	newNode->AllRes_prev = NULL;
 
-	newNode->AllRes_next = g_allRes_Head_ptr; /* new.next points to head */
-	g_allRes_Head_ptr->AllRes_prev = newNode; /* old_head.before  points to new */
-	g_allRes_Head_ptr = newNode; /* new becomes new head */
+	newNode->AllRes_next = g_allRes_Head; /* new.next points to head */
+	g_allRes_Head->AllRes_prev = newNode; /* old_head.before  points to new */
+	g_allRes_Head = newNode; /* new becomes new head */
 	return newNode;
 }
 
@@ -66,7 +68,7 @@ int duplicateReservation(char* reservation_code){
 
 	ResNode *aux=NULL;
 
-	for (aux = g_allRes_Head_ptr; aux != NULL; aux = aux->AllRes_next) {
+	for (aux = g_allRes_Head; aux != NULL; aux = aux->AllRes_next) {
 		if (aux->reservation->reservationCode!= NULL && !strcmp(aux->reservation->reservationCode, reservation_code))
 		{
 			printf(DUPLICATE_RESERVATION, reservation_code);
@@ -88,7 +90,7 @@ int tooManyReservations(int reservationPassengers, Flight *flight_ptr){
 }
 
 
-Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCode,
+Flight* validReservation(char flightId[], Date flightDate, char* reservationCode,
 						 int passengerNum, Date today){
 
 	Flight * flight_ptr;
@@ -114,7 +116,7 @@ Flight* validReservation(FlightID flightId, Date flightDate, char* reservationCo
 }
 
 
-int add_Reservation(FlightID flightId, Date flightDate,
+int add_Reservation(char flightId[], Date flightDate,
 					char* reservationCode, int passengerNum, Date today) {
 	Reservation* new=(Reservation*)malloc(sizeof(Reservation));
 	int numRes;
@@ -151,7 +153,6 @@ int add_Reservation(FlightID flightId, Date flightDate,
 	++(flight_ptr->numReservations);
 	flight_ptr->numPassengers += passengerNum;
 
-	/* links new reservation to the list of all reservations */
 	if (resListIsEmpty()) {
 		flight_ptr->reservationList[numRes]->resNode_ptr = resListInit(new);
 
@@ -185,7 +186,7 @@ void sortReservations(Reservation **reservationList, int numRes){
 }
 
 
-void listReservations(FlightID flightId, Date flightDate, Date today){
+void listReservations(char flightId[], Date flightDate, Date today){
 
 	int i, numRes;
 	Reservation* res;
@@ -210,8 +211,8 @@ void listReservations(FlightID flightId, Date flightDate, Date today){
 void deleteResNode(ResNode *current){
 	ResNode *prev = current->AllRes_prev, *next = current->AllRes_next;
 
-	if (current == g_allRes_Head_ptr){
-		g_allRes_Head_ptr = next;
+	if (current == g_allRes_Head){
+		g_allRes_Head = next;
 	}
 	else {
 		prev->AllRes_next = next;
@@ -227,7 +228,7 @@ int deleteReservation(char* code){
 	ResNode *aux=NULL;
 	int i, numRes, resIndex;
 	Flight *flightPtr;
-	for (aux = g_allRes_Head_ptr; aux != NULL; aux = aux->AllRes_next){
+	for (aux = g_allRes_Head; aux != NULL; aux = aux->AllRes_next){
 
 		if (!strcmp(aux->reservation->reservationCode, code)){
 			/* remove from all reservations list */
@@ -250,12 +251,9 @@ int deleteReservation(char* code){
 						sizeof(Reservation)*
 							(--flightPtr->numReservations));
 
-			/* deletes aux reservation's memory block */
-			/*free(aux);*/	/* NECESSARY??????*/
 			return 1;
 		}
 	}
-	/* if the reservation wasn't found */
 	return 0;
 }
 

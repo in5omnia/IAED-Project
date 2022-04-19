@@ -18,8 +18,8 @@ Airport *airportBank = NULL;
 Flight* flightBank_Tail = NULL;
 Flight* flightBank_Head = NULL;
 /* initializes linked list of reservations */
-ResNode *g_allRes_Head_ptr = NULL;
-/*ResNode g_allRes_Head;*/
+ResNode *g_allRes_Head = NULL;
+
 
 /*	identifies command and redirects to associated function	*/
 Date readCommand(char cmd, Date today) {
@@ -52,7 +52,7 @@ Date readCommand(char cmd, Date today) {
 	return today;
 }
 
-
+/* frees memory associated with each flight and its reservations */
 void freeFlight(){
 	Flight *temp = flightBank_Head;
 	int i;
@@ -69,9 +69,9 @@ void freeFlight(){
 	flightBank_Head->prev = NULL;
 }
 
+/* frees all memory allocated manually */
 void freeAll(){
 	while (flightBank_Head != flightBank_Tail){
-		/*free(temp->ID.letters);*/
 		freeFlight();
 	}
 	if (flightBank_Tail != NULL) {
@@ -89,7 +89,6 @@ void freeAll(){
 int main() {
 	Date today = FIRST_TODAY;
 	char cmd;
-	/*	gets commands from standard input	*/
 	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
 		today = readCommand(cmd, today);
 	}

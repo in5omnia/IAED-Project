@@ -30,21 +30,19 @@ void insertEnd(Flight* new){
 
 
 /*	Creates a Flight	*/
-Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
+Flight createFlight(char flightID[], char departureAirportID[MAX_AIRPORT_ID],
 					char arrivalAirportID[MAX_AIRPORT_ID],
 					DateTime departureDateTime, DateTime arrivalDateTime,
 					int capacity) {
 
 	Flight newFlight;
 
-	newFlight.ID = flightID;
+	strcpy(newFlight.ID, flightID);
 	strcpy(newFlight.departureAirport, departureAirportID);
 	strcpy(newFlight.arrivalAirport, arrivalAirportID);
 
 	newFlight.departureDateTime = departureDateTime;
 	newFlight.arrivalDateTime = arrivalDateTime;
-
-	/*newFlight.duration = duration;*/
 	newFlight.capacity = capacity;
 
 	newFlight.numPassengers = 0;
@@ -59,28 +57,33 @@ Flight createFlight(FlightID flightID, char departureAirportID[MAX_AIRPORT_ID],
 
 
 
-/* Compares 2 flightIDs. Returns 1 if they are the same and 0 if not. */
-int sameFlightID(FlightID id_1, FlightID id_2){
-	return (!strcmp(id_1.letters, id_2.letters) && id_1.num == id_2.num);
-}
-
 /*	Checks flightID's validity - checks if it has 2, all upper case, letters
  * and if its number is within the correct interval. Returns 1 if it's valid
  * and 0 if not.	*/
-int validFlightID(FlightID flightID){
+int validFlightID(char flightID[]){
 	int i;
 
-	for (i=0; flightID.letters[i] != '\0' && i < MAX_FLIGHT_ID_STR; i++) {
+	if (strlen(flightID) > FLIGHT_ID_MAXLEN)
+		return 0;
 
-		if (flightID.letters[i] < 'A' || flightID.letters[i] > 'Z') {
+	for (i=0; flightID[i] != '\0' && i < 2; i++) {
 
+		if (flightID[i] < 'A' || flightID[i] > 'Z') {
 			printf(INVALID_FLIGHT_ID);
 			return 0;
 		}
 	}
-	if (flightID.num < 1 || flightID.num > 9999){
+
+	if (flightID[2] == '0') {
 		printf(INVALID_FLIGHT_ID);
 		return 0;
+	}
+
+	for (i=3; flightID[i] != '\0'; i++) {
+		if (flightID[i] < '0' || flightID[i] > '9') {
+			printf(INVALID_FLIGHT_ID);
+			return 0;
+		}
 	}
 	return 1;
 }
@@ -100,23 +103,21 @@ int validCapacity(int capacity){
 
 /*	Checks if flight already exists (is duplicate). Returns 0 if it exists and
  * 1 if not. */
-Flight* duplicateFlight(FlightID flightID, Date departureDate, char flag) {
+Flight* duplicateFlight(char flightID[], Date departureDate, char flag) {
 
 	Flight* aux;
 	for (aux = flightBank_Head; aux != NULL ; aux = aux->next) {
 
-		if (sameFlightID(flightID, aux->ID)
-			&& sameDate(departureDate,
-						aux->departureDateTime.date))
-		/* same code for same day*/
-		{
+		if (!strcmp(flightID, aux->ID)
+			&& sameDate(departureDate,aux->departureDateTime.date)){
+
 			if (flag == 'v')
 				printf(DUPLICATE_FLIGHT);
 			return aux;
 		}
 	}
 	if (flag == 'r')
-		printf(FLIGHT_DOESNT_EXIST, flightID.letters, flightID.num);
+		printf(FLIGHT_DOESNT_EXIST, flightID);
 	return NULL;
 }
 
@@ -139,7 +140,7 @@ int tooManyFlights(){
 
 /*	Creates and adds new flight to the system	*/
 void addFlight(Date departure_date, Time departureTime, Time duration,
-			   int capacity, FlightID flightID,
+			   int capacity, char flightID[],
 			   char depAirportID[MAX_AIRPORT_ID],
 			   char arrAirportID[MAX_AIRPORT_ID]){
 
@@ -160,7 +161,7 @@ void addFlight(Date departure_date, Time departureTime, Time duration,
 	}
 	else
 		insertEnd(newFlight);
-	/*	increases global variable (total of flights in the system)	*/
+
 	g_TotalOfFlights++;
 
 }
@@ -174,26 +175,25 @@ void findFlights(char airportID[MAX_AIRPORT_ID], char flag){
 	int number_flights, num_flights_found=0;
 	int airportIndexPlus1 = airportExist(airportID, CASE_V);
 
-	if (!airportIndexPlus1) 	/*	if airport doesn't exist	*/
+	if (!airportIndexPlus1)
 		return;
 
 
-	if (CASE_P)		/*	gets airport's number of departure flights */
+	if (CASE_P)
 		number_flights = airportBank[airportIndexPlus1-1].n_Departure_Flights;
 
-	else 	/* (case C)  gets airport's number of arrival flights */
+	else
 		number_flights = airportBank[airportIndexPlus1-1].n_Arrival_Flights;
 
 
 	for (aux = flightBank_Head; aux != NULL; aux = aux->next) {
 
-		if (num_flights_found == number_flights)	/* all flights were found*/
+		if (num_flights_found == number_flights)
 			break;
 
 		if ((CASE_P && !strcmp(aux->departureAirport, airportID))
 			|| (CASE_C && !strcmp(aux->arrivalAirport, airportID))){
 
-			/*	adds flight to wantedFlights	*/
 			wantedFlights[num_flights_found] = *aux;
 			num_flights_found++;
 		}
@@ -222,7 +222,7 @@ void sortFlights( Flight desiredFlights[MAX_FLIGHTS], int left, int right,
 				desiredFlights[j + 1] = desiredFlights[j];
 				j--;
 			}
-		} else {	/*	CASE C	*/
+		} else {
 			while ( j >= left && beforeDateTime(v.arrivalDateTime,
 											   desiredFlights[j].arrivalDateTime))
 			{
@@ -248,7 +248,7 @@ void listAllFlights() {
 		f_date = f.departureDateTime.date;
 		f_time = f.departureDateTime.time;
 
-		printf(OUT_FLIGHT, f.ID.letters, f.ID.num, f.departureAirport,
+		printf(OUT_FLIGHT, f.ID, f.departureAirport,
 			   f.arrivalAirport, f_date.day, f_date.month, f_date.year,
 			   f_time.hour, f_time.min);
 	}
@@ -276,7 +276,7 @@ void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 			printf(OUT_P_C_FLIGHT, OUT_P_C_FLIGHT_VARIABLES);
 		}
 
-	} else {	/* case C */
+	} else {
 
 		for (i=0; i < num_flights; i++) {
 
@@ -291,34 +291,13 @@ void outputFlights_P_C(Flight wantedFlights[MAX_FLIGHTS], int num_flights,
 }
 
 
-
-FlightID getFlightID(char* code){
-	FlightID id;
-	char* temp = NULL;
-	int i;
-	for (i=0; i < 2; i++){
-		id.letters[i] = code[i];
-	}
-	id.letters[i] = '\0';
-	for (i=0; i < 4 && code[i] != '\0'; i++){
-		temp = realloc(temp, sizeof(char)*(i+1));
-		temp[i]= code[i+2];
-	}
-
-	id.num = atoi(temp);
-	free(temp);
-
-	return id;
-}
-
-
-int deleteFlight(FlightID flightID){
+int deleteFlight(char flightID[]){
 
 	Flight* aux, *next;
 	int flag=0;
 	for (aux = flightBank_Head; aux != NULL; aux = next){
 
-		if (sameFlightID(flightID, aux->ID)){
+		if (!strcmp(flightID, aux->ID)){
 
 			deleteFlightReservations(aux);
 			if (aux == flightBank_Head)

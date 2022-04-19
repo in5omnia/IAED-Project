@@ -152,7 +152,6 @@ DateTime sumDuration(DateTime departure, Time duration) {
 	departure.time.hour += duration.hour;
 	departure.time.min += duration.min;
 
-	/* converts minutes and hours to their correct interval */
 	if (departure.time.min > 59) {
 		departure.time.min -= 60;
 		departure.time.hour += 1;
@@ -161,7 +160,6 @@ DateTime sumDuration(DateTime departure, Time duration) {
 		departure.time.hour -= 24;
 		departure.date.day += 1;
 	}
-	/* converts day, month and year to their correct interval */
 	if (departure.date.day > daysPerMonth[departure.date.month-1]) {
 		departure.date.month++;
 		departure.date.day = 1;

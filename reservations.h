@@ -9,7 +9,7 @@
 
 /*#include "BG_102463.h"*/
 
-#define FLIGHT_DOESNT_EXIST "%s%d: flight does not exist\n"
+#define FLIGHT_DOESNT_EXIST "%s: flight does not exist\n"
 #define OUT_INVALID_PASSENGER_NUM "invalid passenger number\n"
 #define OUT_INVALID_RES_CODE "invalid reservation code\n"
 #define DUPLICATE_RESERVATION "%s: flight reservation already used\n"
