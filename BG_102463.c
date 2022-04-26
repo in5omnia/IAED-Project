@@ -1,25 +1,30 @@
 /*
 * File: BG_102463.c
 * Author: Beatriz Gavilan - 102463
-* Description: main file with main function and the function that identifies
- * commands.
-*/
+* Description: main file with main function, the function that frees all memory                 allocated and the function that identifies commands.
+ */
 
 #include "BG_102463.h"
 
 
-/*	initializes global variables */
-
+/*	Initializes global variables */
 int g_TotalOfAirports = 0;
 int g_TotalOfFlights = 0;
-/*	initializes array of all airports currently in the system	*/
+
+/* Pointer to array of airports in the system */
 Airport *airportBank = NULL;
-/*	initializes doubly linked list of flights currently in the system	*/
-Flight* flightBank_Tail = NULL;
+
+/* Pointers to the beginning and end of a doubly linked list of flights,
+ * respectively */
 Flight* flightBank_Head = NULL;
+Flight* flightBank_Tail = NULL;
+
+/* Declaration of the hashTable of ResNodes */
+ResNode* hashTable[HASH_TABLE_SIZE];
 
 
-/*	identifies command and redirects to associated function	*/
+
+/*	Identifies command and redirects to associated function.	*/
 Date readCommand(char cmd, Date today) {
 
 	switch (cmd) {
@@ -46,46 +51,60 @@ Date readCommand(char cmd, Date today) {
 
 		case 'e': commandE();
 			break;
+
 	}
 	return today;
 }
 
 
-void del(){
+/* Quits the program if there's no memory left. */
+void noMemory() {
+    
+	printf(NO_MEMORY);
+	freeAll();
+	exit(1);
+}
+
+
+/* Frees memory associated with a flight and its reservations. */
+void freeFlight() {
+
 	Flight *temp = flightBank_Head;
-	if (temp->reservationList != NULL)
-		free(temp->reservationList);
+
+	deleteFlightReservations(temp);
 	flightBank_Head = flightBank_Head->next;
+
 	free(temp);
-	temp=NULL;
-	flightBank_Head->prev = NULL;
-}
+	if (flightBank_Head != NULL)
+        flightBank_Head->prev = NULL;
 
-void freeAll(){
-	while (flightBank_Head != flightBank_Tail){
-		/*free(temp->ID.letters);*/
-		del();
-	}
-	if (flightBank_Tail->reservationList != NULL)
-		free(flightBank_Tail->reservationList);
-	free(flightBank_Tail);
-	free(airportBank);
 }
 
 
+/* Frees all memory allocated manually */
+void freeAll() {
+    
+	while (flightBank_Head != flightBank_Tail) freeFlight();
+
+	if (flightBank_Tail != NULL)
+        freeFlight();
+
+	if (airportBank != NULL)
+        free(airportBank);
+}
 
 
 int main() {
-
+    
 	Date today = FIRST_TODAY;
 	char cmd;
-	/*	gets commands from standard input	*/
-	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM){
+	Init_HashTable();
+
+	while ((cmd = getchar()) != EOF && cmd != END_PROGRAM) {
 		today = readCommand(cmd, today);
 	}
 	freeAll();
 	return 0;
 }
-
 
 

@@ -30,7 +30,7 @@ DateTime createDateTime(Date date, Time time) {
 
 
 /*	Creates a new date	*/
-Date newDate(Date possibleDate, Date today){
+Date newDate(Date possibleDate, Date today) {
 
 	today.day = possibleDate.day;
 	today.month = possibleDate.month;
@@ -43,7 +43,7 @@ Date newDate(Date possibleDate, Date today){
 /*	Checks if a date (taking as arguments a day, month and year) is in the past,
  * when compared with the system's "today". If so, it returns 1, if not, it
  * returns 0.	*/
-int pastDate(int day, int month, int year, Date today){
+int pastDate(int day, int month, int year, Date today) {
 
 	return ((year < today.year) ||
 			(year == today.year && month < today.month) ||
@@ -64,8 +64,9 @@ int afterOneYear(int day, int month, int year, Date today) {
 
 
 /*	Presents a date in the standard output	*/
-void outputDate(Date date){
-	printf("%02d-%02d-%d\n", date.day, date.month, date.year);
+void outputDate(Date date) {
+
+	printf(OUT_DATE, date.day, date.month, date.year);
 }
 
 
@@ -80,8 +81,8 @@ int check_date(Date date, Date today) {
 	if (pastDate(date.day, date.month, date.year, today) ||
 		afterOneYear(date.day, date.month, date.year, today) ||
 		date.day > daysPerMonth[date.month-1]) {
-		printf(INVALID_DATE);
 
+		printf(INVALID_DATE);
 		return 0;
 	}
 	return 1;
@@ -90,7 +91,7 @@ int check_date(Date date, Date today) {
 
 /*	Checks the duration's validity: if it's within the correct interval (no more
  * than 12 hours). Returns 1 if it's valid and 0 if not.	*/
-int validDuration(Time duration){
+int validDuration(Time duration) {
 
 	if (duration.hour > 12 || (duration.hour == 12 && duration.min > 0)) {
 
@@ -111,7 +112,7 @@ int sameDate(Date date1, Date date2) {
 
 /*	Checks if a time object is in the past when compared to another. Returns 1
  * if it is and 0 if not.	*/
-int beforeTime(Time time1, Time time2){
+int beforeTime(Time time1, Time time2) {
 
 	if (time1.hour < time2.hour ||
 		(time1.hour == time2.hour && time1.min < time2.min))
@@ -128,15 +129,12 @@ int beforeDateTime(DateTime dateTime1, DateTime dateTime2) {
 	int day1 = dateTime1.date.day, month1 = dateTime1.date.month,
 		year1 = dateTime1.date.year;
 
-
-	if (pastDate(day1, month1, year1, dateTime2.date)){
+	if (pastDate(day1, month1, year1, dateTime2.date))
 		return 1;
-	}
 
 	if (sameDate(dateTime1.date, dateTime2.date) &&
-		beforeTime(dateTime1.time, dateTime2.time)) {
+		beforeTime(dateTime1.time, dateTime2.time))
 		return 1;
-	}
 
 	return 0;
 }
@@ -152,7 +150,6 @@ DateTime sumDuration(DateTime departure, Time duration) {
 	departure.time.hour += duration.hour;
 	departure.time.min += duration.min;
 
-	/* converts minutes and hours to their correct interval */
 	if (departure.time.min > 59) {
 		departure.time.min -= 60;
 		departure.time.hour += 1;
@@ -161,7 +158,6 @@ DateTime sumDuration(DateTime departure, Time duration) {
 		departure.time.hour -= 24;
 		departure.date.day += 1;
 	}
-	/* converts day, month and year to their correct interval */
 	if (departure.date.day > daysPerMonth[departure.date.month-1]) {
 		departure.date.month++;
 		departure.date.day = 1;

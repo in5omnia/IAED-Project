@@ -2,7 +2,7 @@
 * File: commands.c
 * Author: Beatriz Gavilan - 102463
 * Description: file with functions that execute or validate commands.
-*/
+ */
 
 #include "BG_102463.h"
 
@@ -13,9 +13,10 @@ extern int g_TotalOfFlights;
 extern Airport *airportBank;
 
 
+
 /*	Checks validity for "case a" : returns 1 if the airportID is valid and if
- * the limit of airports won't be exceeded when adding one */
-int validate_case_a(char airportID[]){
+ * the limit of airports won't be exceeded when adding one. */
+int validate_case_a(char airportID[]) {
 
 	int num_airports = g_TotalOfAirports;
 	if (!validAirportID(airportID))
@@ -32,9 +33,9 @@ int validate_case_a(char airportID[]){
 /*	Checks validity for case v: checks if flightID and its airports' IDs
  * are valid; if the flight is duplicate and if the airports exist;
  * if adding a flight will exceed the limit of flights; if the flight date,
- * duration and capacity are valid	*/
+ * duration and capacity are valid.	*/
 
-int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
+int valid_case_v(char flightID[], char arrivalAirportID[MAX_AIRPORT_ID],
 				 char departureAirportID[MAX_AIRPORT_ID], Date departureDate,
 				 Time duration, int capacity, Date today) {
 
@@ -45,8 +46,6 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 		validAirportID(departureAirportID) &&
 		validAirportID(arrivalAirportID)) {
 
-		/* airportExist returns 0 or (airport index in airportBank + 1)
-		 * if it exists*/
 		departureIndexPlus1 = airportExist(departureAirportID,CASE_V);
 
 		arrivalIndexPlus1 = airportExist(arrivalAirportID,CASE_V);
@@ -54,8 +53,7 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 		if (!(!departureIndexPlus1 || !arrivalIndexPlus1) &&
 			!tooManyFlights() &&
 			check_date(departureDate, today) &&
-			validDuration(duration) && validCapacity(capacity))
-		{
+			validDuration(duration) && validCapacity(capacity)) {
 			airportBank[departureIndexPlus1-1].n_Departure_Flights++;
 			airportBank[arrivalIndexPlus1-1].n_Arrival_Flights++;
 			return 1;
@@ -67,11 +65,11 @@ int valid_case_v(FlightID flightID, char arrivalAirportID[MAX_AIRPORT_ID],
 
 /*	Receives input for command "a" and, if it's valid, creates and adds a
  * new airport, presenting the corresponding message in standard output.	*/
-void commandA(){
+void commandA() {
 
 	char airportID[MAX_AIRPORT_ID], country[MAX_COUNTRY], city[MAX_CITY];
-	scanf(IN_AIRPORT_ID_OR_COUNTRY, airportID);
-	scanf(IN_AIRPORT_ID_OR_COUNTRY, country);
+	scanf(IN_STR, airportID);
+	scanf(IN_STR, country);
 	scanf(IN_CITY, city);
 
 	if (validate_case_a(airportID)) {
@@ -80,7 +78,6 @@ void commandA(){
 		addAirport(new_airport);
 
 		printf(OUT_AIRPORT_ID, airportID);
-		/*	increases global variable (total of airports in the system)	*/
 		g_TotalOfAirports++;
 
 	}
@@ -89,8 +86,8 @@ void commandA(){
 
 /*	Receives remaining input for command "l" and: if there isn't any, presents
  * sorted airports; if there is, stores the airports asked for and presents the
- * valid ones */
-void commandL(){
+ * valid ones. */
+void commandL() {
 
 	char airportID[MAX_AIRPORT_ID];
 	if (getchar() == '\n') {
@@ -101,7 +98,7 @@ void commandL(){
 		char requested_IDs[MAX_AIRPORTS][MAX_AIRPORT_ID];
 		int num_IDs = 0;
 		do {
-			scanf(IN_AIRPORT_ID_OR_COUNTRY, airportID);
+			scanf(IN_STR, airportID);
 			strcpy(requested_IDs[num_IDs], airportID);
 			num_IDs++;
 
@@ -114,23 +111,23 @@ void commandL(){
 
 /*	Receives remaining input for command "v" and: if there isn't any, presents
 * all flights; if there is, checks if it's valid and, if so, adds new flight to
- * FlightBank	*/
-void commandV(Date today){
+ * FlightBank.	*/
+void commandV(Date today) {
 
-	if (getchar() == '\n') {
+	if (getchar() == '\n')
 		listAllFlights();
 
-	} else {
+	else {
 
 		int capacity;
-		char depAirportID[MAX_AIRPORT_ID], arrAirportID[MAX_AIRPORT_ID];
-		FlightID flightID;
+		char depAirportID[MAX_AIRPORT_ID], arrAirportID[MAX_AIRPORT_ID],
+			flightID[MAX_FLIGHT_ID];
 		Date departure_date;
 		Time duration, departureTime;
 
-		scanf(IN_FLIGHT_ID, flightID.letters, &flightID.num);
-		scanf(IN_AIRPORT_ID_OR_COUNTRY, depAirportID);
-	  	scanf(IN_AIRPORT_ID_OR_COUNTRY, arrAirportID);
+		scanf(IN_STR, flightID);
+		scanf(IN_STR, depAirportID);
+		scanf(IN_STR, arrAirportID);
 
 		scanf(IN_DATE, &departure_date.day, &departure_date.month,
 			  &departure_date.year);
@@ -150,17 +147,17 @@ void commandV(Date today){
 }
 
 
-/*	Receives airportID for P and C commands and finds associated flights	*/
-void command_P_C(char flag){
+/*	Receives airportID for P and C commands and finds associated flights.	*/
+void command_P_C(char flag) {
 
 	char airportID[MAX_AIRPORT_ID];
-	scanf(IN_AIRPORT_ID_OR_COUNTRY, airportID);
+	scanf(IN_STR, airportID);
 	findFlights(airportID, flag);
 }
 
 
-/*	Gets a date from input and if it's valid, updates "today"	*/
-Date command_T(Date today){
+/*	Gets a date from input and if it's valid, updates "today".	*/
+Date command_T(Date today) {
 
 	int day, month, year;
 	Date possibleDate;
@@ -168,8 +165,7 @@ Date command_T(Date today){
 	scanf(IN_DATE, &day, &month, &year);
 	possibleDate = createDate(day, month, year);
 
-	if (check_date(possibleDate, today))	/*	checks date's validity	*/
-	{
+	if (check_date(possibleDate, today)) {
 		today = newDate(possibleDate, today);
 		outputDate(today);
 	}
@@ -177,61 +173,65 @@ Date command_T(Date today){
 }
 
 
-void commandR(Date today)
-{
-	char *reservationCode;
+/*	Receives flightID and date and when there's no more input, it lists the
+ * flight's reservations, otherwise, it receives the reservation's info and
+ * adds it to the system.	*/
+void commandR(Date today) {
+    
+	char *reservation_code=NULL, temp[MAX_CMD_R], flightID[MAX_FLIGHT_ID];
 	int passengerNum;
-	FlightID flightId;
 	Date flightDate;
-	/*flightId = readFlightID();*/
-	scanf(IN_FLIGHT_ID, flightId.letters, &flightId.num);
+
+	scanf(IN_STR, flightID);
 	scanf(IN_DATE, &flightDate.day, &flightDate.month, &flightDate.year);
 
-	if (getchar()!='\n'){
+	if (getchar()!='\n') {
 
-		reservationCode = malloc(sizeof (char)*MAX_CMD_R);
+		scanf(IN_RES_CODE_AND_PASS, temp, &passengerNum);
 
-		if (reservationCode == NULL){
-			printf(NO_MEMORY);
-			freeAll();
-			exit(1);
-		}
+		reservation_code = (char*)malloc(sizeof (char)*(strlen(temp)+1));
 
-		scanf(IN_RES_CODE_AND_PASS, reservationCode, &passengerNum);
+		if (reservation_code == NULL)
+			noMemory();
+		
+		strcpy(reservation_code, temp);
 
-		reservationCode = realloc(reservationCode,
-								  sizeof(char)*strlen(reservationCode));
-
-		add_Reservation(flightId, flightDate, reservationCode,
-						passengerNum, today);
+		if (!add_Reservation(flightID, flightDate, reservation_code,
+							 passengerNum, today))
+			free(reservation_code);
+		
 	}
-	else{
-		listReservations(flightId, flightDate, today);
+	else {
+		listReservations(flightID, flightDate, today);
 	}
 }
 
 
-void commandE(){
+/* Receives a code and deletes the corresponding flight or reservation. */
+void commandE() {
+    
 	char *code = malloc(sizeof (char)*MAX_CMD_E);
 	int len;
-	FlightID flightID;
-	scanf("%s", code);
+
+	if (code == NULL)
+		noMemory();
+	
+
+	scanf(IN_STR, code);
 	len = strlen(code);
 	code = realloc(code, sizeof (char)*(len+1));
 
-	if (len < 10){
-
-		flightID = getFlightID(code);
-		if (!deleteFlight(flightID))
+	if (len < 10) {
+		if (!deleteFlight(code))
 			printf(NOT_FOUND);
-
+		else
+			--g_TotalOfFlights;
 	}
-
 	else {
-		if (!deleteReservation(code)){
+		if (!deleteReservation(code, 1))
 			printf(NOT_FOUND);
-		}
 	}
 	free(code);
 }
+
 
